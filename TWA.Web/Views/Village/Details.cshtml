@@ -1,0 +1,261 @@
+@model TWA.Core.Entities.Village
+@{
+    ViewData["Title"] = Model.Name;
+    
+    // Güvenli Yüzdelik Hesaplamalar
+    // Ensure denominator is not zero
+    long capacity = Model.StorageCapacity > 0 ? Model.StorageCapacity : 1;
+    int woodP = (int)((double)Model.Wood / capacity * 100);
+    int stoneP = (int)((double)Model.Stone / capacity * 100);
+    int ironP = (int)((double)Model.Iron / capacity * 100);
+    
+    long popMax = Model.PopulationMax > 0 ? Model.PopulationMax : 1;
+    int popP = (int)((double)Model.PopulationCurrent / popMax * 100);
+}
+
+<div class="card border-0 mb-4 bg-glass overflow-hidden position-relative fade-in-up">
+    <div class="position-absolute top-0 end-0 p-3 opacity-10">
+        <i class="fas fa-chess-rook fa-10x text-white"></i>
+    </div>
+    
+    <div class="card-body p-4 position-relative z-index-1">
+        <div class="d-flex justify-content-between align-items-end">
+            <div>
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <h1 class="display-5 fw-bold text-white mb-0">@Model.Name</h1>
+                    <span class="badge bg-soft-primary border border-primary border-opacity-25 fs-6">
+                        <i class="fas fa-map-marker-alt me-1"></i> @Model.Coordinates
+                    </span>
+                </div>
+                <div class="text-muted d-flex gap-4">
+                    <span><i class="fas fa-star text-warning me-1"></i> Puan: <strong class="text-white">@Model.Points.ToString("N0")</strong></span>
+                    <span><i class="fas fa-heart text-danger me-1"></i> Sadakat: <strong class="text-white">@Model.Loyalty</strong></span>
+                    <span><i class="fas fa-shield-alt text-success me-1"></i> Durum: <strong class="text-success">GÜVENLİ</strong></span>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-light border-secondary hover-white">
+                    <i class="fas fa-sync-alt me-2"></i> Yenile
+                </button>
+                <button class="btn btn-danger shadow-lg shadow-danger">
+                    <i class="fas fa-crosshairs me-2"></i> Operasyon Başlat
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="progress" style="height: 2px; background: transparent;">
+        <div class="progress-bar bg-primary" style="width: 100%"></div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4 fade-in-up" style="animation-delay: 0.1s;">
+    <div class="col-md-3">
+        <div class="card border-0 bg-glass h-100 card-hover">
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small text-uppercase fw-bold"><i class="fas fa-tree text-success me-2"></i> Odun</span>
+                    <span class="font-monospace text-white">@((Model.Wood/1000.0).ToString("0.0"))k</span>
+                </div>
+                <div class="progress bg-dark" style="height: 6px;">
+                    <div class="progress-bar bg-success progress-bar-animated-striped" style="width: @woodP%"></div>
+                </div>
+                <small class="text-muted mt-2 d-block text-end" style="font-size: 0.7rem;">@woodP% Dolu</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 bg-glass h-100 card-hover">
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small text-uppercase fw-bold"><i class="fas fa-cubes text-secondary me-2"></i> Kil</span>
+                    <span class="font-monospace text-white">@((Model.Stone/1000.0).ToString("0.0"))k</span>
+                </div>
+                <div class="progress bg-dark" style="height: 6px;">
+                    <div class="progress-bar bg-secondary progress-bar-animated-striped" style="width: @stoneP%"></div>
+                </div>
+                <small class="text-muted mt-2 d-block text-end" style="font-size: 0.7rem;">@stoneP% Dolu</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 bg-glass h-100 card-hover">
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small text-uppercase fw-bold"><i class="fas fa-gem text-info me-2"></i> Demir</span>
+                    <span class="font-monospace text-white">@((Model.Iron/1000.0).ToString("0.0"))k</span>
+                </div>
+                <div class="progress bg-dark" style="height: 6px;">
+                    <div class="progress-bar bg-info progress-bar-animated-striped" style="width: @ironP%"></div>
+                </div>
+                <small class="text-muted mt-2 d-block text-end" style="font-size: 0.7rem;">@ironP% Dolu</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 bg-glass h-100 card-hover border-start border-4 @(popP > 95 ? "border-danger" : "border-warning")">
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small text-uppercase fw-bold"><i class="fas fa-users text-warning me-2"></i> Nüfus</span>
+                    <span class="font-monospace text-white">@Model.PopulationCurrent</span>
+                </div>
+                <div class="progress bg-dark" style="height: 6px;">
+                    <div class="progress-bar bg-warning" style="width: @popP%"></div>
+                </div>
+                <small class="text-muted mt-2 d-block text-end" style="font-size: 0.7rem;">Max: @Model.PopulationMax</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 fade-in-up" style="animation-delay: 0.2s;">
+    <div class="col-lg-7">
+        <div class="card border-0 bg-glass h-100">
+            <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-danger"><i class="fas fa-shield-alt me-2"></i> GARNİZON KUVVETLERİ</span>
+                <button class="btn btn-xs btn-outline-danger border-0"><i class="fas fa-plus-circle me-1"></i> Asker Bas</button>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    @functions {
+                        void RenderTroopCard(string name, int count, string iconClass, string colorClass) {
+                            <div class="col-md-3 col-6">
+                                <div class="troop-card position-relative overflow-hidden rounded-3 p-3 border border-secondary border-opacity-10 bg-dark bg-opacity-25">
+                                    <i class="@iconClass position-absolute" style="font-size: 4rem; right: -10px; bottom: -10px; opacity: 0.1; color: var(--bs-@colorClass);"></i>
+                                    
+                                    <h3 class="fw-bold text-white mb-0">@count</h3>
+                                    <small class="text-@colorClass text-uppercase fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">@name</small>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                    @{
+                        // Check if OwnedTroops is null just in case
+                        var troops = Model.OwnedTroops ?? new TWA.Core.Entities.TroopSet();
+                        
+                        RenderTroopCard("Mızrak", troops.Spear, "fas fa-fist-raised", "secondary");
+                        RenderTroopCard("Kılıç", troops.Sword, "fas fa-khanda", "secondary");
+                        RenderTroopCard("Balta", troops.Axe, "fas fa-ax", "danger");
+                        RenderTroopCard("Casus", troops.Spy, "fas fa-eye", "info");
+                        
+                        RenderTroopCard("Hafif", troops.Light, "fas fa-horse", "danger");
+                        RenderTroopCard("Ağır", troops.Heavy, "fas fa-horse-head", "warning");
+                        RenderTroopCard("Şah", troops.Ram, "fas fa-hammer", "light");
+                        RenderTroopCard("Misyoner", troops.Snob, "fas fa-crown", "warning");
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        
+        <div class="card border-0 bg-glass mb-4 border-start border-4 border-info">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="icon-box bg-soft-info rounded-circle animate-pulse">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h6 class="fw-bold text-info mb-0">OVERLORD AI ANALİZİ</h6>
+                </div>
+                <div class="bg-dark bg-opacity-50 p-3 rounded-3 border border-secondary border-opacity-25 font-monospace text-muted small" style="min-height: 80px;">
+                    <span class="text-success">root@twa:~$</span> <span id="ai-output" class="text-light">Analiz başlatılıyor...</span><span class="blink">_</span>
+                </div>
+                <button class="btn btn-sm btn-outline-info w-100 mt-2" id="btn-ask-groq" data-id="@Model.Id">
+                    <i class="fas fa-magic me-2"></i> Taktiksel Öneri İste
+                </button>
+            </div>
+        </div>
+
+        <div class="card border-0 bg-glass">
+            <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25">
+                <span class="fw-bold text-warning"><i class="fas fa-city me-2"></i> KRİTİK ALTYAPI</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item bg-transparent border-secondary border-opacity-10 d-flex align-items-center justify-content-between py-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="icon-box bg-soft-warning rounded-circle" style="width: 36px; height: 36px;"><i class="fas fa-home fa-sm"></i></div>
+                            <div>
+                                <div class="text-white fw-bold small">Ana Bina</div>
+                                <div class="text-muted" style="font-size: 0.7rem;">Yönetim Merkezi</div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-dark border border-secondary text-warning">Lvl @Model.BuildingMain</span>
+                        </div>
+                    </div>
+
+                    <div class="list-group-item bg-transparent border-secondary border-opacity-10 d-flex align-items-center justify-content-between py-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="icon-box bg-soft-danger rounded-circle" style="width: 36px; height: 36px;"><i class="fas fa-dungeon fa-sm"></i></div>
+                            <div>
+                                <div class="text-white fw-bold small">Kışla</div>
+                                <div class="text-muted" style="font-size: 0.7rem;">Piyade Üretimi</div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-dark border border-secondary text-danger">Lvl 25</span>
+                        </div>
+                    </div>
+
+                    <div class="list-group-item bg-transparent border-secondary border-opacity-10 d-flex align-items-center justify-content-between py-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="icon-box bg-soft-success rounded-circle" style="width: 36px; height: 36px;"><i class="fas fa-warehouse fa-sm"></i></div>
+                            <div>
+                                <div class="text-white fw-bold small">Depo</div>
+                                <div class="text-muted" style="font-size: 0.7rem;">Kapasite: @(capacity/1000)k</div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-success">MAX</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Bu sayfa için özel mikro-stiller */
+    .troop-card {
+        transition: transform 0.2s;
+    }
+    .troop-card:hover {
+        transform: translateY(-3px);
+        background: rgba(255,255,255,0.05) !important;
+        border-color: rgba(255,255,255,0.2) !important;
+    }
+    .hover-white:hover {
+        color: #fff !important;
+        border-color: #fff !important;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // AI Yazı Efekti
+        function typeWriter(text, i, fnCallback) {
+            if (i < (text.length)) {
+               document.querySelector("#ai-output").innerHTML = text.substring(0, i+1);
+               setTimeout(function() {
+                  typeWriter(text, i + 1, fnCallback)
+               }, 30);
+            }
+        }
+
+        $('#btn-ask-groq').click(function() {
+            var btn = $(this);
+            btn.prop('disabled', true);
+            $('#ai-output').text(''); // Temizle
+            
+            // Simülasyon
+            setTimeout(function() {
+                var msg = "Depo kapasitesi kritik (%90). Öneri: 2 adet 'Altın Para' basımı başlatılarak kaynak eritilmeli.";
+                typeWriter(msg, 0);
+                btn.prop('disabled', false).html('<i class="fas fa-sync me-2"></i> Yeniden Tara');
+            }, 1000);
+        });
+    </script>
+}

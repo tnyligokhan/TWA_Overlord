@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OVERLORD | @ViewData["Title"]</title>
+    <!-- Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 (Fixed Version) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block sidebar">
+                <div class="text-center py-4">
+                    <h3 class="fw-bold"><i class="fas fa-shield-alt text-danger"></i> TWA <span style="color:var(--accent-cyan)">v3.2</span></h3>
+                    <small class="text-muted">PROJECT OVERLORD</small>
+                </div>
+                <hr style="border-color: var(--border-color)">
+                
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Dashboard" ? "active" : "")" asp-controller="Dashboard" asp-action="Index">
+                            <i class="fas fa-tachometer-alt"></i> KOMUTA MERKEZİ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Village" ? "active" : "")" asp-controller="Village" asp-action="Index">
+                            <i class="fas fa-chess-rook"></i> KÖY YÖNETİMİ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Infrastructure" ? "active" : "")" asp-controller="Infrastructure" asp-action="Index">
+                            <i class="fas fa-hard-hat"></i> ALTYAPI
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Attack" ? "active" : "")" asp-controller="Attack" asp-action="Index">
+                            <i class="fas fa-fighter-jet"></i> SAVAŞ ODASI <span class="badge bg-danger ms-2">@ViewData["ActiveOpsCount"]</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Map" ? "active" : "")" asp-controller="Map" asp-action="Index">
+                            <i class="fas fa-map-marked-alt"></i> RADAR & HARİTA
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Economy" ? "active" : "")" asp-controller="Economy" asp-action="Index">
+                            <i class="fas fa-coins"></i> EKONOMİ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger fw-bold @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Emergency" ? "active" : "")" asp-controller="Emergency" asp-action="Index">
+                            <i class="fas fa-biohazard"></i> ACİL DURUM
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="position-absolute bottom-0 w-100 p-3 text-muted text-center" style="font-size: 0.7rem;">
+                    Server Time: <span id="server-clock">--:--:--</span><br>
+                    Groq AI: <span class="text-success">ONLINE ●</span>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    <script>
+        // Basit Saat Scripti
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('server-clock').innerText = now.toLocaleTimeString();
+        }, 1000);
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,117 @@
+@model TWA.Web.Models.InfrastructureViewModel
+@{
+    ViewData["Title"] = "ALTYAPI YÖNETİMİ";
+}
+
+<div class="container-fluid engineering-board fade-in-down">
+    
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h2 class="text-white fw-bold mb-0"><i class="fas fa-hard-hat text-warning me-2"></i> ŞANTİYE YÖNETİMİ</h2>
+            <small class="text-muted">İNŞAAT KUYRUĞU VE PROJE DURUMLARI</small>
+        </div>
+        <div class="text-end">
+             <button class="btn btn-outline-warning btn-sm"><i class="fas fa-plus me-1"></i> YENİ İNŞAAT EMRİ</button>
+        </div>
+    </div>
+
+    <!-- 1. ACTIVE CONSTRUCTION (The Workshop) -->
+    <div>
+        <div class="section-header">
+            <span class="section-title"><i class="fas fa-hammer section-icon fa-spin" style="animation-duration: 3s;"></i> DEVAM EDEN İNŞAATLAR</span>
+            <span class="badge bg-warning text-dark">@Model.ActiveBuilds.Count AKTİF</span>
+        </div>
+
+        <div class="row">
+            @foreach (var task in Model.ActiveBuilds)
+            {
+                <div class="col-lg-6">
+                    <div class="infra-card active">
+                        <div class="card-grid">
+                            <!-- Icon -->
+                            <div class="building-icon-box">
+                                <i class="@task.BuildingIcon"></i>
+                            </div>
+
+                            <!-- Info -->
+                            <div class="building-info">
+                                <span class="text-warning small fw-bold d-block mb-1">@task.VillageName</span>
+                                <span class="building-name">@task.BuildingName</span>
+                                <div class="level-transition">
+                                    Lvl @task.CurrentLevel <i class="fas fa-arrow-right mx-1 text-warning"></i> <span class="text-white fw-bold">Lvl @task.TargetLevel</span>
+                                </div>
+                            </div>
+
+                            <!-- Timer -->
+                            <div class="timer-box">
+                                <span class="countdown">@task.Remaining.ToString(@"hh\:mm\:ss")</span>
+                                <span class="eta">Bitiş: @task.EndTime.ToString("HH:mm")</span>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="progress-rail">
+                            <div class="progress-fill active" style="width: @task.Progress%"></div>
+                        </div>
+
+                        <!-- Hidden Actions -->
+                        <div class="action-overlay">
+                            <button class="btn-eng speed" title="Hızlandır (Premium)"><i class="fas fa-bolt"></i></button>
+                            <button class="btn-eng cancel" title="İptal Et"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- 2. CONSTRUCTION QUEUE (The Blueprint Table) -->
+    <div class="flex-grow-1">
+        <div class="section-header" style="border-color: rgba(255,255,255,0.1);">
+            <span class="section-title text-muted"><i class="fas fa-clock section-icon text-muted"></i> BEKLEYENLER</span>
+            <span class="badge bg-secondary">@Model.BuildQueue.Count SIRADA</span>
+        </div>
+
+        <div class="row">
+            @foreach (var task in Model.BuildQueue)
+            {
+                <div class="col-lg-4">
+                    <div class="infra-card queued">
+                        <div class="card-grid">
+                            <!-- Icon -->
+                            <div class="building-icon-box">
+                                <i class="@task.BuildingIcon"></i>
+                            </div>
+
+                            <!-- Info -->
+                            <div class="building-info">
+                                <span class="text-muted small fw-bold d-block mb-1">@task.VillageName</span>
+                                <span class="building-name text-muted">@task.BuildingName</span>
+                                <div class="level-transition text-muted opacity-75">
+                                    Lvl @task.CurrentLevel <i class="fas fa-arrow-right mx-1"></i> Lvl @task.TargetLevel
+                                </div>
+                            </div>
+                            
+                             <!-- Actions (Visible on hover) -->
+                            <div class="action-overlay">
+                                <button class="btn-eng" title="Öne Çek"><i class="fas fa-arrow-up"></i></button>
+                                <button class="btn-eng cancel" title="İptal Et"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        
+                        <!-- Static Progress Rail -->
+                        <div class="progress-rail" style="background: rgba(255,255,255,0.05);"></div>
+                    </div>
+                </div>
+            }
+        </div>
+        
+        @if (!Model.ActiveBuilds.Any() && !Model.BuildQueue.Any())
+        {
+             <div class="text-center py-5 text-muted opacity-50">
+                <i class="fas fa-hard-hat fa-3x mb-3"></i>
+                <p>Şantiye sessiz. İnşaat emri yok.</p>
+            </div>
+        }
+    </div>
+</div>

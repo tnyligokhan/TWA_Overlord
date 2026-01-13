@@ -1,0 +1,141 @@
+@{
+    ViewData["Title"] = "ACİL DURUM PROTOKOLLERİ";
+    bool isLocked = ViewBag.IsLocked ?? false;
+}
+
+<div class="emergency-overlay @(isLocked ? "active" : "")"></div>
+
+<div class="container position-relative z-index-10 py-5 fade-in-down">
+    
+    <div class="text-center mb-5">
+        <div class="d-inline-block position-relative">
+            <div class="icon-box bg-soft-danger rounded-circle mx-auto mb-3" style="width: 100px; height: 100px; font-size: 3rem; display: flex; align-items: center; justify-content: center; background: rgba(220, 53, 69, 0.2);">
+                <i class="fas fa-biohazard animate-pulse text-danger"></i>
+            </div>
+            @if(isLocked)
+            {
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light">
+                    SİSTEM KİLİTLİ
+                    <span class="visually-hidden">unread messages</span>
+                </span>
+            }
+        </div>
+        <h1 class="display-4 fw-bold text-white tracking-tight">ACİL DURUM KONTROLÜ</h1>
+        <p class="text-muted fs-5">Kritik müdahale protokolleri. <span class="text-danger fw-bold">DİKKATLİ KULLANIN.</span></p>
+    </div>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-warning border-0 border-start border-warning border-5 bg-dark text-white shadow-lg mb-5 d-flex align-items-center">
+            <i class="fas fa-exclamation-triangle fa-2x text-warning me-3"></i>
+            <div>
+                <h5 class="alert-heading fw-bold mb-0">Rapor</h5>
+                <div>@TempData["Message"]</div>
+            </div>
+        </div>
+    }
+
+    <div class="row g-4 justify-content-center">
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 border-danger bg-dark-gradient card-hover overflow-hidden">
+                <div class="card-header bg-transparent border-danger border-opacity-25 text-danger fw-bold d-flex justify-content-between">
+                    <span>PROTOKOL: OMEGA</span>
+                    <i class="fas fa-power-off"></i>
+                </div>
+                <div class="card-body text-center d-flex flex-column justify-content-between">
+                    <p class="text-muted small mb-4">
+                        Sistemi anında susturur. Tüm servisleri keser. Bot "Offline" taklidi yapar ve yanıt vermez.
+                    </p>
+                    
+                    @if (isLocked)
+                    {
+                        <div class="p-3 mb-3 rounded border border-danger bg-soft-danger text-danger fw-bold">
+                            <i class="fas fa-lock me-2"></i> SİSTEM KİLİTLENDİ
+                        </div>
+                        <form asp-action="ToggleKillSwitch" method="post" class="mt-auto">
+                            <input type="hidden" name="enable" value="false" />
+                            <button class="btn btn-success btn-lg w-100 py-3 fw-bold shadow-success">
+                                <i class="fas fa-key me-2"></i> KİLİDİ AÇ
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="ToggleKillSwitch" method="post" class="mt-auto">
+                            <input type="hidden" name="enable" value="true" />
+                            <button class="btn btn-danger btn-lg w-100 py-4 fw-bold big-red-button">
+                                <span class="d-block mb-1"><i class="fas fa-skull fa-lg"></i></span>
+                                KILL SWITCH
+                            </button>
+                        </form>
+                    }
+                </div>
+                <div class="hazard-stripe"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 border-warning bg-dark-gradient card-hover">
+                <div class="card-header bg-transparent border-warning border-opacity-25 text-warning fw-bold d-flex justify-content-between">
+                    <span>PROTOKOL: DEFCON 1</span>
+                    <i class="fas fa-shield-virus"></i>
+                </div>
+                <div class="card-body text-center d-flex flex-column justify-content-between">
+                    <p class="text-muted small mb-4">
+                        Tüm köylerde "Milis" çağrısı yapar. Hammaddeleri pazara gizler ve birlikleri dışarı kaçırır (Dodging).
+                    </p>
+                    <button class="btn btn-outline-warning btn-lg w-100 py-3 mt-auto fw-bold" data-bs-toggle="modal" data-bs-target="#confirmDefense">
+                        <i class="fas fa-siren-on me-2"></i> SAVUNMAYI BAŞLAT
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 border-secondary bg-dark-gradient card-hover" style="opacity: 0.7;">
+                <div class="card-header bg-transparent border-secondary border-opacity-25 text-secondary fw-bold d-flex justify-content-between">
+                    <span>PROTOKOL: GHOST</span>
+                    <i class="fas fa-user-secret"></i>
+                </div>
+                <div class="card-body text-center d-flex flex-column justify-content-between">
+                    <p class="text-muted small mb-4">
+                        Acil durum karartması. Tüm logları siler, çerezleri temizler ve iz bırakmadan oturumu kapatır.
+                    </p>
+                    <button class="btn btn-dark btn-lg w-100 py-3 mt-auto border-secondary text-muted" onclick="alert('Bu özellik v3.3\'te gelecek.')">
+                        <i class="fas fa-eye-slash me-2"></i> KARARTMA YAP
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="confirmDefense" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border border-warning shadow-lg">
+            <div class="modal-header border-warning border-opacity-25 bg-soft-warning">
+                <h5 class="modal-title text-warning fw-bold"><i class="fas fa-exclamation-triangle me-2"></i> ONAY GEREKLİ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-white p-4">
+                <div class="d-flex align-items-start gap-3">
+                    <i class="fas fa-radiation fa-3x text-warning opacity-50"></i>
+                    <div>
+                        <p class="mb-2">Bu işlem <strong>tüm köylerde</strong> hammadde üretimini %50 düşürecek ve sivil milisleri aktif edecektir.</p>
+                        <p class="text-muted small fst-italic">Geri dönüşü yoktur. Emin misiniz Komutanım?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary border-opacity-25">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">İptal</button>
+                <form asp-action="PanicDefense" method="post">
+                    <button type="submit" class="btn btn-warning fw-bold px-4">
+                        <i class="fas fa-check me-2"></i> ONAYLIYORUM
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

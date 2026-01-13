@@ -1,0 +1,127 @@
+@model IEnumerable<TWA.Core.Entities.Village>
+@{
+    ViewData["Title"] = "Köy Envanteri";
+}
+
+<div class="d-flex justify-content-between align-items-end mb-4 fade-in-up">
+    <div>
+        <h6 class="text-muted text-uppercase fw-bold mb-1">Mülk Yönetimi</h6>
+        <h2 class="fw-bold text-white m-0">Köy Envanteri</h2>
+    </div>
+    <div class="d-flex gap-2">
+        <div class="input-group">
+            <span class="input-group-text bg-glass border-secondary text-muted"><i class="fas fa-search"></i></span>
+            <input type="text" class="form-control bg-glass border-secondary text-white" placeholder="Köy veya Koordinat Ara...">
+        </div>
+        <a href="#" class="btn btn-primary d-flex align-items-center gap-2 text-nowrap shadow-lg">
+            <i class="fas fa-plus-circle"></i> <span>Köy Fethet</span>
+        </a>
+    </div>
+</div>
+
+<div class="d-flex flex-column gap-3 fade-in-up" style="animation-delay: 0.1s;">
+    
+    <div class="d-flex px-4 text-muted small text-uppercase fw-bold pb-2 border-bottom border-secondary border-opacity-25">
+        <div style="width: 35%;">Köy Bilgisi</div>
+        <div style="width: 30%;">Lojistik Durumu</div>
+        <div style="width: 20%;">Demografi</div>
+        <div style="width: 15%;" class="text-end">Yönetim</div>
+    </div>
+
+    @foreach (var item in Model)
+    {
+        // Yüzdelik Hesaplamalar
+        // Ensure denominator is not zero to avoid DivideByZeroException
+        long capacity = item.StorageCapacity > 0 ? item.StorageCapacity : 1;
+        int woodP = (int)((double)item.Wood / capacity * 100);
+        int stoneP = (int)((double)item.Stone / capacity * 100);
+        int ironP = (int)((double)item.Iron / capacity * 100);
+        
+        long popMax = item.PopulationMax > 0 ? item.PopulationMax : 1;
+        int popP = (int)((double)item.PopulationCurrent / popMax * 100);
+
+        <div class="card border-0 card-hover bg-glass">
+            <div class="card-body py-3 px-4 d-flex align-items-center">
+                
+                <div class="d-flex align-items-center" style="width: 35%;">
+                    <div class="icon-box bg-soft-primary rounded-3 me-3 flex-shrink-0" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-chess-rook fs-5"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-white fs-5 mb-1">@item.Name</div>
+                        <div class="d-flex gap-2">
+                            <span class="badge bg-soft-secondary font-monospace border border-secondary border-opacity-25">@item.Coordinates</span>
+                            <span class="badge bg-soft-warning text-warning"><i class="fas fa-star me-1"></i> @item.Points.ToString("N0")</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3" style="width: 30%;">
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted"><i class="fas fa-tree text-success"></i></span>
+                            <span class="text-white">@((item.Wood/1000.0).ToString("0.0"))k</span>
+                        </div>
+                        <div class="progress bg-dark" style="height: 4px;">
+                            <div class="progress-bar bg-success" style="width: @woodP%"></div>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted"><i class="fas fa-cubes text-secondary"></i></span>
+                            <span class="text-white">@((item.Stone/1000.0).ToString("0.0"))k</span>
+                        </div>
+                        <div class="progress bg-dark" style="height: 4px;">
+                            <div class="progress-bar bg-secondary" style="width: @stoneP%"></div>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted"><i class="fas fa-gem text-info"></i></span>
+                            <span class="text-white">@((item.Iron/1000.0).ToString("0.0"))k</span>
+                        </div>
+                        <div class="progress bg-dark" style="height: 4px;">
+                            <div class="progress-bar bg-info" style="width: @ironP%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ps-4" style="width: 20%;">
+                    <div class="d-flex align-items-center mb-1">
+                        <i class="fas fa-users text-muted small me-2"></i>
+                        <div class="progress bg-dark flex-grow-1 me-2" style="height: 6px;">
+                            <div class="progress-bar @(popP > 90 ? "bg-danger" : "bg-primary")" style="width: @popP%"></div>
+                        </div>
+                        <span class="small text-muted">@popP%</span>
+                    </div>
+                    <div class="small text-muted">
+                        <i class="fas fa-heart text-danger me-1"></i> Sadakat: <span class="text-white">100</span>
+                    </div>
+                </div>
+
+                <div class="text-end" style="width: 15%;">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-icon btn-outline-light border-0 text-muted hover-white" title="Detay">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+
+            </div>
+            
+            <div class="card-footer bg-dark border-top border-secondary border-opacity-10 py-2 px-4 d-none d-md-flex justify-content-end gap-2 action-drawer">
+                <button class="btn btn-xs btn-outline-danger border-0"><i class="fas fa-crosshairs me-1"></i> Saldırı Çık</button>
+                <button class="btn btn-xs btn-outline-warning border-0"><i class="fas fa-coins me-1"></i> Pazar</button>
+                <button class="btn btn-xs btn-outline-info border-0"><i class="fas fa-hammer me-1"></i> İnşaat</button>
+            </div>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 text-muted bg-glass rounded-3 border border-dashed border-secondary">
+            <i class="fas fa-wind fa-3x mb-3 opacity-50"></i>
+            <h5>Henüz hiç köyünüz yok Komutanım.</h5>
+            <p class="small">Sistemi oyuna bağlayarak veya veritabanını güncelleyerek başlayın.</p>
+        </div>
+    }
+
+</div>

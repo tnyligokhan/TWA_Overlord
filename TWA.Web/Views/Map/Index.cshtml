@@ -1,0 +1,191 @@
+@model TWA.Web.Models.MapRadarViewModel
+@{
+    ViewData["Title"] = "TAKTIK RADAR";
+    ViewData["HideFooter"] = true; // Opsiyonel: Footer'ı gizlemek isterseniz Layout'ta logic olmalı
+}
+
+<!-- IMMERSIVE MAP CONTAINER -->
+<div class="atc-map-container fade-in">
+    
+    <!-- 1. ACTIVE SONAR BACKGROUND -->
+    <div class="atc-grid"></div>
+    <div class="sonar-emitter">
+        <div class="sonar-wave" style="animation-delay: 0s;"></div>
+        <div class="sonar-wave" style="animation-delay: 1.5s;"></div>
+        <div class="sonar-wave" style="animation-delay: 3s;"></div>
+    </div>
+
+    <!-- 2. FLOATING HUD (CONTROL DECK) -->
+    <div class="floating-hud">
+        <div class="hud-title">
+            <span><i class="fas fa-sliders-h me-2"></i> TARAMA PARAMETRELERİ</span>
+            <i class="fas fa-satellite-dish fa-spin text-info" style="font-size: 0.8rem;"></i>
+        </div>
+
+        <form asp-action="Scan" method="post">
+            <!-- Coordinates -->
+            <div class="row g-2 mb-3">
+                <div class="col-6">
+                    <label class="text-muted small text-uppercase">X Koord</label>
+                    <input type="number" class="hud-input" asp-for="CenterX" placeholder="500">
+                </div>
+                <div class="col-6">
+                    <label class="text-muted small text-uppercase">Y Koord</label>
+                    <input type="number" class="hud-input" asp-for="CenterY" placeholder="500">
+                </div>
+            </div>
+
+            <!-- Radius Slider -->
+            <div class="mb-4 range-wrap">
+                <label class="text-muted small text-uppercase">Tarama Menzili</label>
+                <span class="range-display"><span id="radius-val">@Model.Radius</span> BR</span>
+                <input type="range" class="form-range mt-2" min="5" max="50" asp-for="Radius" 
+                       oninput="document.getElementById('radius-val').innerText = this.value">
+            </div>
+
+            <!-- Points Filter -->
+            <div class="row g-2 mb-4">
+                <div class="col-6">
+                    <label class="text-muted small text-uppercase">Min Puan</label>
+                    <input type="number" class="hud-input" asp-for="MinPoints" placeholder="0">
+                </div>
+                <div class="col-6">
+                    <label class="text-muted small text-uppercase">Max Puan</label>
+                    <input type="number" class="hud-input" asp-for="MaxPoints" placeholder="12000">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-info w-100 fw-bold shadow-lg text-dark" style="letter-spacing: 1px;">
+                <i class="fas fa-radar me-2"></i> TARAMAYI BAŞLAT
+            </button>
+        </form>
+
+        <!-- Mini Stats -->
+        <div class="d-flex justify-content-between mt-3 pt-3 border-top border-secondary">
+            <div class="text-center">
+                <div class="h5 text-success mb-0">@Model.BarbarianCount</div>
+                <small class="text-muted" style="font-size: 0.7rem;">BARBAR</small>
+            </div>
+            <div class="text-center">
+                <div class="h5 text-danger mb-0">@Model.PlayerCount</div>
+                <small class="text-muted" style="font-size: 0.7rem;">DÜŞMAN</small>
+            </div>
+            <div class="text-center">
+                <div class="h5 text-warning mb-0">@Model.Radius</div>
+                <small class="text-muted" style="font-size: 0.7rem;">YARIÇAP</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. MAP BLIPS (VISUALIZATION) -->
+    <!-- Center (Self) -->
+    <div class="scan-blip" style="top: 50%; left: 50%; background: #3b82f6; box-shadow: 0 0 15px #3b82f6;" 
+         data-bs-toggle="tooltip" title="MERKEZ ÜSSÜ"></div>
+
+    @foreach (var target in Model.Targets)
+    {
+        double scale = 40.0 / Model.Radius; // Scale factor
+        double diffX = (target.CoordinateX - Model.CenterX) * scale;
+        double diffY = (target.CoordinateY - Model.CenterY) * scale;
+        
+        double leftPos = 50 + diffX;
+        double topPos = 50 + diffY;
+
+        // Render only if within bounds (safety margin 5-95%)
+        if(leftPos > 5 && leftPos < 95 && topPos > 5 && topPos < 95)
+        {
+            var blipType = target.Type == TWA.Core.Entities.VillageType.Barbarian ? "barbarian" : "enemy";
+            /* Unique ID for interaction */
+            var blipId = $"blip-{target.CoordinateX}-{target.CoordinateY}";
+
+            <div id="@blipId" class="scan-blip @blipType" 
+                 style="top: @topPos%; left: @leftPos%;"
+                 data-coord="@target.Coordinates"
+                 data-bs-toggle="tooltip" title="@target.Name (@target.Coordinates)">
+                 
+                 <div class="blip-label">@target.Coordinates</div>
+            </div>
+        }
+    }
+
+    <!-- 4. TARGET DRAWER (RIGHT PANEL) -->
+    <div class="target-drawer">
+        <div class="drawer-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 text-white fw-bold"><i class="fas fa-crosshairs me-2 text-danger"></i> HEDEF LİSTESİ</h6>
+            <div>
+                <span class="badge bg-soft-info text-info border border-info">@Model.Targets.Count() TESPİT</span>
+            </div>
+        </div>
+
+        <div class="drawer-header py-2">
+            <div class="btn-group w-100 btn-group-sm">
+                <button class="btn btn-outline-secondary active">En Yakın</button>
+                <button class="btn btn-outline-secondary">En Yüksek Puan</button>
+            </div>
+        </div>
+
+        <div class="drawer-content custom-scroll">
+            @foreach (var target in Model.Targets.OrderBy(t => Math.Sqrt(Math.Pow(t.CoordinateX - Model.CenterX, 2) + Math.Pow(t.CoordinateY - Model.CenterY, 2))))
+            {
+                double dist = Math.Sqrt(Math.Pow(target.CoordinateX - Model.CenterX, 2) + Math.Pow(target.CoordinateY - Model.CenterY, 2));
+                var blipId = $"blip-{target.CoordinateX}-{target.CoordinateY}";
+                
+                <div class="target-card" onmouseenter="highlightTarget('@blipId')" onmouseleave="unhighlightTarget('@blipId')">
+                    <div class="target-score-box">
+                        <div class="target-score @(target.Type == TWA.Core.Entities.VillageType.Barbarian ? "text-success" : "text-danger")">@target.Points</div>
+                        <div class="target-dist">@dist.ToString("F1") br</div>
+                    </div>
+                    
+                    <div class="target-info">
+                        <div class="target-coord">@target.Coordinates</div>
+                        <div class="small text-muted text-truncate" style="max-width: 120px;">@target.Name</div>
+                    </div>
+
+                    <div class="target-actions">
+                        <button class="btn btn-sm btn-warning" title="Casus Gönder"><i class="fas fa-eye"></i></button>
+                        <button class="btn btn-sm btn-danger" title="Saldırı Planla"><i class="fas fa-crosshairs"></i></button>
+                    </div>
+                </div>
+            }
+            
+            @if(!Model.Targets.Any())
+            {
+                <div class="text-center mt-5 text-muted opacity-50">
+                    <i class="fas fa-radar fa-3x mb-3"></i>
+                    <p>Menzilde hedef yok.<br>Parametreleri genişletin.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        // Simple Interaction Script for Radar
+        function highlightTarget(id) {
+            var el = document.getElementById(id);
+            if(el) {
+                el.style.transform = "translate(-50%, -50%) scale(2)";
+                el.style.zIndex = "100";
+                el.style.filter = "brightness(1.5)";
+                // Optional: Draw line logic here
+            }
+        }
+
+        function unhighlightTarget(id) {
+             var el = document.getElementById(id);
+            if(el) {
+                el.style.transform = "translate(-50%, -50%) scale(1)";
+                el.style.zIndex = "10";
+                el.style.filter = "none";
+            }
+        }
+        
+        // Tooltip Init
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
+}

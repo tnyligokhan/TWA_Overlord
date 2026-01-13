@@ -1,0 +1,258 @@
+@model TWA.Web.Models.WarRoomViewModel
+@{
+    ViewData["Title"] = "SAVAŞ ODASI";
+}
+
+<!-- FULL SCREEN WAR ROOM CONTAINER -->
+<div class="war-room-container fade-in-down">
+    
+    <!-- LEFT PANEL: MISSION CONTROL (40%) -->
+    <div class="mission-control-panel">
+        <div class="mb-4">
+            <h4 class="text-white fw-bold"><i class="fas fa-satellite-dish me-2 text-primary"></i> MISSION CONTROL</h4>
+            <small class="text-muted">OPERASYON PLANLAYICI // v3.2</small>
+        </div>
+
+        <form asp-action="ScheduleAttack" method="post" class="d-flex flex-column h-100">
+            <!-- Target Input -->
+            <div class="mb-4">
+                <label class="form-label text-muted small fw-bold">HEDEF KOORDİNAT (X|Y)</label>
+                <input type="text" id="target-coords" asp-for="NewTask.TargetCoordinates" class="form-control form-control-lg font-monospace text-center fs-4" placeholder="555|555" style="letter-spacing: 3px;" required />
+                <input type="hidden" id="source-village-id" value="@Model.CurrentVillageId" />
+            </div>
+
+            <!-- Attack Type: Segmented Control -->
+            <div class="mb-4">
+                <label class="form-label text-muted small fw-bold">OPERASYON TÜRÜ</label>
+                <div class="segmented-control">
+                    <div class="segment-option active" onclick="selectType('Attack')" id="type-attack">
+                        <i class="fas fa-meteor"></i> SALDIRI
+                    </div>
+                    <div class="segment-option" onclick="selectType('Support')" id="type-support">
+                        <i class="fas fa-shield-alt"></i> DESTEK
+                    </div>
+                    <div class="segment-option" onclick="selectType('Snipe')" id="type-snipe" data-value="snipe">
+                        <i class="fas fa-crosshairs"></i> SNIPE
+                    </div>
+                </div>
+                <!-- Hidden Input -->
+                <input type="hidden" id="AttackType" name="NewTask.Type" value="Attack" />
+            </div>
+
+            <!-- TACTICAL TOOLS (Ghost Train & Snipe) -->
+            <div class="mb-4 p-3 bg-dark bg-opacity-25 rounded border border-secondary border-opacity-25">
+                <h6 class="text-info small fw-bold mb-2"><i class="fas fa-tools me-1"></i> TAKTİK ARAÇLAR</h6>
+                
+                <div class="d-flex gap-2 mb-2">
+                    <button type="button" id="btn-ghost-train" class="btn btn-sm btn-outline-warning flex-grow-1">
+                        <i class="fas fa-ghost me-1"></i> HAYALET TREN
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-light flex-grow-1" data-bs-toggle="collapse" data-bs-target="#snipeCalc">
+                        <i class="fas fa-calculator me-1"></i> SNIPE HESAPLA
+                    </button>
+                </div>
+                
+                <div class="collapse mt-2" id="snipeCalc">
+                    <label class="small text-muted">Hedeflenen Varış Saati</label>
+                    <input type="datetime-local" id="arrival-time" class="form-control form-control-sm mb-2 bg-secondary text-white border-0">
+                    <button type="button" id="calculate-snipe" class="btn btn-sm btn-info w-100">
+                        <i class="fas fa-hourglass-start me-1"></i> ÇIKIŞ SAATİNİ BUL
+                    </button>
+                    <div class="mt-2 text-center">
+                        <small class="text-muted">ÇIKIŞ SAATİ:</small><br>
+                        <span id="launch-time-display" class="fw-bold text-warning font-monospace fs-5">--:--:--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unit Selection: Card Grid -->
+            <div class="mb-4 flex-grow-1 overflow-auto custom-scroll">
+                <label class="form-label text-muted small fw-bold mb-3">BİRLİK SEÇİMİ</label>
+                <div class="unit-grid">
+                    <!-- Spear -->
+                    <div class="unit-card" onclick="focusUnit('Spear')">
+                        <div class="unit-icon"><i class="fas fa-map-pin"></i></div>
+                        <input type="number" name="NewTask.Troops.Spear" class="unit-input" placeholder="0" min="0" onfocus="highlightCard(this)" onblur="unhighlightCard(this)">
+                        <small class="text-muted d-block mt-1">MIZRAK</small>
+                    </div>
+                    <!-- Sword -->
+                    <div class="unit-card" onclick="focusUnit('Sword')">
+                        <div class="unit-icon"><i class="fas fa-shield-virus"></i></div>
+                        <input type="number" name="NewTask.Troops.Sword" class="unit-input" placeholder="0" min="0" onfocus="highlightCard(this)" onblur="unhighlightCard(this)">
+                        <small class="text-muted d-block mt-1">KILIÇ</small>
+                    </div>
+                    <!-- Axe -->
+                    <div class="unit-card" onclick="focusUnit('Axe')">
+                        <div class="unit-icon"><i class="fas fa-axe"></i></div>
+                        <input type="number" name="NewTask.Troops.Axe" class="unit-input" placeholder="0" min="0" onfocus="highlightCard(this)" onblur="unhighlightCard(this)">
+                        <small class="text-muted d-block mt-1">BALTA</small>
+                    </div>
+                    <!-- Spy -->
+                    <div class="unit-card" onclick="focusUnit('Spy')">
+                        <div class="unit-icon"><i class="fas fa-eye"></i></div>
+                        <input type="number" name="NewTask.Troops.Spy" class="unit-input" placeholder="0" min="0" onfocus="highlightCard(this)" onblur="unhighlightCard(this)">
+                        <small class="text-muted d-block mt-1">CASUS</small>
+                    </div>
+                    <!-- Light -->
+                    <div class="unit-card" onclick="focusUnit('Light')">
+                        <div class="unit-icon"><i class="fas fa-horse-head"></i></div>
+                        <input type="number" name="NewTask.Troops.Light" class="unit-input" placeholder="0" min="0" onfocus="highlightCard(this)" onblur="unhighlightCard(this)">
+                        <small class="text-muted d-block mt-1">HAFİF</small>
+                    </div>
+                    <!-- Heavy -->
+                    <div class="unit-card" onclick="focusUnit('Heavy')">
+                        <div class="unit-icon"><i class="fas fa-chess-knight"></i></div>
+                        <input type="number" name="NewTask.Troops.Heavy" class="unit-input" placeholder="0" min="0" onfocus="highlightCard(this)" onblur="unhighlightCard(this)">
+                        <small class="text-muted d-block mt-1">AĞIR</small>
+                    </div>
+                    <!-- Ram -->
+                    <div class="unit-card" onclick="focusUnit('Ram')">
+                        <div class="unit-icon"><i class="fas fa-hammer"></i></div>
+                        <input type="number" name="NewTask.Troops.Ram" class="unit-input" placeholder="0" min="0" onfocus="highlightCard(this)" onblur="unhighlightCard(this)">
+                        <small class="text-muted d-block mt-1">ŞAH</small>
+                    </div>
+                    <!-- Catapult -->
+                    <div class="unit-card" onclick="focusUnit('Catapult')">
+                        <div class="unit-icon"><i class="fas fa-bomb"></i></div>
+                        <input type="number" name="NewTask.Troops.Catapult" class="unit-input" placeholder="0" min="0" onfocus="highlightCard(this)" onblur="unhighlightCard(this)">
+                        <small class="text-muted d-block mt-1">MANCINIK</small>
+                    </div>
+                    <!-- Noble -->
+                    <div class="unit-card" onclick="focusUnit('Noble')">
+                        <div class="unit-icon"><i class="fas fa-chess-king text-warning"></i></div>
+                        <input type="number" name="NewTask.Troops.Noble" class="unit-input" placeholder="0" min="0" onfocus="highlightCard(this)" onblur="unhighlightCard(this)">
+                        <small class="text-warning d-block mt-1 fw-bold">MİSYONER</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sticky Footer Button -->
+             <button type="submit" class="btn btn-danger sticky-footer-btn">
+                <i class="fas fa-biohazard me-2"></i> OPERASYONU BAŞLAT
+            </button>
+        </form>
+    </div>
+
+    <!-- RIGHT PANEL: LIVE FEED (60%) -->
+    <div class="live-feed-panel">
+        <div class="feed-header d-flex justify-content-between align-items-center">
+            <h5 class="text-white mb-0"><i class="fas fa-radar me-2 text-info"></i> LIVE OPS FEED</h5>
+            <div class="d-flex gap-2">
+                 <span class="badge bg-danger"><i class="fas fa-meteor"></i> 12 SALDIRI</span>
+                 <span class="badge bg-warning"><i class="fas fa-coins"></i> 5 YAĞMA</span>
+            </div>
+        </div>
+
+        <div class="feed-list custom-scroll">
+            @if(Model.Attacks == null || !Model.Attacks.Any())
+            {
+                <div class="text-center text-muted py-5 opacity-50">
+                    <i class="fas fa-radar fa-3x mb-3 fa-spin" style="animation-duration: 3s;"></i>
+                    <p>RADAR TARAMASI AKTİF...<br>Henüz bir operasyon emri yok.</p>
+                </div>
+            }
+            else
+            {
+                /* REAL DATA LOOP */
+                @foreach(var attack in Model.Attacks)
+                {
+                     <div class="feed-card status-@attack.Type.ToString().ToLower()">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="feed-icon">
+                                @if(attack.Type.ToString() == "Attack") { <i class="fas fa-meteor fa-2x text-danger"></i> }
+                                else if(attack.Type.ToString() == "Support") { <i class="fas fa-shield-alt fa-2x text-info"></i> }
+                                else { <i class="fas fa-shopping-bag fa-2x text-warning"></i> }
+                            </div>
+                            <div>
+                                <span class="feed-target">@attack.TargetCoordinates</span>
+                                <span class="badge bg-secondary opacity-75 small">ID: @attack.Id.ToString().Substring(0,4)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="text-end">
+                            <div class="feed-timer @(attack.LaunchTime < DateTime.Now.AddMinutes(5) ? "urgent" : "")">
+                                <i class="fas fa-clock me-1"></i> @attack.LaunchTime.ToString("HH:mm:ss")
+                            </div>
+                            <small class="text-muted d-block mt-1">VARIŞ: @attack.ArrivalTime.ToString("HH:mm")</small>
+                        </div>
+                    </div>
+                }
+            }
+            
+            <!-- MOCK DATA FOR TASARIM DEMO (If Empty) -->
+            @if(Model.Attacks == null || !Model.Attacks.Any())
+            { 
+                <div class="feed-card status-attack">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="feed-icon"><i class="fas fa-meteor fa-2x text-danger"></i></div>
+                        <div>
+                            <span class="feed-target">455|600</span>
+                            <span class="badge bg-danger bg-opacity-10 text-danger">KAMI</span>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="feed-timer urgent"><i class="fas fa-stopwatch me-1"></i> 00:00:12</div>
+                        <small class="text-muted d-block mt-1">VARIŞ: 14:30</small>
+                    </div>
+                </div>
+
+                <div class="feed-card status-farm">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="feed-icon"><i class="fas fa-shopping-bag fa-2x text-warning"></i></div>
+                        <div>
+                            <span class="feed-target">452|599</span>
+                            <span class="badge bg-warning bg-opacity-10 text-warning">YAĞMA</span>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="feed-timer"><i class="fas fa-stopwatch me-1"></i> 00:45:30</div>
+                        <small class="text-muted d-block mt-1">VARIŞ: 15:15</small>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+    <script src="~/js/warroom.js"></script>
+    <script>
+        // Segmented Control Logic
+        function selectType(type) {
+            // UI Update
+            $('.segment-option').removeClass('active');
+            if(type === 'Attack') $('#type-attack').addClass('active');
+            if(type === 'Support') $('#type-support').addClass('active');
+            if(type === 'Snipe') $('#type-snipe').addClass('active');
+
+            // Hidden Input
+            $('#AttackType').val(type);
+
+            // Theme Change for Snipe
+            const btn = $('.sticky-footer-btn');
+            if(type === 'Snipe') {
+                btn.removeClass('btn-danger').addClass('btn-info').html('<i class="fas fa-crosshairs me-2"></i> SNIPE BAŞLAT');
+            } else if (type === 'Support') {
+                btn.removeClass('btn-danger').addClass('btn-primary').html('<i class="fas fa-shield-alt me-2"></i> DESTEK ÇIK');
+            } else {
+                btn.removeClass('btn-info btn-primary').addClass('btn-danger').html('<i class="fas fa-biohazard me-2"></i> OPERASYONU BAŞLAT');
+            }
+        }
+
+        // Unit Card Logic
+        function highlightCard(input) {
+            $(input).closest('.unit-card').addClass('selected');
+        }
+
+        function unhighlightCard(input) {
+            if($(input).val() == "" || $(input).val() == "0") {
+                $(input).closest('.unit-card').removeClass('selected');
+            }
+        }
+
+        function focusUnit(unitName) {
+            // Allows clicking card to focus input
+            // Implementation depends on finding input inside
+        }
+    </script>
+}

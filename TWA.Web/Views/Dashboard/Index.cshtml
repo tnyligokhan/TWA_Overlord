@@ -1,0 +1,280 @@
+@model TWA.Web.Controllers.DashboardViewModel
+@{
+    ViewData["Title"] = "KOMUTA MERKEZİ";
+}
+
+<!-- 1. TOP TOOLBAR (Control Panel) -->
+<div class="d-flex justify-content-between align-items-center mb-4 fade-in-down">
+    <div>
+        <h4 class="mb-0 fw-bold text-white"><i class="fas fa-rocket me-2 text-primary"></i> KOMUTA MERKEZİ</h4>
+        <small class="text-muted">OVERLORD v3.2 // CONNECTED</small>
+    </div>
+    
+    <div class="d-flex gap-3 align-items-center">
+        <!-- Server Time Pill -->
+        <div class="d-flex align-items-center px-3 py-2 rounded-pill" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);">
+            <i class="fas fa-globe me-2 text-muted"></i>
+            <span id="server-clock" class="font-monospace fw-bold text-white">--:--:--</span>
+        </div>
+
+        <!-- Connect Action -->
+        <button id="btn-connect" class="btn btn-success d-flex align-items-center gap-2">
+            <i class="fas fa-plug"></i> <span>OYUNA BAĞLAN</span>
+        </button>
+        
+        <button class="btn btn-icon btn-outline-light rounded-circle" style="width: 42px; height: 42px;">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+</div>
+
+<!-- 2. HUD STATS (Bento Grid) -->
+<div class="row g-4 mb-4">
+    <!-- Village Count -->
+    <div class="col-md-3">
+        <div class="card hud-stat-card border-primary">
+            <h4 class="hud-stat-value text-primary">@Model.TotalVillages</h4>
+            <span class="hud-stat-label">TOPLAM KÖY</span>
+            <i class="fas fa-city hud-watermark text-primary"></i>
+        </div>
+    </div>
+    
+    <!-- Points -->
+    <div class="col-md-3">
+        <div class="card hud-stat-card border-warning">
+            <h4 class="hud-stat-value text-warning">@Model.TotalPoints.ToString("N0")</h4>
+            <span class="hud-stat-label">TOPLAM PUAN</span>
+            <i class="fas fa-trophy hud-watermark text-warning"></i>
+        </div>
+    </div>
+    
+    <!-- Active Ops -->
+    <div class="col-md-3">
+        <div class="card hud-stat-card border-danger">
+            <h4 class="hud-stat-value text-danger">@Model.ActiveAttacks</h4>
+            <span class="hud-stat-label">AKTİF OPERASYON</span>
+            <i class="fas fa-crosshairs hud-watermark text-danger"></i>
+        </div>
+    </div>
+    
+    <!-- Logistics -->
+    <div class="col-md-3">
+        <div class="card hud-stat-card border-info">
+            <h4 class="hud-stat-value text-info">@Model.LowStorageVillages</h4>
+            <span class="hud-stat-label">LOJİSTİK UYARISI</span>
+            <i class="fas fa-truck-loading hud-watermark text-info"></i>
+        </div>
+    </div>
+</div>
+
+<!-- 3. MAIN CONTENT (Split View) -->
+<div class="row g-4 flex-grow-1" style="min-height: 0;"> <!-- min-height:0 for nested flex scroll -->
+    
+    <!-- LEFT PANEL: Operations (Floating Table) -->
+    <div class="col-lg-8">
+        <div class="glass-panel p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0 text-white"><i class="fas fa-list-ul me-2 text-muted"></i> BEKLEYEN SAVAŞ EMİRLERİ</h5>
+                <span class="badge bg-primary"><i class="fas fa-satellite-dish me-1"></i> CANLI</span>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="floating-table">
+                    <thead>
+                        <tr>
+                            <th>HEDEF</th>
+                            <th>GÖREV TÜRÜ</th>
+                            <th>ÇIKIŞ ZAMANI</th>
+                            <th>BİRLİK</th>
+                            <th>DURUM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if(Model.ActiveAttacks == 0)
+                        {
+                            <tr class="floating-row">
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <i class="fas fa-check-circle mb-2 fa-2x opacity-25"></i><br>
+                                    Bekleyen emir yok Komutanım. Sistem beklemede.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                             /* Mock Data for Design Demo */
+                            <tr class="floating-row">
+                                <td>
+                                    <div class="fw-bold text-white">Barbar (455|600)</div>
+                                    <small class="text-muted">K45 - Sector A</small>
+                                </td>
+                                <td><span class="badge bg-warning text-warning bg-opacity-10">YAĞMA</span></td>
+                                <td>
+                                    <span class="badge bg-secondary font-monospace"><i class="fas fa-stopwatch me-1"></i> 14:02:45</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fas fa-horse-head text-muted"></i> <span class="text-white">50 Hafif</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-dot pulse bg-success"></span>
+                                    <span class="text-success fw-bold small">HAZIR</span>
+                                </td>
+                            </tr>
+                             <tr class="floating-row">
+                                <td>
+                                    <div class="fw-bold text-white">LordVader (458|602)</div>
+                                    <small class="text-muted">K45 - Sector B</small>
+                                </td>
+                                <td><span class="badge bg-danger text-danger bg-opacity-10">SALDIRI</span></td>
+                                <td>
+                                    <span class="badge bg-secondary font-monospace"><i class="fas fa-stopwatch me-1"></i> 18:30:00</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fas fa-axe text-muted"></i> <span class="text-white">500 Balta</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-dot bg-warning"></span>
+                                    <span class="text-warning fw-bold small">BEKLİYOR</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL: Command Center (Tabs) -->
+    <div class="col-lg-4">
+        <div class="glass-panel h-100 d-flex flex-column overflow-hidden">
+            <!-- Tabs Header -->
+            <ul class="nav cmd-tabs border-bottom border-light border-opacity-10" id="cmdTab" role="tablist">
+                <li class="nav-item flex-fill text-center" role="presentation">
+                    <button class="nav-link active w-100" id="ai-tab" data-bs-toggle="tab" data-bs-target="#ai-panel" type="button" role="tab">
+                        <i class="fas fa-brain me-2"></i>AI ASİSTAN
+                    </button>
+                </li>
+                <li class="nav-item flex-fill text-center" role="presentation">
+                    <button class="nav-link w-100" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs-panel" type="button" role="tab">
+                        <i class="fas fa-terminal me-2"></i>SİSTEM LOG
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tabs Content -->
+            <div class="tab-content flex-grow-1 d-flex flex-column h-100" id="cmdTabContent" style="min-height: 400px;">
+                
+                <!-- AI Panel -->
+                <div class="tab-pane fade show active h-100 p-3 d-flex flex-column" id="ai-panel" role="tabpanel">
+                    <div id="chat-history" class="flex-grow-1 mb-3 overflow-auto pe-2 custom-scroll">
+                        <!-- Welcome Message -->
+                        <div class="chat-bubble chat-left">
+                            <strong class="text-info d-block mb-1"><i class="fas fa-robot me-1"></i> OVERLORD</strong>
+                            Emredersiniz Komutanım. Analizler tamamlandı. K45 bölgesinde 12 sahipsiz barbar tespit ettim. Emir bekliyorum.
+                        </div>
+                    </div>
+                    
+                    <div class="mt-auto">
+                        <div class="input-group">
+                            <input type="text" id="groq-input" class="form-control" placeholder="Bir emir giriniz..." style="border-right: none;">
+                            <button class="btn btn-outline-light" id="btn-send-groq" style="border-left: none; border-color: var(--glass-border); background: rgba(255,255,255,0.05);">
+                                <i class="fas fa-paper-plane text-primary"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logs Panel -->
+                <div class="tab-pane fade h-100" id="logs-panel" role="tabpanel">
+                    <div class="cmd-log-window p-3 h-100 custom-scroll">
+                        @foreach (var log in Model.RecentLogs)
+                        {
+                            <div class="mb-1">
+                                <span class="text-muted small me-2">[@DateTime.Now.ToString("HH:mm:ss")]</span>
+                                <span class="text-success fw-bold">SYS:</span> @log
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Clock
+        setInterval(() => {
+            document.getElementById('server-clock').innerText = new Date().toLocaleTimeString();
+        }, 1000);
+
+        // Connect Button Animation
+        $('#btn-connect').click(function() {
+            var btn = $(this);
+            var originalContent = btn.html();
+            
+            btn.prop('disabled', true).html('<i class="fas fa-circle-notch fa-spin"></i> BAĞLANILIYOR...');
+            
+            $.post('/Dashboard/ConnectGame', function(data) {
+                if(data.success) {
+                    btn.removeClass('btn-success').addClass('btn-outline-success')
+                       .html('<i class="fas fa-link"></i> BAĞLI (ONLINE)');
+                    // Show toast?
+                } else {
+                    btn.prop('disabled', false).html('<i class="fas fa-exclamation-triangle"></i> HATA - TEKRAR DENE');
+                }
+            });
+        });
+
+        // Simple Chat Logic
+        function sendMessage() {
+            var input = $('#groq-input');
+            var msg = input.val();
+            if(!msg) return;
+
+            // User Bubble
+            $('#chat-history').append(`
+                <div class="chat-bubble chat-right">
+                    ${msg}
+                </div>
+            `);
+            
+            input.val('');
+            scrollToBottom();
+
+            // Fake Response
+            setTimeout(() => {
+                 $('#chat-history').append(`
+                    <div class="chat-bubble chat-left">
+                        <strong class="text-info d-block mb-1"><i class="fas fa-robot me-1"></i> OVERLORD</strong>
+                        <span class="typing-indicator">Analiz ediliyor... <i class="fas fa-circle-notch fa-spin small"></i></span>
+                    </div>
+                `);
+                scrollToBottom();
+                
+                // Real Response Update (Simulated)
+                setTimeout(() => {
+                    $('#chat-history .typing-indicator').last().parent().html(`
+                        <strong class="text-info d-block mb-1"><i class="fas fa-robot me-1"></i> OVERLORD</strong>
+                        Anlaşıldı, "${msg}" emri işleme alındı.
+                    `);
+                    scrollToBottom();
+                }, 1500);
+
+            }, 600);
+        }
+
+        function scrollToBottom() {
+            var chat = document.getElementById("chat-history");
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        $('#btn-send-groq').click(sendMessage);
+        $('#groq-input').keypress(function(e) {
+            if(e.which == 13) sendMessage();
+        });
+    </script>
+}

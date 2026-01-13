@@ -1,0 +1,205 @@
+@model TWA.Web.Models.EconomyViewModel
+@{
+    ViewData["Title"] = "WALL STREET";
+}
+
+<div class="container-fluid h-100 d-flex flex-column fade-in-down">
+    
+    <!-- 1. HEADER: ASSET STRIP (Hero Stats) -->
+    <div class="asset-strip">
+        <!-- Wood Asset -->
+        <div class="asset-item">
+            <div class="asset-value text-warning">@Model.TotalWood.ToString("N0")</div>
+            <div class="asset-label"><i class="fas fa-tree me-1"></i> TOPLAM ODUN</div>
+            <div class="asset-trend"><i class="fas fa-caret-up"></i> +45.2K/sa</div>
+        </div>
+        <!-- Clay Asset -->
+        <div class="asset-item">
+            <div class="asset-value text-warning">@Model.TotalClay.ToString("N0")</div>
+            <div class="asset-label"><i class="fas fa-cubes me-1"></i> TOPLAM KİL</div>
+            <div class="asset-trend"><i class="fas fa-caret-up"></i> +42.1K/sa</div>
+        </div>
+        <!-- Iron Asset -->
+        <div class="asset-item">
+            <div class="asset-value text-white">@Model.TotalIron.ToString("N0")</div> <!-- Iron usually harder, kept white -->
+            <div class="asset-label"><i class="fas fa-mountain me-1"></i> TOPLAM DEMİR</div>
+            <div class="asset-trend"><i class="fas fa-caret-up"></i> +38.5K/sa</div>
+        </div>
+        <!-- Gold Reserve -->
+        <div class="asset-item">
+            <div class="asset-value" style="color: var(--neon-amber)">@Model.TotalGoldCoins</div>
+            <div class="asset-label"><i class="fas fa-coins me-1"></i> ALTIN REZERVİ</div>
+            <div class="asset-trend text-warning"><i class="fas fa-equals"></i> STABİL</div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN DASHBOARD CONTENT -->
+    <div class="row g-4 flex-grow-1" style="min-height: 0;">
+        
+        <!-- LEFT PANEL: TRADING FLOOR (Asset List) -->
+        <div class="col-lg-8 d-flex flex-column h-100">
+            <!-- Tabs -->
+            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="pills-all-tab" data-bs-toggle="pill" data-bs-target="#pills-all" type="button" role="tab">
+                        <i class="fas fa-globe me-2"></i> TÜM VARLIKLAR
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link text-warning" id="pills-alert-tab" data-bs-toggle="pill" data-bs-target="#pills-alert" type="button" role="tab">
+                        <i class="fas fa-exclamation-triangle me-2"></i> DEPO ALARMI (@Model.VillageResources.Count(v => v.IsStorageFull))
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Content Area (Scrollable) -->
+            <div class="tab-content flex-grow-1 overflow-auto custom-scroll pe-2" id="pills-tabContent">
+                
+                <!-- ALL ASSETS TAB -->
+                <div class="tab-pane fade show active" id="pills-all" role="tabpanel">
+                    @foreach (var village in Model.VillageResources)
+                    {
+                        <div class="asset-card @(village.IsStorageFull ? "alert-full" : "")">
+                            <!-- Village Info -->
+                            <div style="width: 15%; min-width: 120px;">
+                                <div class="fw-bold text-white text-truncate">@village.VillageName</div>
+                                <div class="font-monospace text-muted small">@village.Coordinates</div>
+                            </div>
+
+                            <!-- Resources Bars -->
+                            <div class="flex-grow-1 px-4">
+                                <!-- Wood -->
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="fas fa-tree text-muted me-2" style="width: 16px;"></i>
+                                    <div class="slim-progress-container">
+                                        <div class="slim-progress-bar progress-wood" style="width: @(village.Wood * 100 / village.StorageCapacity)%"></div>
+                                    </div>
+                                    <span class="res-val ms-2">@((village.Wood/1000.0).ToString("0.#"))k</span>
+                                </div>
+                                <!-- Clay -->
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="fas fa-cubes text-muted me-2" style="width: 16px;"></i>
+                                    <div class="slim-progress-container">
+                                        <div class="slim-progress-bar progress-clay" style="width: @(village.Clay * 100 / village.StorageCapacity)%"></div>
+                                    </div>
+                                    <span class="res-val ms-2">@((village.Clay/1000.0).ToString("0.#"))k</span>
+                                </div>
+                                /* Iron */
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-mountain text-muted me-2" style="width: 16px;"></i>
+                                    <div class="slim-progress-container">
+                                        <div class="slim-progress-bar progress-iron" style="width: @(village.Iron * 100 / village.StorageCapacity)%"></div>
+                                    </div>
+                                    <span class="res-val ms-2">@((village.Iron/1000.0).ToString("0.#"))k</span>
+                                </div>
+                            </div>
+
+                            <!-- Status/Action -->
+                            <div style="width: 10%; text-align: right;">
+                                @if (village.IsStorageFull)
+                                {
+                                    <span class="badge bg-warning text-dark"><i class="fas fa-bell"></i> DOLU</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success bg-opacity-10 text-success">STABİL</span>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- ALERTS TAB (Only Full Storage) -->
+                <div class="tab-pane fade" id="pills-alert" role="tabpanel">
+                     @foreach (var village in Model.VillageResources.Where(v => v.IsStorageFull))
+                    {
+                        <div class="asset-card alert-full">
+                            <!-- Same structure simplified for redundancy, could use partial view -->
+                            <div class="fw-bold text-white me-4">@village.VillageName</div>
+                            <div class="flex-grow-1 text-warning fw-bold">
+                                <i class="fas fa-exclamation-circle me-2"></i> DEPO KAPASİTESİ DOLDU! ACİL TRANSFER GEREKİYOR.
+                            </div>
+                            <button class="btn btn-sm btn-outline-warning">TRANSFER BAŞLAT</button>
+                        </div>
+                    }
+                    @if(!Model.VillageResources.Any(v => v.IsStorageFull))
+                    {
+                        <div class="text-center py-5 text-muted">
+                            <i class="fas fa-check-circle fa-3x mb-3 text-success"></i>
+                            <p>Tüm depolar stabil seviyede.</p>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: ACTION CENTER -->
+        <div class="col-lg-4 d-flex flex-column gap-4">
+            
+            <!-- 1. MINING RIG (Gold Minting) -->
+            <div class="glass-panel p-4 text-center">
+                <h6 class="text-start text-muted mb-4 small fw-bold"><i class="fas fa-microchip me-2"></i> GOLD MINING RIG</h6>
+                
+                <div class="mining-rig-container">
+                    <div class="mining-ring"></div>
+                    <div class="mining-core">
+                        <div class="coin-count">4</div>
+                        <small class="text-muted">BASILABİLİR</small>
+                    </div>
+                </div>
+
+                <div class="d-grid">
+                    <button class="btn mint-btn py-3">
+                        <i class="fas fa-coins me-2"></i> TÜMÜNÜ BAS
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. LOGISTICS NETWORK -->
+            <div class="glass-panel p-4 flex-grow-1">
+                <h6 class="text-start text-muted mb-4 small fw-bold"><i class="fas fa-project-diagram me-2"></i> LOGISTICS NETWORK</h6>
+                
+                <div class="logistics-flow">
+                    <!-- Flow Item 1 -->
+                    <div class="flow-item">
+                        <i class="fas fa-warehouse text-warning"></i>
+                        <div class="flow-line"><div class="flow-particle"></div></div>
+                        <i class="fas fa-dungeon text-muted"></i>
+                    </div>
+                     <!-- Flow Item 2 -->
+                    <div class="flow-item">
+                         <i class="fas fa-warehouse text-warning"></i>
+                        <div class="flow-line"><div class="flow-particle" style="animation-duration: 1.5s;"></div></div>
+                        <i class="fas fa-dungeon text-muted"></i>
+                    </div>
+                     <!-- Flow Item 3 -->
+                    <div class="flow-item">
+                         <i class="fas fa-warehouse text-warning"></i>
+                        <div class="flow-line"><div class="flow-particle" style="animation-duration: 2.5s;"></div></div>
+                         <i class="fas fa-coins text-warning"></i>
+                    </div>
+                </div>
+
+                <div class="mt-4 p-3 rounded" style="background: rgba(0,0,0,0.2);">
+                    <div class="d-flex justify-content-between text-white mb-2">
+                        <span>Aktif Transferler</span>
+                        <span class="fw-bold font-monospace text-emerald">12</span>
+                    </div>
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>Taşınan Yük</span>
+                        <span class="font-monospace">450.000 Birim</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Optional: Add simple tab switching logic if Bootstrap JS isn't handling it smoothly
+        // or for custom effects.
+    </script>
+}
