@@ -3,6 +3,11 @@
     ViewData["Title"] = "ALTYAPI YÖNETİMİ";
 }
 
+<!-- Bağlantı Durumu -->
+<div class="connection-indicator position-fixed top-0 end-0 m-3 p-2 bg-dark rounded shadow-lg" style="z-index: 9999;">
+    <span class="text-muted">🔄 Bağlanıyor...</span>
+</div>
+
 <div class="container-fluid engineering-board fade-in-down">
     
     <div class="d-flex justify-content-between align-items-center mb-2">
@@ -26,7 +31,7 @@
             @foreach (var task in Model.ActiveBuilds)
             {
                 <div class="col-lg-6">
-                    <div class="infra-card active">
+                    <div class="infra-card active" data-build-id="@task.Id">
                         <div class="card-grid">
                             <!-- Icon -->
                             <div class="building-icon-box">
@@ -115,3 +120,9 @@
         }
     </div>
 </div>
+
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+    <script src="~/js/live-data-client.js"></script>
+}

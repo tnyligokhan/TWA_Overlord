@@ -1,0 +1,74 @@
+/* Canlı Veri Animasyonları */
+
+.troop-updated {
+    animation: pulse-green 0.5s ease-in-out;
+}
+
+.value-updated {
+    animation: flash-gold 0.3s ease-in-out;
+}
+
+.fade-out {
+    animation: fadeOut 0.5s ease-out forwards;
+}
+
+@keyframes pulse-green {
+    0%, 100% {
+        transform: scale(1);
+        color: inherit;
+    }
+    50% {
+        transform: scale(1.1);
+        color: #00ff00;
+        text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    }
+}
+
+@keyframes flash-gold {
+    0%, 100% {
+        color: inherit;
+    }
+    50% {
+        color: #ffd700;
+        text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+/* Bağlantı Durumu Göstergesi */
+.connection-indicator {
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.connection-indicator .text-success {
+    color: #00ff00 !important;
+}
+
+.connection-indicator .text-warning {
+    color: #ffa500 !important;
+}
+
+.connection-indicator .text-danger {
+    color: #ff0000 !important;
+}
+
+/* İlerleme Çubuğu Geçişleri */
+.progress-bar {
+    transition: width 0.5s ease, background-color 0.3s ease;
+}
+
+/* Kaynak Değer Geçişleri */
+.resource-wood, .resource-stone, .resource-iron {
+    transition: color 0.3s ease;
+}

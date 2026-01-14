@@ -21,11 +21,21 @@ namespace TWA.Web.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            // Repository'den köyü, askerleri ve inşaat planlarını getir
-            // (Gerçek senaryoda .Include() kullanmanız gerekebilir)
+            // Repository'den köyü getir (BuildQueue ve Attacks şimdilik yükleme - DB hatası veriyor)
             var village = await _unitOfWork.Repository<Village>().GetByIdAsync(id);
             
             if (village == null) return NotFound();
+
+            // OwnedTroops null ise initialize et
+            if (village.OwnedTroops == null)
+            {
+                village.OwnedTroops = new TroopSet();
+            }
+            
+            if (village.TotalTroops == null)
+            {
+                village.TotalTroops = new TroopSet();
+            }
 
             // View'a gönder
             return View(village);

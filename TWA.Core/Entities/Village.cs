@@ -53,6 +53,29 @@ namespace TWA.Core.Entities
         public int BuildingStorage { get; set; }
         public int BuildingFarm { get; set; }
         public int BuildingWall { get; set; }
+        public int BuildingBarracks { get; set; }
+        public int BuildingSmithy { get; set; }
+        public int BuildingStable { get; set; }
+        public int BuildingSnob { get; set; } // Academy
+        
+        // AI Logic Properties
+        public string AiAction { get; set; } = "BUILD"; // Default action
+        public string AiTarget { get; set; } = ""; // Default empty target
+
+        // Aliases for compatibility
+        public int WallLevel { get => BuildingWall; set => BuildingWall = value; }
+        public int BarracksLevel { get => BuildingBarracks; set => BuildingBarracks = value; }
+        public int SmithyLevel { get => BuildingSmithy; set => BuildingSmithy = value; }
+
+        public int StableLevel { get => BuildingStable; set => BuildingStable = value; }
+        public int AcademyLevel { get => BuildingSnob; set => BuildingSnob = value; }
+
+        public bool IsStorageNearFull()
+        {
+            if (StorageCapacity == 0) return false;
+            // %90 doluysa true
+            return Wood > StorageCapacity * 0.9 || Stone > StorageCapacity * 0.9 || Iron > StorageCapacity * 0.9;
+        }
 
         public VillageType Type { get; set; } = VillageType.Own;
 
@@ -94,6 +117,24 @@ namespace TWA.Core.Entities
         public double DistanceTo(int targetX, int targetY)
         {
             return Math.Sqrt(Math.Pow(CoordinateX - targetX, 2) + Math.Pow(CoordinateY - targetY, 2));
+        }
+        public int AvailableMerchants { get; set; }
+
+        public int X => CoordinateX;
+        public int Y => CoordinateY;
+
+        public bool NeedsResources()
+        {
+            if (StorageCapacity == 0) return false;
+            // %30 altı veya inşaat kuyruğu var ama kaynak yok (basitlik için %30 kuralı)
+            return Wood < StorageCapacity * 0.3 || Stone < StorageCapacity * 0.3 || Iron < StorageCapacity * 0.3;
+        }
+
+        public bool HasExcessResources()
+        {
+            if (StorageCapacity == 0) return false;
+            // %80 üstü
+            return Wood > StorageCapacity * 0.8 && Stone > StorageCapacity * 0.8 && Iron > StorageCapacity * 0.8;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace TWA.Service.Services
             _config = config;
             _httpClient = httpClient;
             _unitOfWork = unitOfWork;
-            _apiKey = _config["ApiKeys:GroqApiKey"] ?? throw new ArgumentNullException("ApiKeys:GroqApiKey cannot be null");
+            _apiKey = _config["ApiKeys:XAiApiKey"] ?? throw new ArgumentNullException("ApiKeys:XAiApiKey cannot be null");
         }
 
         public async Task<string> AnalyzeReportAsync(string reportHtml)
@@ -34,9 +34,9 @@ namespace TWA.Service.Services
             
             HTML:
             {reportHtml.Substring(0, Math.Min(reportHtml.Length, 15000))} 
-            "; // HTML çok uzunsa kesiyoruz, Groq limiti için.
+            "; // HTML çok uzunsa kesiyoruz.
 
-            return await CallGroqApi(prompt);
+            return await CallAiApi(prompt);
         }
 
         public async Task<string> GetStrategySuggestionAsync(int villageId)
@@ -56,16 +56,16 @@ namespace TWA.Service.Services
             Sadece tek bir strateji öner ve nedenini 1 cümle ile açıkla.
             ";
 
-            return await CallGroqApi(prompt);
+            return await CallAiApi(prompt);
         }
 
         public async Task<string> GetChatResponseAsync(string prompt)
         {
             // Genel sohbet cevapları için
-            return await CallGroqApi(prompt);
+            return await CallAiApi(prompt);
         }
 
-        private async Task<string> CallGroqApi(string userPrompt)
+        private async Task<string> CallAiApi(string userPrompt)
         {
             string systemPrompt;
             try
@@ -73,16 +73,16 @@ namespace TWA.Service.Services
                 var promptPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SystemPrompts.txt");
                 systemPrompt = File.Exists(promptPath) 
                     ? await File.ReadAllTextAsync(promptPath) 
-                    : "You are TWA-Overlord AI Assistant. Respond in Turkish.";
+                    : "You are TWA-Overlord AI Assistant powered by Grok. Respond in Turkish.";
             }
             catch
             {
-                systemPrompt = "You are TWA-Overlord AI Assistant. Respond in Turkish.";
+                systemPrompt = "You are TWA-Overlord AI Assistant powered by Grok. Respond in Turkish.";
             }
 
             var requestBody = new
             {
-                model = "llama3-70b-8192", // Groq üzerindeki güçlü model
+                model = "grok-beta", // xAI Grok Model
                 messages = new[]
                 {
                     new { role = "system", content = systemPrompt },
@@ -94,7 +94,8 @@ namespace TWA.Service.Services
             var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _apiKey);
 
-            var response = await _httpClient.PostAsync("https://api.groq.com/openai/v1/chat/completions", content);
+            // xAI Endpoint
+            var response = await _httpClient.PostAsync("https://api.x.ai/v1/chat/completions", content);
             
             if (!response.IsSuccessStatusCode)
                 return "AI Hatası: " + response.ReasonPhrase;

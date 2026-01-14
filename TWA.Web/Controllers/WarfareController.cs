@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using TWA.Core.Entities;
+using TWA.Core.Interfaces;
 using TWA.Service.Services;
+using TWA.Web.Models;
 
 namespace TWA.Web.Controllers
 {
@@ -8,11 +11,26 @@ namespace TWA.Web.Controllers
     {
         private readonly DeceptionService _deceptionService;
         private readonly OpCoordinatorService _opCoordinator;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public WarfareController(DeceptionService deceptionService, OpCoordinatorService opCoordinator)
+        public WarfareController(DeceptionService deceptionService, OpCoordinatorService opCoordinator, IUnitOfWork unitOfWork)
         {
             _deceptionService = deceptionService;
             _opCoordinator = opCoordinator;
+            _unitOfWork = unitOfWork;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var attacks = await _unitOfWork.Repository<AttackTask>()
+                .FindAsync(a => a.Status == AttackStatus.Scheduled || a.Status == AttackStatus.Sent);
+
+            var model = new WarfareViewModel
+            {
+                ActiveAttacks = attacks.OrderBy(a => a.LaunchTime).ToList()
+            };
+
+            return View(model);
         }
 
         [HttpPost]

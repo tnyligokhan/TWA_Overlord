@@ -15,5 +15,11 @@ namespace TWA.Core.Interfaces.Services
 
         // Tarayıcı üzerinden fiziksel saldırıyı başlatır (Ghost Engine için)
         Task SendAttackAsync(AttackCommand cmd);
+
+        // Kaynak gönderimi yapar
+        Task SendResourcesAsync(TransportCommand cmd);
+        
+        // Son operasyonları getir
+        Task<IEnumerable<AttackTask>> GetRecentOperationsAsync(int count);
     }
 }

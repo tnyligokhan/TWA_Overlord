@@ -1,0 +1,130 @@
+@model TWA.Web.Models.WarfareViewModel
+@{
+    ViewData["Title"] = "SAVAŞ ODASI";
+}
+
+<!-- Bağlantı Durumu -->
+<div class="connection-indicator position-fixed top-0 end-0 m-3 p-2 bg-dark rounded shadow-lg" style="z-index: 9999;">
+    <span class="text-muted">🔄 Bağlanıyor...</span>
+</div>
+
+<div class="d-flex justify-content-between align-items-end mb-4 fade-in-up">
+    <div>
+        <h6 class="text-muted text-uppercase fw-bold mb-1">Operasyon Merkezi</h6>
+        <h2 class="fw-bold text-white m-0"><i class="fas fa-crosshairs text-danger me-2"></i> Savaş Odası</h2>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-warning"><i class="fas fa-ghost me-1"></i> Ghost Train</button>
+        <button class="btn btn-danger"><i class="fas fa-plus me-1"></i> Yeni Saldırı</button>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Aktif Saldırılar -->
+    <div class="col-lg-8">
+        <div class="card bg-glass border-0">
+            <div class="card-header bg-dark border-bottom border-secondary border-opacity-25">
+                <h5 class="text-white mb-0"><i class="fas fa-rocket me-2"></i> Aktif Operasyonlar</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0">
+                        <thead>
+                            <tr class="text-muted small">
+                                <th>KAYNAK</th>
+                                <th>HEDEF</th>
+                                <th>TİP</th>
+                                <th>DURUM</th>
+                                <th>KALKIŞ</th>
+                                <th>VARIŞ</th>
+                                <th>İŞLEM</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model?.ActiveAttacks != null && Model.ActiveAttacks.Any())
+                            {
+                                @foreach (var attack in Model.ActiveAttacks)
+                                {
+                                    <tr data-attack-id="@attack.Id">
+                                        <td class="text-white">@attack.SourceVillageName</td>
+                                        <td class="font-monospace">@attack.TargetX|@attack.TargetY</td>
+                                        <td>
+                                            <span class="badge bg-@(attack.Type == TWA.Core.Entities.AttackType.Snipe ? "danger" : "warning")">
+                                                @attack.Type
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge attack-status bg-info">@attack.Status</span>
+                                        </td>
+                                        <td class="small text-muted">@attack.LaunchTime.ToString("HH:mm:ss")</td>
+                                        <td class="small text-warning arrival-time">@(attack.ArrivalTime.HasValue ? attack.ArrivalTime.Value.ToString("HH:mm:ss") : "--:--:--")</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="cancelAttack(@attack.Id)">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        <i class="fas fa-peace fa-2x mb-2"></i>
+                                        <p>Aktif saldırı yok. Barış zamanı.</p>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Saldırı İstatistikleri -->
+    <div class="col-lg-4">
+        <div class="card bg-glass border-0 mb-3">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-3">BUGÜNKÜ OPERASYONLAR</h6>
+                <div class="display-4 text-danger fw-bold">24</div>
+                <small class="text-muted">Toplam Saldırı</small>
+            </div>
+        </div>
+
+        <div class="card bg-glass border-0 mb-3">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-3">BAŞARI ORANI</h6>
+                <div class="display-4 text-success fw-bold">87%</div>
+                <small class="text-muted">Kazanılan Savaşlar</small>
+            </div>
+        </div>
+
+        <div class="card bg-glass border-0">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-3">TOPLAM YAĞMA</h6>
+                <div class="display-4 text-warning fw-bold">2.4M</div>
+                <small class="text-muted">Kaynak Çalındı</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+    <script src="~/js/live-data-client.js"></script>
+    <script>
+        function cancelAttack(attackId) {
+            if (confirm('Bu saldırıyı iptal etmek istediğinizden emin misiniz?')) {
+                fetch(`/Warfare/CancelAttack/${attackId}`, { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Saldırı iptal edildi!');
+                            location.reload();
+                        }
+                    });
+            }
+        }
+    </script>
+}

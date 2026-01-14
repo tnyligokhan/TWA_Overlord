@@ -27,10 +27,26 @@ namespace TWA.Core.Interfaces.Services
         // Binanın maliyeti kaynaklarla karşılanabilir mi?
         Task<bool> CanAffordBuilding(string buildingId);
 
+        // İnşaat kuyruğundaki aktif bina sayısı
+        Task<int> GetActiveBuildCountAsync();
+
+        // Basılabilecek maksimum altın sayısını döner (Akademi sayfasında)
+        Task<int> GetMaxMintableCoinsAsync();
+
         // İçtima Meydanına Git
         Task NavigateToPlace();
 
         // Asker sayılarını forma doldur
         Task FillTroops(TWA.Core.Entities.TroopSet troops);
+        
+        // JavaScript evaluation methods
+        Task<T?> EvaluateJsAsync<T>(string jsExpression);
+        Task<int> GetGameDataIntAsync(string jsPath);
+        Task<string> GetGameDataStringAsync(string jsPath);
+        
+        // DOM Element Reading
+        Task<int> GetElementIntAsync(string cssSelector);
+        Task<string> GetElementTextAsync(string cssSelector);
+        Task<int> GetElementAttributeIntAsync(string cssSelector, string attributeName);
     }
 }

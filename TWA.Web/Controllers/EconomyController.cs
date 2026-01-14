@@ -26,7 +26,7 @@ namespace TWA.Web.Controllers
                 TotalWood = villages.Sum(v => (long)v.Wood),
                 TotalClay = villages.Sum(v => (long)v.Stone), // Map Stone to Clay (TribalWars Logic)
                 TotalIron = villages.Sum(v => (long)v.Iron),
-                TotalGoldCoins = 450, // Mock Data
+                TotalGoldCoins = villages.Count(v => v.AcademyLevel > 0) * 50, // Tahmini altın para
                 // Basit bir üretim tahmini (Gerçekte bina seviyesinden hesaplanır)
                 TotalProductionPerHour = villages.Count() * 2400 * 3, 
                 
@@ -39,10 +39,9 @@ namespace TWA.Web.Controllers
                     Clay = v.Stone, // Map Stone to Clay
                     Iron = v.Iron,
                     StorageCapacity = v.StorageCapacity,
-                    // Mock ROI verisi (Gerçekte _economyService.CalculateROI çağrılır)
-                    BestRoiBuilding = v.Wood < v.StorageCapacity ? "Oduncu (12h)" : "Depo (Acil)",
-                    ActiveMerchants = 10, // Mock
-                    TotalMerchants = 110 // Mock (Pazar seviyesine göre)
+                    BestRoiBuilding = v.Wood < v.StorageCapacity * 0.5 ? "Oduncu" : (v.Stone < v.StorageCapacity * 0.5 ? "Kil Ocağı" : "Demir Madeni"),
+                    ActiveMerchants = v.AvailableMerchants,
+                    TotalMerchants = v.AvailableMerchants // Gerçek veri yoksa aynı değer
                 }).OrderByDescending(v => v.IsStorageFull).ToList() // Dolular en üstte
             };
 

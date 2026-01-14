@@ -99,5 +99,46 @@ namespace TWA.Service.Services
 
             Console.WriteLine($"🚀 SALDIRI ÇIKILDI! Hedef: {cmd.TargetX}|{cmd.TargetY} - Tip: {cmd.Type}");
         }
+
+
+        public async Task SendResourcesAsync(TransportCommand cmd)
+        {
+            // 1. PAZAR YERİNE GİT
+            await _browser.NavigateToBuilding("market");
+
+            // 2. KAYNAK MİKTARLARINI GİR
+            if (cmd.Wood > 0) await _browser.TypeHumanLike("input[name='wood']", cmd.Wood.ToString());
+            if (cmd.Stone > 0) await _browser.TypeHumanLike("input[name='stone']", cmd.Stone.ToString());
+            if (cmd.Iron > 0) await _browser.TypeHumanLike("input[name='iron']", cmd.Iron.ToString());
+
+            // 3. KOORDİNATLARI GİR
+            await _browser.TypeHumanLike("input[name='x']", cmd.TargetX.ToString());
+            await _browser.TypeHumanLike("input[name='y']", cmd.TargetY.ToString());
+
+            // 4. "GÖNDER" BUTONUNA TIKLA
+            // Genelde "btn-target-action" veya form submit butonu
+            try {
+                await _browser.ClickButtonAsync("input[type='submit']"); 
+            } catch {
+                 await _browser.ClickButtonAsync(".btn-default"); 
+            }
+
+            // 5. ONAYLA
+            // Onay sayfasında "OK" veya "Confirm" butonu
+            try {
+                await _browser.ClickButtonAsync("#delivery_target_submit"); // TW Market Onay Butonu ID'si
+            } catch {
+                await _browser.ClickButtonAsync(".btn-confirm-yes");
+            }
+            
+            Console.WriteLine($"🚚 LOJİSTİK: Kaynaklar yola çıktı -> {cmd.TargetX}|{cmd.TargetY} (Odun: {cmd.Wood}, Kil: {cmd.Stone}, Demir: {cmd.Iron})");
+        }
+        
+        public async Task<IEnumerable<AttackTask>> GetRecentOperationsAsync(int count)
+        {
+            // Bu metod için IUnitOfWork inject edilmeli, şimdilik boş liste döndürelim
+            // Gerçek implementasyon için _unitOfWork.Repository<AttackTask>() kullanılmalı
+            return await Task.FromResult(new List<AttackTask>());
+        }
     }
 }

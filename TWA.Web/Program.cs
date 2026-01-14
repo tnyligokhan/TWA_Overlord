@@ -1,5 +1,6 @@
 using TWA.Data;
 using TWA.Service;
+using TWA.Web.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +14,12 @@ builder.Services.AddServiceLayer();
 // Web Katmanı Servisleri
 builder.Services.AddControllersWithViews();
 
+// SignalR Eklendi (Canlı Veri İçin)
+builder.Services.AddSignalR();
+
 // Background Worker Kaydı
 builder.Services.AddHostedService<TWA.Web.Workers.AttackBackgroundService>();
+builder.Services.AddHostedService<TWA.Web.Workers.LiveDataBroadcastService>();
 
 var app = builder.Build();
 
@@ -35,5 +40,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+
+// SignalR Hub Endpoint
+app.MapHub<GameDataHub>("/gameDataHub");
 
 app.Run();

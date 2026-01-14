@@ -22,5 +22,11 @@ namespace TWA.Core.Entities
         {
             return Spear + Sword + Axe + (Spy * 2) + (Light * 4) + (Heavy * 6) + (Ram * 5) + (Catapult * 8) + (Snob * 100); 
         }
+
+        // Toplam Asker Adedi (Garnizon için)
+        public int Total()
+        {
+            return Spear + Sword + Axe + Spy + Light + Heavy + Ram + Catapult + Knight + Snob + Militia;
+        }
     }
 }

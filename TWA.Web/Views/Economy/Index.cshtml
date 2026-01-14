@@ -3,25 +3,30 @@
     ViewData["Title"] = "WALL STREET";
 }
 
+<!-- Bağlantı Durumu -->
+<div class="connection-indicator position-fixed top-0 end-0 m-3 p-2 bg-dark rounded shadow-lg" style="z-index: 9999;">
+    <span class="text-muted">🔄 Bağlanıyor...</span>
+</div>
+
 <div class="container-fluid h-100 d-flex flex-column fade-in-down">
     
     <!-- 1. HEADER: ASSET STRIP (Hero Stats) -->
     <div class="asset-strip">
         <!-- Wood Asset -->
         <div class="asset-item">
-            <div class="asset-value text-warning">@Model.TotalWood.ToString("N0")</div>
+            <div class="asset-value text-warning total-wood">@Model.TotalWood.ToString("N0")</div>
             <div class="asset-label"><i class="fas fa-tree me-1"></i> TOPLAM ODUN</div>
             <div class="asset-trend"><i class="fas fa-caret-up"></i> +45.2K/sa</div>
         </div>
         <!-- Clay Asset -->
         <div class="asset-item">
-            <div class="asset-value text-warning">@Model.TotalClay.ToString("N0")</div>
+            <div class="asset-value text-warning total-stone">@Model.TotalClay.ToString("N0")</div>
             <div class="asset-label"><i class="fas fa-cubes me-1"></i> TOPLAM KİL</div>
             <div class="asset-trend"><i class="fas fa-caret-up"></i> +42.1K/sa</div>
         </div>
         <!-- Iron Asset -->
         <div class="asset-item">
-            <div class="asset-value text-white">@Model.TotalIron.ToString("N0")</div> <!-- Iron usually harder, kept white -->
+            <div class="asset-value text-white total-iron">@Model.TotalIron.ToString("N0")</div>
             <div class="asset-label"><i class="fas fa-mountain me-1"></i> TOPLAM DEMİR</div>
             <div class="asset-trend"><i class="fas fa-caret-up"></i> +38.5K/sa</div>
         </div>
@@ -47,7 +52,7 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link text-warning" id="pills-alert-tab" data-bs-toggle="pill" data-bs-target="#pills-alert" type="button" role="tab">
-                        <i class="fas fa-exclamation-triangle me-2"></i> DEPO ALARMI (@Model.VillageResources.Count(v => v.IsStorageFull))
+                        <i class="fas fa-exclamation-triangle me-2"></i> DEPO ALARMI (<span class="storage-alert-count">@Model.VillageResources.Count(v => v.IsStorageFull)</span>)
                     </button>
                 </li>
             </ul>
@@ -198,8 +203,6 @@
 </div>
 
 @section Scripts {
-    <script>
-        // Optional: Add simple tab switching logic if Bootstrap JS isn't handling it smoothly
-        // or for custom effects.
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+    <script src="~/js/live-data-client.js"></script>
 }

@@ -1,3 +1,4 @@
+@using TWA.Core.Entities
 @model TWA.Web.Controllers.DashboardViewModel
 @{
     ViewData["Title"] = "KOMUTA MERKEZİ";
@@ -67,6 +68,68 @@
     </div>
 </div>
 
+<!-- ECO PANEL (Widget Row) -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card bg-glass border-warning h-100">
+            <div class="card-header bg-transparent border-warning text-warning fw-bold">
+                <i class="fas fa-coins me-2"></i> DARPHANE DURUMU
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-between">
+                <div>
+                    <h2 class="text-white mb-0">@Model.TotalGoldCoins</h2>
+                    <small class="text-muted">Toplam Altın Para (Tahmini)</small>
+                    <div class="mt-2 text-success small">
+                        <i class="fas fa-info-circle me-1"></i> Akademi seviyesine göre
+                    </div>
+                </div>
+                <div class="coin-spinner position-relative">
+                    <div class="spinner-border text-warning" style="width: 4rem; height: 4rem;" role="status"></div>
+                    <i class="fas fa-gavel position-absolute top-50 start-50 translate-middle text-warning"></i>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <button class="btn btn-sm btn-outline-warning w-100" onclick="TriggerMinting()">
+                    <i class="fas fa-sync me-2"></i> Zorla Bas
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card bg-glass h-100">
+            <div class="card-header bg-transparent text-info fw-bold">
+                <i class="fas fa-truck-loading me-2"></i> LOJİSTİK AĞI
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    @if(Model.ActiveLogistics.Any())
+                    {
+                        @foreach(var route in Model.ActiveLogistics)
+                        {
+                            <div class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="badge bg-dark border border-secondary">@route.SourceVillageName</span>
+                                    <i class="fas fa-arrow-right text-muted mx-2"></i>
+                                    <span class="badge bg-dark border border-secondary">@route.TargetVillageName</span>
+                                </div>
+                                <small class="text-muted"><i class="fas fa-clock me-1"></i> @route.ArrivalTime</small>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="list-group-item bg-transparent text-white text-center py-4">
+                            <i class="fas fa-check-circle text-success mb-2"></i><br>
+                            <small class="text-muted">Aktif lojistik hareketi yok</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- 3. MAIN CONTENT (Split View) -->
 <div class="row g-4 flex-grow-1" style="min-height: 0;"> <!-- min-height:0 for nested flex scroll -->
     
@@ -101,45 +164,78 @@
                         }
                         else
                         {
-                             /* Mock Data for Design Demo */
-                            <tr class="floating-row">
-                                <td>
-                                    <div class="fw-bold text-white">Barbar (455|600)</div>
-                                    <small class="text-muted">K45 - Sector A</small>
-                                </td>
-                                <td><span class="badge bg-warning text-warning bg-opacity-10">YAĞMA</span></td>
-                                <td>
-                                    <span class="badge bg-secondary font-monospace"><i class="fas fa-stopwatch me-1"></i> 14:02:45</span>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="fas fa-horse-head text-muted"></i> <span class="text-white">50 Hafif</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="status-dot pulse bg-success"></span>
-                                    <span class="text-success fw-bold small">HAZIR</span>
-                                </td>
-                            </tr>
-                             <tr class="floating-row">
-                                <td>
-                                    <div class="fw-bold text-white">LordVader (458|602)</div>
-                                    <small class="text-muted">K45 - Sector B</small>
-                                </td>
-                                <td><span class="badge bg-danger text-danger bg-opacity-10">SALDIRI</span></td>
-                                <td>
-                                    <span class="badge bg-secondary font-monospace"><i class="fas fa-stopwatch me-1"></i> 18:30:00</span>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="fas fa-axe text-muted"></i> <span class="text-white">500 Balta</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="status-dot bg-warning"></span>
-                                    <span class="text-warning fw-bold small">BEKLİYOR</span>
-                                </td>
-                            </tr>
+                            @foreach(var attack in Model.ActiveAttackList)
+                            {
+                                <tr class="floating-row">
+                                    <td>
+                                        <div class="fw-bold text-white">@attack.TargetPlayerName (@attack.TargetX|@attack.TargetY)</div>
+                                        <small class="text-muted">@(attack.SourceVillage?.Name ?? "Köy")</small>
+                                    </td>
+                                    <td>
+                                        @switch(attack.Type)
+                                        {
+                                            case AttackType.Fake:
+                                                <span class="badge bg-secondary text-secondary bg-opacity-10">FAKE</span>
+                                                break;
+                                            case AttackType.Farm:
+                                                <span class="badge bg-warning text-warning bg-opacity-10">YAĞMA</span>
+                                                break;
+                                            case AttackType.Real_Nuke:
+                                                <span class="badge bg-danger text-danger bg-opacity-10">KAMI</span>
+                                                break;
+                                            case AttackType.Real_Noble:
+                                                <span class="badge bg-danger text-danger bg-opacity-10">MİSYONER</span>
+                                                break;
+                                            case AttackType.Snipe:
+                                                <span class="badge bg-info text-info bg-opacity-10">SNIPE</span>
+                                                break;
+                                            case AttackType.Support:
+                                                <span class="badge bg-success text-success bg-opacity-10">DESTEK</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary font-monospace"><i class="fas fa-stopwatch me-1"></i> @attack.LaunchTime.ToString("HH:mm:ss")</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="fas fa-users text-muted"></i> 
+                                            <span class="text-white">
+                                                @if(attack.Troops.Spear > 0) { <text>@attack.Troops.Spear Miz </text> }
+                                                @if(attack.Troops.Sword > 0) { <text>@attack.Troops.Sword Kıl </text> }
+                                                @if(attack.Troops.Axe > 0) { <text>@attack.Troops.Axe Bal </text> }
+                                                @if(attack.Troops.Light > 0) { <text>@attack.Troops.Light Haf </text> }
+                                                @if(attack.Troops.Heavy > 0) { <text>@attack.Troops.Heavy Ağır </text> }
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @switch(attack.Status)
+                                        {
+                                            case AttackStatus.Pending:
+                                                <span class="status-dot bg-secondary"></span>
+                                                <span class="text-secondary fw-bold small">BEKLİYOR</span>
+                                                break;
+                                            case AttackStatus.Scheduled:
+                                                <span class="status-dot pulse bg-warning"></span>
+                                                <span class="text-warning fw-bold small">ZAMANLI</span>
+                                                break;
+                                            case AttackStatus.Sent:
+                                                <span class="status-dot pulse bg-success"></span>
+                                                <span class="text-success fw-bold small">GÖNDERİLDİ</span>
+                                                break;
+                                            case AttackStatus.Cancelled:
+                                                <span class="status-dot bg-danger"></span>
+                                                <span class="text-danger fw-bold small">İPTAL</span>
+                                                break;
+                                            case AttackStatus.Failed:
+                                                <span class="status-dot bg-danger"></span>
+                                                <span class="text-danger fw-bold small">HATA</span>
+                                                break;
+                                        }
+                                    </td>
+                                </tr>
+                            }
                         }
                     </tbody>
                 </table>
@@ -222,12 +318,54 @@
                 if(data.success) {
                     btn.removeClass('btn-success').addClass('btn-outline-success')
                        .html('<i class="fas fa-link"></i> BAĞLI (ONLINE)');
-                    // Show toast?
+                    
+                    // Show success message in chat
+                    $('#chat-history').append(`
+                        <div class="chat-bubble chat-left">
+                            <strong class="text-success d-block mb-1"><i class="fas fa-check-circle me-1"></i> SİSTEM</strong>
+                            ${data.message}
+                        </div>
+                    `);
+                    scrollToBottom();
                 } else {
                     btn.prop('disabled', false).html('<i class="fas fa-exclamation-triangle"></i> HATA - TEKRAR DENE');
+                    
+                    // Show error message in chat
+                    $('#chat-history').append(`
+                        <div class="chat-bubble chat-left">
+                            <strong class="text-danger d-block mb-1"><i class="fas fa-exclamation-triangle me-1"></i> HATA</strong>
+                            ${data.message || 'Bilinmeyen bir hata oluştu.'}
+                        </div>
+                    `);
+                    scrollToBottom();
                 }
+            }).fail(function(xhr, status, error) {
+                btn.prop('disabled', false).html('<i class="fas fa-exclamation-triangle"></i> HATA - TEKRAR DENE');
+                
+                // Show network error in chat
+                $('#chat-history').append(`
+                    <div class="chat-bubble chat-left">
+                        <strong class="text-danger d-block mb-1"><i class="fas fa-exclamation-triangle me-1"></i> BAĞLANTI HATASI</strong>
+                        Sunucuya bağlanılamadı: ${error}
+                    </div>
+                `);
+                scrollToBottom();
             });
         });
+
+        // Trigger Minting
+        function TriggerMinting() {
+            var btn = $(event.target).closest('button');
+            var originalContent = btn.html();
+            
+            btn.prop('disabled', true).html('<i class="fas fa-cog fa-spin"></i> İşleniyor...');
+            
+            // Post to backend (Demo)
+            setTimeout(() => {
+                btn.prop('disabled', false).html('<i class="fas fa-check"></i> Emredildi');
+                setTimeout(() => { btn.html(originalContent); }, 2000);
+            }, 1000);
+        }
 
         // Simple Chat Logic
         function sendMessage() {

@@ -195,7 +195,33 @@
                             </div>
                         </div>
                         <div class="text-end">
-                            <span class="badge bg-dark border border-secondary text-danger">Lvl 25</span>
+                            <span class="badge bg-dark border border-secondary text-danger">Lvl @Model.BuildingBarracks</span>
+                        </div>
+                    </div>
+
+                    <div class="list-group-item bg-transparent border-secondary border-opacity-10 d-flex align-items-center justify-content-between py-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="icon-box bg-soft-info rounded-circle" style="width: 36px; height: 36px;"><i class="fas fa-horse fa-sm"></i></div>
+                            <div>
+                                <div class="text-white fw-bold small">Ahır</div>
+                                <div class="text-muted" style="font-size: 0.7rem;">Süvari Üretimi</div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-dark border border-secondary text-info">Lvl @Model.BuildingStable</span>
+                        </div>
+                    </div>
+
+                    <div class="list-group-item bg-transparent border-secondary border-opacity-10 d-flex align-items-center justify-content-between py-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="icon-box bg-soft-warning rounded-circle" style="width: 36px; height: 36px;"><i class="fas fa-hammer fa-sm"></i></div>
+                            <div>
+                                <div class="text-white fw-bold small">Demirci</div>
+                                <div class="text-muted" style="font-size: 0.7rem;">Asker Geliştirme</div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-dark border border-secondary text-warning">Lvl @Model.BuildingSmithy</span>
                         </div>
                     </div>
 
@@ -208,7 +234,40 @@
                             </div>
                         </div>
                         <div class="text-end">
-                            <span class="badge bg-success">MAX</span>
+                            <span class="badge bg-dark border border-secondary text-success">Lvl @Model.BuildingStorage</span>
+                        </div>
+                    </div>
+
+                    <div class="list-group-item bg-transparent border-secondary border-opacity-10 d-flex align-items-center justify-content-between py-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="icon-box bg-soft-danger rounded-circle" style="width: 36px; height: 36px;"><i class="fas fa-shield-alt fa-sm"></i></div>
+                            <div>
+                                <div class="text-white fw-bold small">Sur</div>
+                                <div class="text-muted" style="font-size: 0.7rem;">Savunma Bonusu</div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-dark border border-secondary text-danger">Lvl @Model.BuildingWall</span>
+                        </div>
+                    </div>
+
+                    <div class="list-group-item bg-transparent border-secondary border-opacity-10 d-flex align-items-center justify-content-between py-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="icon-box bg-soft-primary rounded-circle" style="width: 36px; height: 36px;"><i class="fas fa-graduation-cap fa-sm"></i></div>
+                            <div>
+                                <div class="text-white fw-bold small">Akademi</div>
+                                <div class="text-muted" style="font-size: 0.7rem;">Misyoner Üretimi</div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            @if (Model.BuildingSnob > 0)
+                            {
+                                <span class="badge bg-dark border border-secondary text-primary">Lvl @Model.BuildingSnob</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-dark border border-secondary text-muted">YOK</span>
+                            }
                         </div>
                     </div>
                 </div>

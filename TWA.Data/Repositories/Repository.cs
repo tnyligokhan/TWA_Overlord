@@ -39,7 +39,21 @@ namespace TWA.Data.Repositories
 
         public async Task<T?> GetByIdAsync(int id)
         {
+            // Owned entities (TroopSet gibi) otomatik yüklenir
+            // Ancak navigation properties için Include gerekir
             return await _dbSet.FindAsync(id);
+        }
+        
+        public async Task<T?> GetByIdWithIncludesAsync(int id, params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _dbSet;
+            
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+            
+            return await query.FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public void Remove(T entity)

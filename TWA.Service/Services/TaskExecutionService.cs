@@ -41,7 +41,7 @@ namespace TWA.Service.Services
                     else if (task.Type == TaskType.Building)
                     {
                         // Bina Yönetimini Çağır
-                        await _buildingManager.BuildNextAsync(village, task.ActionTarget);
+                        await _buildingManager.CheckAndBuildAsync(village.Id);
                     }
                 } catch {
                      // JSON parse hatası veya task yapısı bozuk

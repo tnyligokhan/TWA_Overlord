@@ -33,7 +33,7 @@ namespace TWA.Core.Entities
 
         // Zamanlama (En Kritik Kısım)
         public DateTime LaunchTime { get; set; } // Çıkış Zamanı
-        public DateTime ArrivalTime { get; set; } // Varış Zamanı (Snipe için hedef)
+        public DateTime? ArrivalTime { get; set; } // Varış Zamanı (Snipe için hedef)
 
         // Gönderilecek Asker
         public TroopSet Troops { get; set; } = new TroopSet();
@@ -42,6 +42,10 @@ namespace TWA.Core.Entities
         public AttackStatus Status { get; set; }
         
         public string GroqNotes { get; set; } = string.Empty; // AI'ın bu saldırıyı neden açtığına dair notu
+
+        // Kaynak köy adı (View için)
+        [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+        public string SourceVillageName => SourceVillage?.Name ?? "Bilinmeyen";
 
         [System.ComponentModel.DataAnnotations.Schema.NotMapped]
         public string TargetCoordinates

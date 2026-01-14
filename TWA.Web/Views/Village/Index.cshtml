@@ -3,6 +3,11 @@
     ViewData["Title"] = "Köy Envanteri";
 }
 
+<!-- Bağlantı Durumu Göstergesi -->
+<div class="connection-indicator position-fixed top-0 end-0 m-3 p-2 bg-dark rounded shadow-lg" style="z-index: 9999;">
+    <span class="text-muted">🔄 Bağlanıyor...</span>
+</div>
+
 <div class="d-flex justify-content-between align-items-end mb-4 fade-in-up">
     <div>
         <h6 class="text-muted text-uppercase fw-bold mb-1">Mülk Yönetimi</h6>
@@ -40,7 +45,7 @@
         long popMax = item.PopulationMax > 0 ? item.PopulationMax : 1;
         int popP = (int)((double)item.PopulationCurrent / popMax * 100);
 
-        <div class="card border-0 card-hover bg-glass">
+        <div class="card border-0 card-hover bg-glass" data-village-id="@item.Id">
             <div class="card-body py-3 px-4 d-flex align-items-center">
                 
                 <div class="d-flex align-items-center" style="width: 35%;">
@@ -60,28 +65,28 @@
                     <div class="flex-grow-1">
                         <div class="d-flex justify-content-between small mb-1">
                             <span class="text-muted"><i class="fas fa-tree text-success"></i></span>
-                            <span class="text-white">@((item.Wood/1000.0).ToString("0.0"))k</span>
+                            <span class="text-white resource-wood">@((item.Wood/1000.0).ToString("0.0"))k</span>
                         </div>
                         <div class="progress bg-dark" style="height: 4px;">
-                            <div class="progress-bar bg-success" style="width: @woodP%"></div>
+                            <div class="progress-bar progress-wood bg-success" style="width: @woodP%"></div>
                         </div>
                     </div>
                     <div class="flex-grow-1">
                         <div class="d-flex justify-content-between small mb-1">
                             <span class="text-muted"><i class="fas fa-cubes text-secondary"></i></span>
-                            <span class="text-white">@((item.Stone/1000.0).ToString("0.0"))k</span>
+                            <span class="text-white resource-stone">@((item.Stone/1000.0).ToString("0.0"))k</span>
                         </div>
                         <div class="progress bg-dark" style="height: 4px;">
-                            <div class="progress-bar bg-secondary" style="width: @stoneP%"></div>
+                            <div class="progress-bar progress-stone bg-secondary" style="width: @stoneP%"></div>
                         </div>
                     </div>
                     <div class="flex-grow-1">
                         <div class="d-flex justify-content-between small mb-1">
                             <span class="text-muted"><i class="fas fa-gem text-info"></i></span>
-                            <span class="text-white">@((item.Iron/1000.0).ToString("0.0"))k</span>
+                            <span class="text-white resource-iron">@((item.Iron/1000.0).ToString("0.0"))k</span>
                         </div>
                         <div class="progress bg-dark" style="height: 4px;">
-                            <div class="progress-bar bg-info" style="width: @ironP%"></div>
+                            <div class="progress-bar progress-iron bg-info" style="width: @ironP%"></div>
                         </div>
                     </div>
                 </div>
@@ -89,10 +94,10 @@
                 <div class="ps-4" style="width: 20%;">
                     <div class="d-flex align-items-center mb-1">
                         <i class="fas fa-users text-muted small me-2"></i>
-                        <div class="progress bg-dark flex-grow-1 me-2" style="height: 6px;">
+                        <div class="progress bg-dark flex-grow-1 me-2 progress-population" style="height: 6px;">
                             <div class="progress-bar @(popP > 90 ? "bg-danger" : "bg-primary")" style="width: @popP%"></div>
                         </div>
-                        <span class="small text-muted">@popP%</span>
+                        <span class="small text-muted population-current">@popP%</span>
                     </div>
                     <div class="small text-muted">
                         <i class="fas fa-heart text-danger me-1"></i> Sadakat: <span class="text-white">100</span>
@@ -125,3 +130,9 @@
     }
 
 </div>
+
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+    <script src="~/js/live-data-client.js"></script>
+}

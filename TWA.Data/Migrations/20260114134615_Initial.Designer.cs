@@ -2,9 +2,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TWA.Data.Context;
 
 #nullable disable
@@ -12,8 +12,8 @@ using TWA.Data.Context;
 namespace TWA.Data.Migrations
 {
     [DbContext(typeof(TwaDbContext))]
-    [Migration("20260113134814_AddScheduledAndDailyTasks")]
-    partial class AddScheduledAndDailyTasks
+    [Migration("20260114134615_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,55 +21,55 @@ namespace TWA.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "9.0.0")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("TWA.Core.Entities.AttackTask", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("ArrivalTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("GroqNotes")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("LaunchTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("SourceVillageId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("TargetPlayerName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("TargetX")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TargetY")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Type")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -82,31 +82,31 @@ namespace TWA.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BuildingName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<int>("Priority")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TargetLevel")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("VillageId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -119,42 +119,42 @@ namespace TWA.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ActionTarget")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsCompleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("ScheduledTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("TaskName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("Type")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("VillageId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -167,41 +167,41 @@ namespace TWA.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ExecutionLog")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsCompleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsEmergency")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Payload")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("ScheduledTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Type")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("VillageId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -212,127 +212,165 @@ namespace TWA.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AcademyLevel")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("AiAction")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("AiTarget")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("AvailableMerchants")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BarracksLevel")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BuildingBarracks")
+                        .HasColumnType("integer");
 
                     b.Property<int>("BuildingFarm")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("BuildingIron")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("BuildingMain")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BuildingSmithy")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BuildingSnob")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BuildingStable")
+                        .HasColumnType("integer");
 
                     b.Property<int>("BuildingStone")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("BuildingStorage")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("BuildingWall")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("BuildingWood")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("CoordinateX")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("CoordinateY")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("GameId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Iron")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("IronHourly")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<int>("Loyalty")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Mode")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("Points")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("PopulationCurrent")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("PopulationMax")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SmithyLevel")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("StableLevel")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Stone")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("StoneHourly")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("StorageCapacity")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TargetArcher")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TargetAxe")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TargetCatapult")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TargetHeavy")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TargetKnight")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TargetLight")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TargetMarcher")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TargetRam")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TargetSnob")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TargetSpear")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TargetSpy")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TargetSword")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Type")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("WallLevel")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Wood")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("WoodHourly")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -346,51 +384,51 @@ namespace TWA.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("ArchersActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("FakeLimitPercent")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<double>("GameSpeed")
-                        .HasColumnType("float");
+                        .HasColumnType("double precision");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<int>("LagRandomizationMs")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<bool>("MillisecondsActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("NightBonusActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<TimeSpan>("NightEnd")
-                        .HasColumnType("time");
+                        .HasColumnType("interval");
 
                     b.Property<TimeSpan>("NightStart")
-                        .HasColumnType("time");
+                        .HasColumnType("interval");
 
                     b.Property<bool>("PaladinActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<double>("UnitSpeed")
-                        .HasColumnType("float");
+                        .HasColumnType("double precision");
 
                     b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("WorldId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -408,40 +446,40 @@ namespace TWA.Data.Migrations
                     b.OwnsOne("TWA.Core.Entities.TroopSet", "Troops", b1 =>
                         {
                             b1.Property<int>("AttackTaskId")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Axe")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Catapult")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Heavy")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Knight")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Light")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Militia")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Ram")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Snob")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Spear")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Spy")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Sword")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.HasKey("AttackTaskId");
 
@@ -482,50 +520,50 @@ namespace TWA.Data.Migrations
                     b.OwnsOne("TWA.Core.Entities.TroopSet", "OwnedTroops", b1 =>
                         {
                             b1.Property<int>("VillageId")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Axe")
-                                .HasColumnType("int")
+                                .HasColumnType("integer")
                                 .HasColumnName("Own_Axe");
 
                             b1.Property<int>("Catapult")
-                                .HasColumnType("int")
+                                .HasColumnType("integer")
                                 .HasColumnName("Own_Catapult");
 
                             b1.Property<int>("Heavy")
-                                .HasColumnType("int")
+                                .HasColumnType("integer")
                                 .HasColumnName("Own_Heavy");
 
                             b1.Property<int>("Knight")
-                                .HasColumnType("int")
+                                .HasColumnType("integer")
                                 .HasColumnName("Own_Knight");
 
                             b1.Property<int>("Light")
-                                .HasColumnType("int")
+                                .HasColumnType("integer")
                                 .HasColumnName("Own_Light");
 
                             b1.Property<int>("Militia")
-                                .HasColumnType("int")
+                                .HasColumnType("integer")
                                 .HasColumnName("Own_Militia");
 
                             b1.Property<int>("Ram")
-                                .HasColumnType("int")
+                                .HasColumnType("integer")
                                 .HasColumnName("Own_Ram");
 
                             b1.Property<int>("Snob")
-                                .HasColumnType("int")
+                                .HasColumnType("integer")
                                 .HasColumnName("Own_Snob");
 
                             b1.Property<int>("Spear")
-                                .HasColumnType("int")
+                                .HasColumnType("integer")
                                 .HasColumnName("Own_Spear");
 
                             b1.Property<int>("Spy")
-                                .HasColumnType("int")
+                                .HasColumnType("integer")
                                 .HasColumnName("Own_Spy");
 
                             b1.Property<int>("Sword")
-                                .HasColumnType("int")
+                                .HasColumnType("integer")
                                 .HasColumnName("Own_Sword");
 
                             b1.HasKey("VillageId");
@@ -539,41 +577,41 @@ namespace TWA.Data.Migrations
                     b.OwnsOne("TWA.Core.Entities.TroopSet", "TotalTroops", b1 =>
                         {
                             b1.Property<int>("VillageId")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Axe")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Catapult")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Heavy")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Knight")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Light")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Militia")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Ram")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Snob")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Spear")
-                                .HasColumnType("int")
+                                .HasColumnType("integer")
                                 .HasColumnName("Total_Spear");
 
                             b1.Property<int>("Spy")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Sword")
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
                             b1.HasKey("VillageId");
 

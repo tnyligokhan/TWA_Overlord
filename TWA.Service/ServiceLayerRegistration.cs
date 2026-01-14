@@ -50,8 +50,9 @@ namespace TWA.Service
             services.AddScoped<IWarfareService, WarfareService>();
             services.AddScoped<DeceptionService>();
             services.AddScoped<OpCoordinatorService>();
+            services.AddScoped<LogisticsService>();
+            services.AddScoped<MintingService>();
 
-            return services;
             return services;
         }
     }

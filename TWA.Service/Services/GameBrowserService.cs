@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Playwright;
 using TWA.Core.Helpers; // RandomProvider buradan gelecek
 using TWA.Core.Interfaces.Services;
+using TWA.Core.Configuration;
 
 namespace TWA.Service.Services
 {
@@ -101,19 +102,46 @@ namespace TWA.Service.Services
             {
                 try 
                 {
-                    // "Dünya 99" yazısını ara
-                    var worldSelector = $"a:has-text('Dünya {world.Replace("tr", "")}')";
-                    if (await _page.IsVisibleAsync(worldSelector))
-                    {
-                        await Task.Delay(1000);
-                        await _page.ClickAsync(worldSelector);
-                        worldFound = true;
-                    }
-                    else if (await _page.IsVisibleAsync("#menu_row")) // Zaten girmiş olabilir
+                    // Önce zaten giriş yapılmış mı kontrol et
+                    if (await _page.IsVisibleAsync("#menu_row")) 
                     {
                         worldFound = true;
+                        break;
                     }
-                    else
+
+                    // Dünya seçim sayfasında mıyız?
+                    // Klanlar.org'da dünya listesi genelde .world_button_active veya benzer class'larda
+                    // Daha genel bir yaklaşım: Dünya numarasını içeren herhangi bir link
+                    var worldNumber = world.Replace("tr", "").Replace("TR", "");
+                    
+                    // Farklı selector denemeleri
+                    var selectors = new[] 
+                    {
+                        $"a:has-text('Dünya {worldNumber}')",
+                        $"a:has-text('TR{worldNumber}')",
+                        $"a:has-text('{world}')",
+                        $".world_button_active:has-text('{worldNumber}')",
+                        $"a[href*='world={world}']"
+                    };
+
+                    bool clicked = false;
+                    foreach (var selector in selectors)
+                    {
+                        try
+                        {
+                            if (await _page.IsVisibleAsync(selector))
+                            {
+                                await Task.Delay(1000);
+                                await _page.ClickAsync(selector);
+                                clicked = true;
+                                worldFound = true;
+                                break;
+                            }
+                        }
+                        catch { }
+                    }
+
+                    if (!clicked)
                     {
                         // Ekranda bir şey yok, belki CAPTCHA var? Kullanıcı çözsün diye bekliyoruz.
                         await Task.Delay(1000); 
@@ -211,6 +239,57 @@ namespace TWA.Service.Services
              }
         }
 
+        public async Task<int> GetActiveBuildCountAsync()
+        {
+            if (_page == null) return 0;
+            try
+            {
+                // İnşaat kuyruğundaki iptal butonlarını veya satırları sayar
+                // Bu selector oyunun sürümüne göre değişebilir ama genelde #build_queue içindedir.
+                // Standard: #build_queue .btn-cancel veya .lit-item
+                
+                if (await _page.IsVisibleAsync("#build_queue"))
+                {
+                    // Kuyruktaki satır sayısını al (header hariç)
+                    // Veya direkt iptal edilebilir emirleri say
+                    return await _page.Locator("#build_queue .btn-cancel").CountAsync();
+                }
+                return 0;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        public async Task<int> GetMaxMintableCoinsAsync()
+        {
+            if (_page == null) return 0;
+            try 
+            {
+                // Akademi sayfasındaki "Maksimum: X" yazısını veya kaynağa göre hesabı bul.
+                // Genelde #coin_mint_fill_max gibi bir link olur ve tıklayınca input dolar.
+                // Veya o linkin text'inden (X) değeri okunabilir.
+                
+                var maxLink = _page.Locator("#coin_mint_fill_max"); // Örn selector
+                if (await maxLink.IsVisibleAsync())
+                {
+                    var text = await maxLink.InnerTextAsync();
+                    // "(5)" gibi formatları temizle
+                    text = text.Replace("(", "").Replace(")", "").Trim();
+                    if (int.TryParse(text, out int count)) return count;
+                }
+                
+                // Alternatif: Kaynakları ve altın maliyetini biliyorsak hesaplayabiliriz
+                // Şimdilik sadece DOM'a bakıyoruz.
+                return 0; 
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
         public async Task NavigateToPlace()
         {
             await GetPageContentAsync("place");
@@ -245,18 +324,39 @@ namespace TWA.Service.Services
             {
                 // URL Manipülasyonu ile git (Daha hızlı)
                 var currentUrl = _page.Url;
-                var baseUrl = currentUrl.Split('?')[0]; 
-                var villageId = currentUrl.Contains("village=") ? currentUrl.Split("village=")[1].Split('&')[0] : "";
                 
-                // Eğer köy ID yoksa (ilk giriş), URL'den bulmaya çalışma, direkt menüden git veya mevcut sayfayı kullan
-                if(string.IsNullOrEmpty(villageId))
+                // Köy ID'yi DOM'dan çek (game_data objesinden)
+                string? villageId = null;
+                try
                 {
-                     // Köy ID'yi DOM'dan çekmeyi dene (game_data objesinden)
-                     var vId = await _page.EvaluateAsync<object?>("game_data.village.id");
-                     villageId = vId?.ToString() ?? "";
+                    var vId = await _page.EvaluateAsync<object?>("game_data.village.id");
+                    villageId = vId?.ToString();
+                }
+                catch
+                {
+                    // game_data yoksa URL'den çekmeyi dene
+                    if (currentUrl.Contains("village="))
+                    {
+                        villageId = currentUrl.Split("village=")[1].Split('&')[0];
+                    }
                 }
 
-                await _page.GotoAsync($"{baseUrl}?village={villageId}&screen={screen}");
+                if (string.IsNullOrEmpty(villageId))
+                {
+                    throw new Exception("Köy ID'si alınamadı. Oyuna giriş yapıldığından emin olun.");
+                }
+
+                // Base URL'i bul
+                var baseUrl = currentUrl.Contains('?') ? currentUrl.Split('?')[0] : currentUrl;
+                if (!baseUrl.Contains("game.php"))
+                {
+                    // URL'de game.php yoksa ekle
+                    var uri = new Uri(currentUrl);
+                    baseUrl = $"{uri.Scheme}://{uri.Host}/game.php";
+                }
+
+                var targetUrl = $"{baseUrl}?village={villageId}&screen={screen}";
+                await _page.GotoAsync(targetUrl);
                 await _page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
                 
                 // Rastgele bekleme (İnsan hissi)
@@ -277,6 +377,105 @@ namespace TWA.Service.Services
         public async Task CloseAsync()
         {
             if (_browser != null) await _browser.CloseAsync();
+        }
+        
+        // JavaScript Evaluation Helpers
+        public async Task<T?> EvaluateJsAsync<T>(string jsExpression)
+        {
+            if (_page == null) throw new InvalidOperationException("Browser not initialized");
+            
+            try
+            {
+                return await _page.EvaluateAsync<T>(jsExpression);
+            }
+            catch
+            {
+                return default;
+            }
+        }
+        
+        public async Task<int> GetGameDataIntAsync(string jsPath)
+        {
+            var result = await EvaluateJsAsync<object?>(jsPath);
+            if (result == null) return 0;
+            
+            if (int.TryParse(result.ToString(), out int value))
+                return value;
+            
+            return 0;
+        }
+        
+        public async Task<string> GetGameDataStringAsync(string jsPath)
+        {
+            var result = await EvaluateJsAsync<object?>(jsPath);
+            return result?.ToString() ?? string.Empty;
+        }
+        
+        public async Task<int> GetElementIntAsync(string cssSelector)
+        {
+            if (_page == null) throw new InvalidOperationException("Browser not initialized");
+            
+            try
+            {
+                // Element var mı kontrol et
+                if (!await _page.IsVisibleAsync(cssSelector))
+                    return 0;
+                
+                // Element'in text içeriğini al
+                var text = await _page.InnerTextAsync(cssSelector);
+                
+                // Sayıyı parse et
+                if (int.TryParse(text.Trim(), out int value))
+                    return value;
+                
+                return 0;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+        
+        public async Task<string> GetElementTextAsync(string cssSelector)
+        {
+            if (_page == null) throw new InvalidOperationException("Browser not initialized");
+            
+            try
+            {
+                if (!await _page.IsVisibleAsync(cssSelector))
+                    return string.Empty;
+                
+                return await _page.InnerTextAsync(cssSelector);
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+        
+        public async Task<int> GetElementAttributeIntAsync(string cssSelector, string attributeName)
+        {
+            if (_page == null) throw new InvalidOperationException("Browser not initialized");
+            
+            try
+            {
+                if (!await _page.IsVisibleAsync(cssSelector))
+                    return 0;
+                
+                var attribute = await _page.GetAttributeAsync(cssSelector, attributeName);
+                
+                if (string.IsNullOrEmpty(attribute))
+                    return 0;
+                
+                if (int.TryParse(attribute, out int value))
+                    return value;
+                
+                return 0;
+            }
+            catch
+            {
+                return 0;
+            }
         }
     }
 }

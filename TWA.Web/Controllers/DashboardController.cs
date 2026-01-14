@@ -31,6 +31,13 @@ namespace TWA.Web.Controllers
                                            .Take(10)
                                            .ToList();
 
+            // Altın para hesapla (her köyün akademi seviyesine göre tahmini)
+            // Basit hesap: Her köy için akademi varsa ~50 altın varsayalım
+            int totalGold = villages.Count(v => v.AcademyLevel > 0) * 50;
+
+            // Lojistik rotaları (şimdilik boş, ileride gerçek verilerle doldurulacak)
+            var logistics = new List<LogisticsRoute>();
+
             // ViewModel Oluştur
             var model = new DashboardViewModel
             {
@@ -40,7 +47,9 @@ namespace TWA.Web.Controllers
                 LowStorageVillages = (await _villageService.GetVillagesNeedResourcesAsync()).Count(),
                 FullStorageVillages = (await _villageService.GetVillagesWithFullStorageAsync()).Count(),
                 ActiveAttackList = activeAttacksList,
-                RecentLogs = GenerateSystemLogs(villages.Count(), activeAttacksList.Count)
+                RecentLogs = GenerateSystemLogs(villages.Count(), activeAttacksList.Count),
+                TotalGoldCoins = totalGold,
+                ActiveLogistics = logistics
             };
 
             return View(model);
@@ -104,5 +113,16 @@ namespace TWA.Web.Controllers
         public int FullStorageVillages { get; set; }
         public IEnumerable<AttackTask> ActiveAttackList { get; set; } = new List<AttackTask>();
         public List<string> RecentLogs { get; set; } = new List<string>();
+        
+        // Yeni alanlar
+        public int TotalGoldCoins { get; set; }
+        public List<LogisticsRoute> ActiveLogistics { get; set; } = new List<LogisticsRoute>();
+    }
+
+    public class LogisticsRoute
+    {
+        public string SourceVillageName { get; set; } = string.Empty;
+        public string TargetVillageName { get; set; } = string.Empty;
+        public string ArrivalTime { get; set; } = string.Empty;
     }
 }

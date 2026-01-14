@@ -12,5 +12,9 @@ namespace TWA.Core.Entities
         public int Priority { get; set; } // 1: Yüksek, 5: Düşük
         
         public new bool IsActive { get; set; } // Şu an basılıyor mu?
+        
+        // İnşaat zamanlaması
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
     }
 }

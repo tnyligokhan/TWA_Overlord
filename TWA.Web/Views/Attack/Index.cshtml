@@ -173,7 +173,7 @@
                             <div class="feed-timer @(attack.LaunchTime < DateTime.Now.AddMinutes(5) ? "urgent" : "")">
                                 <i class="fas fa-clock me-1"></i> @attack.LaunchTime.ToString("HH:mm:ss")
                             </div>
-                            <small class="text-muted d-block mt-1">VARIŞ: @attack.ArrivalTime.ToString("HH:mm")</small>
+                            <small class="text-muted d-block mt-1">VARIŞ: @(attack.ArrivalTime.HasValue ? attack.ArrivalTime.Value.ToString("HH:mm") : "--:--")</small>
                         </div>
                     </div>
                 }
