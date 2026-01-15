@@ -11,8 +11,8 @@ namespace TWA.Service
             // Servisleri DI Container'a ekle
             services.AddScoped<IVillageService, VillageService>();
             
-            // Groq Servisi için HttpClient ekliyoruz
-            services.AddHttpClient<IGroqAiService, GroqAiService>();
+            // Grok AI Servisi (xAI Grok-2)
+            services.AddHttpClient<IGrokAiService, GrokAiService>();
 
             services.AddScoped<IWarfareService, WarfareService>(); // EKLENDİ
             services.AddScoped<IEconomyService, EconomyService>();
@@ -25,7 +25,7 @@ namespace TWA.Service
             // Connectivity Services
             services.AddSingleton<ITelegramService, TelegramService>();
             services.AddSingleton<ISignalRService, SignalRService>();
-            services.AddScoped<IHtmlParsingService, HtmlParsingService>();
+            services.AddSingleton<IHtmlParsingService, HtmlParsingService>();
 
             // Ghost Engine (Background Service)
             services.AddHostedService<GhostEngineService>();
@@ -35,9 +35,10 @@ namespace TWA.Service
 
             // Managers
             services.AddScoped<Managers.TroopManager>();
-            // Managers
-            services.AddScoped<Managers.TroopManager>();
             services.AddScoped<Managers.BuildingManager>();
+            
+            // Village Data Sync
+            services.AddScoped<VillageDataSyncService>();
             
             // Execution Service
             services.AddScoped<ITaskExecutionService, TaskExecutionService>();
@@ -52,6 +53,12 @@ namespace TWA.Service
             services.AddScoped<OpCoordinatorService>();
             services.AddScoped<LogisticsService>();
             services.AddScoped<MintingService>();
+            
+            // Recruitment Queue Service
+            services.AddScoped<IRecruitmentQueueService, RecruitmentQueueService>();
+            
+            // Build Queue Service
+            services.AddScoped<IBuildQueueService, BuildQueueService>();
 
             return services;
         }

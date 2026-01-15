@@ -486,5 +486,6 @@ $RECYCLE.BIN/
 ##
 ## Local Configuration Files (Sensitive Data)
 ##
+**/appsettings.Development.json
 **/appsettings.Local.json
 **/appsettings.*.Local.json

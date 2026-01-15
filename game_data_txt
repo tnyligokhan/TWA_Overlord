@@ -1,0 +1,624 @@
+# TWA OVERLORD - ÇEKILEN VERİLER LİSTESİ
+
+## 📊 GENEL BAKIŞ (OVERVIEW SCREEN)
+**URL:** `https://tr99.klanlar.org/game.php?village={VILLAGE_ID}&screen=overview`
+
+### JavaScript game_data Objesi:
+```javascript
+game_data.village.id           // Köy ID
+game_data.village.name         // Köy adı
+game_data.village.x            // X koordinatı
+game_data.village.y            // Y koordinatı
+game_data.village.points       // Puan
+game_data.village.wood         // Odun
+game_data.village.stone        // Taş
+game_data.village.iron         // Demir
+game_data.village.storage_max  // Depo kapasitesi
+game_data.village.pop          // Mevcut nüfus
+game_data.village.pop_max      // Maksimum nüfus
+game_data.player.incomings     // Gelen saldırı sayısı
+```
+
+### HTML Selectors (Header):
+```html
+<!-- Kaynaklar -->
+<span id="wood">12500</span>
+<span id="stone">8900</span>
+<span id="iron">7200</span>
+<span id="storage">30000</span>
+
+<!-- Nüfus -->
+<span id="pop_current_label">450</span>
+<span id="pop_max_label">500</span>
+
+<!-- Gelen Saldırılar -->
+<span id="incomings_amount">3</span>
+```
+
+### Asker Sayıları (Unit Overview Table):
+```html
+<table id="unit_overview_table" class="vis bordered-table">
+  <tr class="all_unit">
+    <td>
+      <a href="#" class="unit_link" data-unit="spear">
+        <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_spear.webp">
+      </a>
+      <strong data-count="spear">230</strong> Mızrakçı
+    </td>
+  </tr>
+  <tr class="all_unit">
+    <td>
+      <strong data-count="sword">89</strong> Kılıç ustası
+    </td>
+  </tr>
+  <tr class="all_unit">
+    <td>
+      <strong data-count="axe">2</strong> Baltacı
+    </td>
+  </tr>
+  <tr class="all_unit">
+    <td>
+      <strong data-count="spy">10</strong> Casus
+    </td>
+  </tr>
+  <tr class="all_unit">
+    <td>
+      <strong data-count="light">0</strong> Hafif atlı
+    </td>
+  </tr>
+  <tr class="all_unit">
+    <td>
+      <strong data-count="heavy">0</strong> Ağır atlı
+    </td>
+  </tr>
+  <tr class="all_unit">
+    <td>
+      <strong data-count="ram">0</strong> Koçbaşı
+    </td>
+  </tr>
+  <tr class="all_unit">
+    <td>
+      <strong data-count="catapult">0</strong> Mancınık
+    </td>
+  </tr>
+  <tr class="all_unit">
+    <td>
+      <strong data-count="knight">1</strong> Şövalye
+    </td>
+  </tr>
+  <tr class="all_unit">
+    <td>
+      <strong data-count="snob">0</strong> Misyoner
+    </td>
+  </tr>
+</table>
+```
+
+**CSS Selectors:**
+```css
+strong[data-count='spear']      /* Mızrakçı sayısı */
+strong[data-count='sword']      /* Kılıççı sayısı */
+strong[data-count='axe']        /* Baltacı sayısı */
+strong[data-count='spy']        /* Casus sayısı */
+strong[data-count='light']      /* Hafif Atlı sayısı */
+strong[data-count='heavy']      /* Ağır Atlı sayısı */
+strong[data-count='ram']        /* Koçbaşı sayısı */
+strong[data-count='catapult']   /* Mancınık sayısı */
+strong[data-count='knight']     /* Şövalye sayısı */
+strong[data-count='snob']       /* Misyoner sayısı */
+```
+
+---
+
+## ⚔️ İÇTİMA MEYDANI (PLACE SCREEN) - ASKER VERİLERİ
+**URL:** `https://tr99.klanlar.org/game.php?village={VILLAGE_ID}&screen=place`
+
+### HTML Yapısı (Asker Input'ları):
+```html
+<table>
+  <tbody>
+    <tr>
+      <td valign="top">
+        <!-- PİYADE -->
+        <table class="vis" width="100%">
+          <tbody>
+            <tr><th>Piyade</th></tr>
+            
+            <!-- Mızrakçı -->
+            <tr>
+              <td class="nowrap">
+                <a href="#" class="unit_link" data-unit="spear">
+                  <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_spear.webp" data-title="Mızrakçı">
+                </a>
+                <input id="unit_input_spear" name="spear" type="text" value="" class="unitsInput" data-all-count="230">
+                <a href="#" class="units-entry-all" data-unit="spear">(230)</a>
+              </td>
+            </tr>
+            
+            <!-- Kılıççı -->
+            <tr>
+              <td class="nowrap">
+                <a href="#" class="unit_link" data-unit="sword">
+                  <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_sword.webp" data-title="Kılıç ustası">
+                </a>
+                <input id="unit_input_sword" name="sword" type="text" value="" class="unitsInput" data-all-count="91">
+                <a href="#" class="units-entry-all" data-unit="sword">(91)</a>
+              </td>
+            </tr>
+            
+            <!-- Baltacı -->
+            <tr>
+              <td class="nowrap">
+                <a href="#" class="unit_link" data-unit="axe">
+                  <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_axe.webp" data-title="Baltacı">
+                </a>
+                <input id="unit_input_axe" name="axe" type="text" value="" class="unitsInput" data-all-count="2">
+                <a href="#" class="units-entry-all" data-unit="axe">(2)</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+      
+      <td valign="top">
+        <!-- ATLILAR -->
+        <table class="vis" width="100%">
+          <tbody>
+            <tr><th>Atlılar</th></tr>
+            
+            <!-- Casus -->
+            <tr>
+              <td class="nowrap">
+                <a href="#" class="unit_link" data-unit="spy">
+                  <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_spy.webp" data-title="Casus">
+                </a>
+                <input id="unit_input_spy" name="spy" type="text" value="" class="unitsInput" data-all-count="10">
+                <a href="#" class="units-entry-all" data-unit="spy">(10)</a>
+              </td>
+            </tr>
+            
+            <!-- Hafif Atlı -->
+            <tr>
+              <td class="nowrap unit-input-faded">
+                <a href="#" class="unit_link" data-unit="light">
+                  <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_light.webp" data-title="Hafif atlı">
+                </a>
+                <input id="unit_input_light" name="light" type="text" value="" class="unitsInput" data-all-count="0">
+                <a href="#" class="units-entry-all" data-unit="light">(0)</a>
+              </td>
+            </tr>
+            
+            <!-- Ağır Atlı -->
+            <tr>
+              <td class="nowrap unit-input-faded">
+                <a href="#" class="unit_link" data-unit="heavy">
+                  <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_heavy.webp" data-title="Ağır atlı">
+                </a>
+                <input id="unit_input_heavy" name="heavy" type="text" value="" class="unitsInput" data-all-count="0">
+                <a href="#" class="units-entry-all" data-unit="heavy">(0)</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+      
+      <td valign="top">
+        <!-- KUŞATMA SİLAHLARI -->
+        <table class="vis" width="100%">
+          <tbody>
+            <tr><th>Kuşatma silahları</th></tr>
+            
+            <!-- Koçbaşı -->
+            <tr>
+              <td class="nowrap unit-input-faded">
+                <a href="#" class="unit_link" data-unit="ram">
+                  <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_ram.webp" data-title="Koçbaşı">
+                </a>
+                <input id="unit_input_ram" name="ram" type="text" value="" class="unitsInput" data-all-count="0">
+                <a href="#" class="units-entry-all" data-unit="ram">(0)</a>
+              </td>
+            </tr>
+            
+            <!-- Mancınık -->
+            <tr>
+              <td class="nowrap unit-input-faded">
+                <a href="#" class="unit_link" data-unit="catapult">
+                  <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_catapult.webp" data-title="Mancınık">
+                </a>
+                <input id="unit_input_catapult" name="catapult" type="text" value="" class="unitsInput" data-all-count="0">
+                <a href="#" class="units-entry-all" data-unit="catapult">(0)</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+      
+      <td valign="top">
+        <!-- DİĞER -->
+        <table class="vis" width="100%">
+          <tbody>
+            <tr><th>Diğer</th></tr>
+            
+            <!-- Şövalye -->
+            <tr>
+              <td class="nowrap">
+                <a href="#" class="unit_link" data-unit="knight">
+                  <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_knight.webp" data-title="Şövalye">
+                </a>
+                <input id="unit_input_knight" name="knight" type="text" value="" class="unitsInput" data-all-count="1">
+                <a href="#" class="units-entry-all" data-unit="knight">(1)</a>
+              </td>
+            </tr>
+            
+            <!-- Misyoner -->
+            <tr>
+              <td class="nowrap unit-input-faded">
+                <a href="#" class="unit_link" data-unit="snob">
+                  <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_snob.webp" data-title="Misyoner">
+                </a>
+                <input id="unit_input_snob" name="snob" type="text" value="" class="unitsInput" data-all-count="0">
+                <a href="#" class="units-entry-all" data-unit="snob">(0)</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Hedef Koordinatları -->
+<input name="x" type="text" id="inputx" size="5" maxlength="3">
+<input name="y" type="text" id="inputy" size="5" maxlength="3">
+
+<!-- Saldırı Butonları -->
+<input id="target_attack" type="submit" value="Saldır">
+<input id="target_support" type="submit" value="Destek">
+```
+
+**CSS Selectors (data-all-count attribute):**
+```css
+input[name='spear'][data-all-count]      /* Mızrakçı: 230 */
+input[name='sword'][data-all-count]      /* Kılıççı: 91 */
+input[name='axe'][data-all-count]        /* Baltacı: 2 */
+input[name='spy'][data-all-count]        /* Casus: 10 */
+input[name='light'][data-all-count]      /* Hafif Atlı: 0 */
+input[name='heavy'][data-all-count]      /* Ağır Atlı: 0 */
+input[name='ram'][data-all-count]        /* Koçbaşı: 0 */
+input[name='catapult'][data-all-count]   /* Mancınık: 0 */
+input[name='knight'][data-all-count]     /* Şövalye: 1 */
+input[name='snob'][data-all-count]       /* Misyoner: 0 */
+```
+
+---
+
+## 🏗️ ANA BİNA (MAIN SCREEN) - BİNA SEVİYELERİ
+**URL:** `https://tr99.klanlar.org/game.php?village={VILLAGE_ID}&screen=main`
+
+### HTML Yapısı:
+```html
+<!-- Bina Satırları -->
+<tr class="main_buildrow" data-building="main">
+  <td class="level">Seviye 30</td>
+  <td>
+    <a href="#" class="btn-build" data-building="main">Geliştir</a>
+  </td>
+</tr>
+
+<tr class="main_buildrow" data-building="barracks">
+  <td class="level">Seviye 25</td>
+</tr>
+
+<tr class="main_buildrow" data-building="stable">
+  <td class="level">Seviye 20</td>
+</tr>
+
+<tr class="main_buildrow" data-building="smith">
+  <td class="level">Seviye 20</td>
+</tr>
+
+<tr class="main_buildrow" data-building="wall">
+  <td class="level">Seviye 20</td>
+</tr>
+
+<tr class="main_buildrow" data-building="storage">
+  <td class="level">Seviye 30</td>
+</tr>
+
+<tr class="main_buildrow" data-building="snob">
+  <td class="level">Seviye 1</td>
+</tr>
+
+<!-- İnşaat Kuyruğu -->
+<div id="build_queue">
+  <div class="buildorder_eri">
+    <a href="#" class="btn-cancel">İptal</a>
+    <span>Kışla (Seviye 26)</span>
+    <span class="timer">02:15:30</span>
+  </div>
+</div>
+```
+
+**CSS Selectors:**
+```css
+.main_buildrow[data-building='main'] .level        /* Ana Bina seviyesi */
+.main_buildrow[data-building='barracks'] .level    /* Kışla seviyesi */
+.main_buildrow[data-building='stable'] .level      /* Ahır seviyesi */
+.main_buildrow[data-building='smith'] .level       /* Demirci seviyesi */
+.main_buildrow[data-building='wall'] .level        /* Sur seviyesi */
+.main_buildrow[data-building='storage'] .level     /* Depo seviyesi */
+.main_buildrow[data-building='snob'] .level        /* Akademi seviyesi */
+.btn-build[data-building='main']                   /* Geliştir butonu */
+#build_queue .buildorder_eri                       /* İnşaat kuyruğu */
+#build_queue .btn-cancel                           /* İptal butonu */
+```
+
+---
+
+## 🪖 KIŞLA (TRAIN SCREEN) - ASKER BASMA
+**URL:** `https://tr99.klanlar.org/game.php?village={VILLAGE_ID}&screen=train`
+
+### HTML Yapısı:
+```html
+<!-- Asker Basma Formu -->
+<form method="post">
+  <table class="vis">
+    <tr>
+      <td>
+        <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_spear.webp">
+        <input name="spear" type="text" maxlength="5">
+        <span class="icon header population">1</span>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_sword.webp">
+        <input name="sword" type="text" maxlength="5">
+        <span class="icon header population">1</span>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_axe.webp">
+        <input name="axe" type="text" maxlength="5">
+        <span class="icon header population">1</span>
+      </td>
+    </tr>
+  </table>
+  
+  <input type="submit" value="Eğit" class="btn-recruit">
+</form>
+
+<!-- Eğitim Kuyruğu -->
+<div class="train_queue_wrap">
+  <div class="trainqueue_wrap">
+    <span>230 Mızrakçı</span>
+    <span class="timer">01:30:00</span>
+  </div>
+</div>
+```
+
+**CSS Selectors:**
+```css
+input[name='spear']           /* Mızrakçı input */
+input[name='sword']           /* Kılıççı input */
+input[name='axe']             /* Baltacı input */
+input[name='spy']             /* Casus input */
+.btn-recruit                  /* Eğit butonu */
+.train_queue_wrap             /* Eğitim kuyruğu */
+```
+
+---
+
+## 🏪 PAZAR (MARKET SCREEN) - KAYNAK TAŞIMA
+**URL:** `https://tr99.klanlar.org/game.php?village={VILLAGE_ID}&screen=market&mode=send`
+
+### HTML Yapısı:
+```html
+<!-- Müsait Tüccar Sayısı -->
+<span id="market_merchant_available_count">10</span>
+
+<!-- Kaynak Gönderme Formu -->
+<form method="post">
+  <input name="wood" type="text" maxlength="7" value="0">
+  <input name="stone" type="text" maxlength="7" value="0">
+  <input name="iron" type="text" maxlength="7" value="0">
+  
+  <input name="x" type="text" size="5" maxlength="3">
+  <input name="y" type="text" size="5" maxlength="3">
+  
+  <input type="submit" value="Gönder" class="btn-target-action">
+</form>
+
+<!-- Onay Butonu -->
+<button class="btn-confirm-yes">Onayla</button>
+```
+
+**CSS Selectors:**
+```css
+#market_merchant_available_count    /* Müsait tüccar sayısı */
+input[name='wood']                  /* Odun input */
+input[name='stone']                 /* Taş input */
+input[name='iron']                  /* Demir input */
+.btn-target-action                  /* Gönder butonu */
+.btn-confirm-yes                    /* Onay butonu */
+```
+
+---
+
+## 🎓 AKADEMİ (SNOB SCREEN) - ALTIN BASMA
+**URL:** `https://tr99.klanlar.org/game.php?village={VILLAGE_ID}&screen=snob&mode=coin`
+
+### HTML Yapısı:
+```html
+<!-- Maksimum Basılabilecek Altın -->
+<a href="#" id="coin_mint_fill_max">(5)</a>
+
+<!-- Altın Basma Formu -->
+<form method="post">
+  <input name="coin_count" type="text" maxlength="3" value="0">
+  <input type="submit" value="Bas" class="btn-mint">
+</form>
+```
+
+**CSS Selectors:**
+```css
+#coin_mint_fill_max        /* Maksimum altın sayısı */
+input[name='coin_count']   /* Altın sayısı input */
+.btn-mint                  /* Bas butonu */
+```
+
+---
+
+## 📊 RAPORLAR (REPORT SCREEN)
+**URL:** `https://tr99.klanlar.org/game.php?village={VILLAGE_ID}&screen=report&mode=all`
+
+### HTML Yapısı:
+```html
+<table class="vis">
+  <tr class="report-link unread">
+    <td>
+      <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/dots/green.png">
+      <a href="/game.php?village=12218&screen=report&view=12345">
+        Saldırı Raporu
+      </a>
+      <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/max_loot/1.png">
+    </td>
+  </tr>
+</table>
+```
+
+**CSS Selectors:**
+```css
+tr.report-link                      /* Rapor satırı */
+.unread                             /* Okunmamış rapor */
+img[src*='graphic/dots/']           /* Durum ikonu */
+img[src*='graphic/max_loot/']       /* Yağma ikonu */
+```
+
+---
+
+## 🗺️ HARİTA (MAP SCREEN)
+**URL:** `https://tr99.klanlar.org/game.php?village={VILLAGE_ID}&screen=map`
+
+### JavaScript Objeleri:
+```javascript
+TWMap.villages              // Tüm köyler
+TWMap.players               // Tüm oyuncular
+TWMap.mapHandler.spawnSector(x, y)  // Sektör yükle
+```
+
+---
+
+## 📋 ÇEKILEN VERİLERİN ÖZET LİSTESİ
+
+### ✅ Köy Bilgileri:
+- Köy ID (game_data.village.id)
+- Köy Adı (game_data.village.name)
+- X Koordinatı (game_data.village.x)
+- Y Koordinatı (game_data.village.y)
+- Puan (game_data.village.points)
+- Sadakat (Loyalty)
+
+### ✅ Ekonomi:
+- Odun (game_data.village.wood / #wood)
+- Taş (game_data.village.stone / #stone)
+- Demir (game_data.village.iron / #iron)
+- Depo Kapasitesi (game_data.village.storage_max / #storage)
+- Saatlik Üretim (WoodHourly, StoneHourly, IronHourly)
+
+### ✅ Nüfus:
+- Mevcut Nüfus (game_data.village.pop / #pop_current_label)
+- Maksimum Nüfus (game_data.village.pop_max / #pop_max_label)
+
+### ✅ Askerler (Place Screen - data-all-count):
+- Mızrakçı (input[name='spear'][data-all-count])
+- Kılıççı (input[name='sword'][data-all-count])
+- Baltacı (input[name='axe'][data-all-count])
+- Casus (input[name='spy'][data-all-count])
+- Hafif Atlı (input[name='light'][data-all-count])
+- Ağır Atlı (input[name='heavy'][data-all-count])
+- Koçbaşı (input[name='ram'][data-all-count])
+- Mancınık (input[name='catapult'][data-all-count])
+- Şövalye (input[name='knight'][data-all-count])
+- Misyoner (input[name='snob'][data-all-count])
+
+### ✅ Binalar:
+- Ana Bina (BuildingMain)
+- Oduncu (BuildingWood)
+- Kil Ocağı (BuildingStone)
+- Demir Madeni (BuildingIron)
+- Depo (BuildingStorage)
+- Çiftlik (BuildingFarm)
+- Sur (BuildingWall)
+- Kışla (BuildingBarracks)
+- Demirci (BuildingSmithy)
+- Ahır (BuildingStable)
+- Akademi (BuildingSnob)
+
+### ✅ Lojistik:
+- Müsait Tüccar Sayısı (#market_merchant_available_count)
+- Aktif Sevkiyatlar
+
+### ✅ Savaş:
+- Gelen Saldırılar (game_data.player.incomings / #incomings_amount)
+- Aktif Saldırılar (AttackTask tablosu)
+- Saldırı Durumu (Pending, Scheduled, Sent, Cancelled, Failed)
+
+### ✅ İnşaat:
+- İnşaat Kuyruğu (#build_queue .buildorder_eri)
+- Aktif İnşaat Sayısı
+- İnşaat Bitiş Zamanı
+
+---
+
+## 🔧 KULLANILAN TEKNOLOJILER
+
+### Backend:
+- **Playwright** - Tarayıcı otomasyonu
+- **Entity Framework Core** - ORM
+- **PostgreSQL** - Veritabanı
+- **SignalR** - Canlı veri yayını
+
+### Parsing Metodları:
+1. **JavaScript Evaluation** - `game_data` objesi
+2. **CSS Selectors** - DOM element'leri
+3. **HTML Attributes** - `data-*` attribute'ları
+4. **XPath** - Karmaşık yapılar için
+
+### Veri Akışı:
+```
+Oyun Sayfası (HTML/JS)
+    ↓
+Playwright (Browser Automation)
+    ↓
+GameBrowserService (Parsing)
+    ↓
+VillageService (Business Logic)
+    ↓
+Repository (Data Access)
+    ↓
+PostgreSQL Database
+    ↓
+SignalR Hub (Real-time)
+    ↓
+Dashboard (UI)
+```
+
+---
+
+## 📌 ÖNEMLİ NOTLAR
+
+1. **game_data objesi** en güvenilir veri kaynağıdır (JavaScript)
+2. **Place screen** asker sayıları için en doğru kaynaktır (data-all-count)
+3. **Overview screen** genel bilgiler için kullanılır
+4. **Main screen** bina seviyeleri için kullanılır
+5. Tüm veriler **real-time** olarak güncellenir
+6. **Anti-bot** önlemleri için insan gibi davranış simülasyonu yapılır
+7. Her işlem arası **rastgele gecikmeler** eklenir
+8. **CAPTCHA** durumunda kullanıcı müdahalesi beklenir
+
+---
+
+**Son Güncelleme:** 2026-01-14
+**Proje:** TWA Overlord - Tribal Wars Automation System

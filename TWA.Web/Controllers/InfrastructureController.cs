@@ -1,81 +1,140 @@
 using Microsoft.AspNetCore.Mvc;
+using TWA.Core.Interfaces;
+using TWA.Core.Entities;
+using TWA.Core.DTOs;
 using TWA.Web.Models;
 
 namespace TWA.Web.Controllers
 {
     public class InfrastructureController : Controller
     {
-        public IActionResult Index()
+        private readonly IUnitOfWork _unitOfWork;
+
+        public InfrastructureController(IUnitOfWork unitOfWork)
         {
-            // MOCK DATA for "Engineering Dashboard"
-            var model = new InfrastructureViewModel();
+            _unitOfWork = unitOfWork;
+        }
 
-            // 1. Active Builds (Under Construction)
-            model.ActiveBuilds = new List<ConstructionTask>
+        public async Task<IActionResult> Index(int? villageId)
+        {
+            var villages = await _unitOfWork.Repository<Village>().GetAllAsync();
+            
+            var selectedVillageId = villageId ?? villages.FirstOrDefault()?.Id ?? 0;
+            var selectedVillage = villages.FirstOrDefault(v => v.Id == selectedVillageId);
+
+            if (selectedVillage == null)
             {
-                new ConstructionTask
-                {
-                    VillageName = "001 | KUZEY KALESİ",
-                    BuildingName = "Demir Madeni",
-                    BuildingIcon = "fas fa-mountain",
-                    CurrentLevel = 28,
-                    TargetLevel = 29,
-                    StartTime = DateTime.Now.AddMinutes(-45),
-                    EndTime = DateTime.Now.AddMinutes(12), // 12 mins left
-                    IsActive = true
-                },
-                new ConstructionTask
-                {
-                    VillageName = "002 | DOĞU CEPHESİ",
-                    BuildingName = "Kışla",
-                    BuildingIcon = "fas fa-dungeon",
-                    CurrentLevel = 24,
-                    TargetLevel = 25,
-                    StartTime = DateTime.Now.AddHours(-2),
-                    EndTime = DateTime.Now.AddMinutes(45), // 45 mins left
-                    IsActive = true
-                },
-                new ConstructionTask
-                {
-                    VillageName = "003 | MERKEZ",
-                    BuildingName = "Saray",
-                    BuildingIcon = "fas fa-chess-rook",
-                    CurrentLevel = 0,
-                    TargetLevel = 1,
-                    StartTime = DateTime.Now.AddHours(-1),
-                    EndTime = DateTime.Now.AddHours(2).AddMinutes(15), 
-                    IsActive = true
-                }
+                return View(new InfrastructureViewModel());
+            }
+
+            // Parse JSON build queue
+            var buildQueue = ParseBuildQueue(selectedVillage.BuildQueueJson);
+            
+            var model = new InfrastructureViewModel
+            {
+                ActiveBuilds = buildQueue
+                    .Where(b => b.IsActive)
+                    .Select(b => new ConstructionTask
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        VillageName = selectedVillage.Name,
+                        BuildingName = GetBuildingName(b.BuildingType),
+                        BuildingIcon = GetBuildingIcon(b.BuildingType),
+                        CurrentLevel = b.CurrentLevel,
+                        TargetLevel = b.TargetLevel,
+                        StartTime = b.StartTime,
+                        EndTime = b.EndTime,
+                        IsActive = true
+                    }).ToList(),
+
+                BuildQueue = buildQueue
+                    .Where(b => !b.IsActive)
+                    .Select(b => new ConstructionTask
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        VillageName = selectedVillage.Name,
+                        BuildingName = GetBuildingName(b.BuildingType),
+                        BuildingIcon = GetBuildingIcon(b.BuildingType),
+                        CurrentLevel = b.CurrentLevel,
+                        TargetLevel = b.TargetLevel,
+                        StartTime = DateTime.Now,
+                        EndTime = DateTime.Now.AddHours(1),
+                        IsActive = false
+                    }).ToList()
             };
 
-            // 2. Build Queue (Waiting)
-            model.BuildQueue = new List<ConstructionTask>
-            {
-                 new ConstructionTask
-                {
-                    VillageName = "001 | KUZEY KALESİ",
-                    BuildingName = "Sur",
-                    BuildingIcon = "fas fa-shield-alt",
-                    CurrentLevel = 19,
-                    TargetLevel = 20,
-                    StartTime = DateTime.Now.AddHours(1),
-                    EndTime = DateTime.Now.AddHours(5),
-                    IsActive = false
-                },
-                new ConstructionTask
-                {
-                    VillageName = "004 | GÜNEY LİMAN",
-                    BuildingName = "Depo",
-                    BuildingIcon = "fas fa-warehouse",
-                    CurrentLevel = 29,
-                    TargetLevel = 30,
-                    StartTime = DateTime.Now.AddHours(3),
-                    EndTime = DateTime.Now.AddHours(12),
-                    IsActive = false
-                }
-            };
+            return View(model);
+        }
 
-            return View(model); 
+        private List<BuildQueueItem> ParseBuildQueue(string json)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(json) || json == "[]")
+                    return new List<BuildQueueItem>();
+                
+                return System.Text.Json.JsonSerializer.Deserialize<List<BuildQueueItem>>(json) ?? new List<BuildQueueItem>();
+            }
+            catch
+            {
+                return new List<BuildQueueItem>();
+            }
+        }
+
+        private string GetBuildingName(string type)
+        {
+            return type switch
+            {
+                "main" => "Saray",
+                "barracks" => "Kışla",
+                "stable" => "Ahır",
+                "garage" => "Atölye",
+                "snob" => "Akademi",
+                "smith" => "Demirci",
+                "place" => "Meydan",
+                "statue" => "Heykel",
+                "market" => "Pazar",
+                "wood" => "Oduncu",
+                "stone" => "Taş Ocağı",
+                "iron" => "Demir Madeni",
+                "farm" => "Çiftlik",
+                "storage" => "Depo",
+                "hide" => "Sığınak",
+                "wall" => "Sur",
+                _ => type
+            };
+        }
+
+        private string GetBuildingIcon(string type)
+        {
+            return type switch
+            {
+                "main" => "fas fa-crown",
+                "barracks" => "fas fa-shield-alt",
+                "stable" => "fas fa-horse",
+                "garage" => "fas fa-tools",
+                "snob" => "fas fa-graduation-cap",
+                "smith" => "fas fa-hammer",
+                "place" => "fas fa-flag",
+                "statue" => "fas fa-monument",
+                "market" => "fas fa-store",
+                "wood" => "fas fa-tree",
+                "stone" => "fas fa-mountain",
+                "iron" => "fas fa-gem",
+                "farm" => "fas fa-tractor",
+                "storage" => "fas fa-warehouse",
+                "hide" => "fas fa-shield",
+                "wall" => "fas fa-fort-awesome",
+                _ => "fas fa-building"
+            };
+        }
+
+        private int CalculateProgress(DateTime start, DateTime end)
+        {
+            var total = (end - start).TotalSeconds;
+            var elapsed = (DateTime.Now - start).TotalSeconds;
+            return total > 0 ? (int)((elapsed / total) * 100) : 0;
         }
     }
 }
+

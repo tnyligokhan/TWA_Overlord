@@ -63,7 +63,7 @@ namespace TWA.Service.Services
             {
                 var warfareService = scope.ServiceProvider.GetRequiredService<IWarfareService>();
                 var villageService = scope.ServiceProvider.GetRequiredService<IVillageService>();
-                var aiService = scope.ServiceProvider.GetRequiredService<IGroqAiService>();
+                var aiService = scope.ServiceProvider.GetRequiredService<IGrokAiService>();
                 var economyService = scope.ServiceProvider.GetRequiredService<IEconomyService>();
                 // var taskService = scope.ServiceProvider.GetRequiredService<ITaskExecutionService>(); 
 

@@ -1,0 +1,161 @@
+@model TWA.Web.Models.SettingsViewModel
+@{
+    ViewData["Title"] = "Ayarlar";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 bg-glass">
+            <div class="card-body">
+                <h2 class="mb-1"><i class="fas fa-cog text-secondary"></i> Ayarlar</h2>
+                <p class="text-muted mb-0">Oyun ve Bot Konfigürasyonu</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card border-0 bg-glass">
+            <div class="card-header bg-transparent border-bottom border-secondary">
+                <h5 class="mb-0"><i class="fas fa-gamepad"></i> Oyun Ayarları</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" asp-action="SaveGameSettings">
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="autoSync" 
+                                   name="AutoSync" @(Model.GameSettings.AutoSync ? "checked" : "")>
+                            <label class="form-check-label text-white" for="autoSync">
+                                Otomatik Senkronizasyon
+                            </label>
+                        </div>
+                        <small class="text-muted">Köy verilerini otomatik olarak güncelle</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-white">Senkronizasyon Aralığı (saniye):</label>
+                        <input type="number" class="form-control bg-dark text-white border-secondary" 
+                               name="SyncInterval" value="@Model.GameSettings.SyncInterval" min="30" max="600">
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="autoBuild" 
+                                   name="AutoBuild" @(Model.GameSettings.AutoBuild ? "checked" : "")>
+                            <label class="form-check-label text-white" for="autoBuild">
+                                Otomatik İnşaat
+                            </label>
+                        </div>
+                        <small class="text-muted">Bina geliştirmelerini otomatik yap</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="autoRecruit" 
+                                   name="AutoRecruit" @(Model.GameSettings.AutoRecruit ? "checked" : "")>
+                            <label class="form-check-label text-white" for="autoRecruit">
+                                Otomatik Asker Basma
+                            </label>
+                        </div>
+                        <small class="text-muted">Asker basımını otomatik yap</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="notifications" 
+                                   name="NotificationsEnabled" @(Model.GameSettings.NotificationsEnabled ? "checked" : "")>
+                            <label class="form-check-label text-white" for="notifications">
+                                Bildirimler
+                            </label>
+                        </div>
+                        <small class="text-muted">Önemli olaylar için bildirim al</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="fas fa-save"></i> Kaydet
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card border-0 bg-glass">
+            <div class="card-header bg-transparent border-bottom border-secondary">
+                <h5 class="mb-0"><i class="fas fa-robot"></i> Bot Ayarları</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" asp-action="SaveBotSettings">
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="botActive" 
+                                   name="IsActive" @(Model.BotSettings.IsActive ? "checked" : "")>
+                            <label class="form-check-label text-white" for="botActive">
+                                Bot Aktif
+                            </label>
+                        </div>
+                        <small class="text-muted">Otomasyonu etkinleştir/devre dışı bırak</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-white">Maksimum Eşzamanlı Görev:</label>
+                        <input type="number" class="form-control bg-dark text-white border-secondary" 
+                               name="MaxConcurrentTasks" value="@Model.BotSettings.MaxConcurrentTasks" min="1" max="10">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-white">İşlemler Arası Gecikme (ms):</label>
+                        <input type="number" class="form-control bg-dark text-white border-secondary" 
+                               name="DelayBetweenActions" value="@Model.BotSettings.DelayBetweenActions" min="500" max="10000">
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="randomDelay" 
+                                   name="RandomizeDelay" @(Model.BotSettings.RandomizeDelay ? "checked" : "")>
+                            <label class="form-check-label text-white" for="randomDelay">
+                                Rastgele Gecikme
+                            </label>
+                        </div>
+                        <small class="text-muted">İnsan davranışını taklit et</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="safeMode" 
+                                   name="SafeMode" @(Model.BotSettings.SafeMode ? "checked" : "")>
+                            <label class="form-check-label text-white" for="safeMode">
+                                Güvenli Mod
+                            </label>
+                        </div>
+                        <small class="text-muted">Kritik işlemlerde onay iste</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="fas fa-save"></i> Kaydet
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 bg-glass border-danger">
+            <div class="card-header bg-transparent border-bottom border-danger">
+                <h5 class="mb-0 text-danger"><i class="fas fa-exclamation-triangle"></i> Tehlikeli Bölge</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Bu işlemler geri alınamaz. Dikkatli olun!</p>
+                <button class="btn btn-outline-danger">
+                    <i class="fas fa-trash"></i> Tüm Verileri Sil
+                </button>
+                <button class="btn btn-outline-warning ms-2">
+                    <i class="fas fa-redo"></i> Fabrika Ayarlarına Dön
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

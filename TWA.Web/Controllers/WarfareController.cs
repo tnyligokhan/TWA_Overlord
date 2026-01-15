@@ -20,17 +20,10 @@ namespace TWA.Web.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var attacks = await _unitOfWork.Repository<AttackTask>()
-                .FindAsync(a => a.Status == AttackStatus.Scheduled || a.Status == AttackStatus.Sent);
-
-            var model = new WarfareViewModel
-            {
-                ActiveAttacks = attacks.OrderBy(a => a.LaunchTime).ToList()
-            };
-
-            return View(model);
+            // Statik veri yok - sadece canlı SignalR verisi
+            return View();
         }
 
         [HttpPost]

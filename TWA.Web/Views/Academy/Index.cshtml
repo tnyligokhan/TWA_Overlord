@@ -1,0 +1,154 @@
+@model TWA.Web.Models.AcademyViewModel
+@{
+    ViewData["Title"] = "Akademi - Altın Sikke";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 bg-glass">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-1"><i class="fas fa-university text-warning"></i> Akademi</h2>
+                        <p class="text-muted mb-0">Altın Sikke Basımı ve Misyoner Eğitimi</p>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-dark border border-secondary text-warning fs-5">Seviye @Model.AcademyLevel</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 bg-glass">
+            <div class="card-body">
+                <label class="form-label text-white fw-bold">Köy Seçin:</label>
+                <select class="form-select bg-dark text-white border-secondary" onchange="window.location.href='/Academy/Index?villageId=' + this.value">
+                    @foreach (var village in Model.Villages)
+                    {
+                        <option value="@village.Id" selected="@(village.Id == Model.SelectedVillageId)">
+                            @village.Name (@village.Coordinates) - Akademi Lv.@village.BuildingSnob
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.SelectedVillage != null)
+{
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 bg-glass">
+                <div class="card-body text-center">
+                    <i class="fas fa-tree text-success fa-2x mb-2"></i>
+                    <h4 class="text-white mb-0">@Model.SelectedVillage.Wood</h4>
+                    <small class="text-muted">Odun</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 bg-glass">
+                <div class="card-body text-center">
+                    <i class="fas fa-cubes text-secondary fa-2x mb-2"></i>
+                    <h4 class="text-white mb-0">@Model.SelectedVillage.Stone</h4>
+                    <small class="text-muted">Kil</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 bg-glass">
+                <div class="card-body text-center">
+                    <i class="fas fa-gem text-info fa-2x mb-2"></i>
+                    <h4 class="text-white mb-0">@Model.SelectedVillage.Iron</h4>
+                    <small class="text-muted">Demir</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card border-0 bg-glass">
+                <div class="card-header bg-transparent border-bottom border-secondary">
+                    <h5 class="mb-0"><i class="fas fa-coins text-warning"></i> Altın Sikke Basımı</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/buildings/snob.png" width="120" alt="Akademi">
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card bg-dark border-warning">
+                                <div class="card-body text-center">
+                                    <h3 class="text-warning mb-0">@Model.AvailableCoins</h3>
+                                    <small class="text-muted">Mevcut Sikke</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-dark border-info">
+                                <div class="card-body text-center">
+                                    <h3 class="text-info mb-0">@Model.CoinsInProduction</h3>
+                                    <small class="text-muted">Üretimde</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info border-info bg-dark text-white mb-4">
+                        <i class="fas fa-info-circle"></i> <strong>Bilgi:</strong> Her misyoner için 1 altın sikke gereklidir. Maksimum @Model.MaxCoins sikke basabilirsiniz.
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="text-white mb-3">Maliyet:</h6>
+                        <div class="d-flex justify-content-around text-center">
+                            <div>
+                                <i class="fas fa-tree text-success fa-2x"></i>
+                                <p class="text-white mb-0 mt-2">28,000</p>
+                                <small class="text-muted">Odun</small>
+                            </div>
+                            <div>
+                                <i class="fas fa-cubes text-secondary fa-2x"></i>
+                                <p class="text-white mb-0 mt-2">30,000</p>
+                                <small class="text-muted">Kil</small>
+                            </div>
+                            <div>
+                                <i class="fas fa-gem text-info fa-2x"></i>
+                                <p class="text-white mb-0 mt-2">25,000</p>
+                                <small class="text-muted">Demir</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.AvailableCoins + Model.CoinsInProduction < Model.MaxCoins)
+                    {
+                        <form method="post" asp-action="MintCoin" asp-route-villageId="@Model.SelectedVillageId">
+                            <button type="submit" class="btn btn-warning btn-lg w-100">
+                                <i class="fas fa-coins"></i> Altın Sikke Bas
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <button class="btn btn-secondary btn-lg w-100" disabled>
+                            <i class="fas fa-check"></i> Maksimum Sikke Sayısına Ulaşıldı
+                        </button>
+                    }
+
+                    <div class="text-center mt-3">
+                        <a href="@Url.Action("Snob", "Recruitment", new { villageId = Model.SelectedVillageId })" 
+                           class="btn btn-outline-warning">
+                            <i class="fas fa-crown"></i> Misyoner Bas
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

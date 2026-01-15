@@ -1,0 +1,87 @@
+@model TWA.Web.Models.GroupsViewModel
+@{
+    ViewData["Title"] = "Köy Grupları";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 bg-glass">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-1"><i class="fas fa-layer-group text-primary"></i> Köy Grupları</h2>
+                        <p class="text-muted mb-0">Köylerinizi organize edin</p>
+                    </div>
+                    <div>
+                        <a href="@Url.Action("Create")" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Yeni Grup
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Groups.Any())
+{
+    <div class="row">
+        @foreach (var group in Model.Groups)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card border-0 bg-glass h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h5 class="text-white mb-1">@group.Name</h5>
+                                <small class="text-muted">@group.VillageCount köy</small>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-dark">
+                                    <li>
+                                        <a class="dropdown-item" href="@Url.Action("Edit", new { id = group.Id })">
+                                            <i class="fas fa-edit"></i> Düzenle
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <form method="post" asp-action="Delete" asp-route-id="@group.Id" class="d-inline">
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="fas fa-trash"></i> Sil
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <p class="text-muted small">@group.Description</p>
+                        
+                        <div class="d-flex gap-2">
+                            <span class="badge bg-primary">@group.Color</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 bg-glass">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-layer-group fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">Henüz Grup Yok</h4>
+                    <p class="text-muted">Köylerinizi organize etmek için grup oluşturun</p>
+                    <a href="@Url.Action("Create")" class="btn btn-success">
+                        <i class="fas fa-plus"></i> İlk Grubu Oluştur
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -56,7 +56,28 @@ namespace TWA.Core.Entities
         public int BuildingBarracks { get; set; }
         public int BuildingSmithy { get; set; }
         public int BuildingStable { get; set; }
+        public int BuildingGarage { get; set; } // Workshop
         public int BuildingSnob { get; set; } // Academy
+        public int BuildingStatue { get; set; } // Heykel (Şövalye)
+        
+        // Demirci Araştırma Seviyeleri
+        public int ResearchSpear { get; set; } = 0;
+        public int ResearchSword { get; set; } = 0;
+        public int ResearchAxe { get; set; } = 0;
+        public int ResearchSpy { get; set; } = 0;
+        public int ResearchLight { get; set; } = 0;
+        public int ResearchHeavy { get; set; } = 0;
+        public int ResearchRam { get; set; } = 0;
+        public int ResearchCatapult { get; set; } = 0;
+        
+        // İnşaat Kuyruğu (JSON olarak saklanır)
+        public string BuildQueueJson { get; set; } = "[]";
+        
+        // Askeri Üretim Kuyrukları (JSON olarak saklanır)
+        public string BarracksQueueJson { get; set; } = "[]"; // Kışla
+        public string StableQueueJson { get; set; } = "[]";   // Ahır
+        public string GarageQueueJson { get; set; } = "[]";   // Atölye
+        public string SnobQueueJson { get; set; } = "[]";     // Akademi (Soylu)
         
         // AI Logic Properties
         public string AiAction { get; set; } = "BUILD"; // Default action

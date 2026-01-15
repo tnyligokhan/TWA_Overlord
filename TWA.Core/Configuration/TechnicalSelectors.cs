@@ -2,13 +2,14 @@ namespace TWA.Core.Configuration
 {
     /// <summary>
     /// Tribal Wars DOM selectors and JavaScript paths for data extraction
-    /// Based on current game structure - update if game changes
+    /// Based on LIVE game structure (Updated: 2026-01-14)
     /// </summary>
     public static class TechnicalSelectors
     {
         // Global Data - Accessible via game_data JavaScript object
         public static class GlobalData
         {
+            // Header Resources
             public const string Wood_Selector = "#wood";
             public const string Wood_JS = "game_data.village.wood";
             
@@ -30,6 +31,9 @@ namespace TWA.Core.Configuration
             public const string IncomingAttacks_Selector = "#incomings_amount";
             public const string IncomingAttacks_JS = "game_data.player.incomings";
             
+            public const string IncomingSupports_Selector = "#supports_amount";
+            
+            // Village Info
             public const string VillageId_JS = "game_data.village.id";
             public const string VillageName_JS = "game_data.village.name";
             public const string VillageX_JS = "game_data.village.x";
@@ -41,14 +45,18 @@ namespace TWA.Core.Configuration
         public static class Buildings
         {
             public const string UrlSuffix = "screen=main";
-            public const string QueueContainer = "#build_queue .buildorder_eri";
+            public const string QueueContainer = "#build_queue";
             public const string BuildBtnPattern = ".btn-build[data-building='{0}']";
             public const string LevelPattern = ".main_buildrow[data-building='{0}'] .level";
+            
+            // Visual labels (from overview screen)
+            public const string VisualLabelPattern = ".visual-label-{0}";
             
             public static readonly string[] BuildingIds = 
             {
                 "main", "barracks", "stable", "garage", "snob", 
-                "smith", "place", "market", "wall", "farm", "storage"
+                "smith", "place", "market", "wall", "farm", "storage",
+                "hide", "church_f", "statue"
             };
         }
         
@@ -67,7 +75,7 @@ namespace TWA.Core.Configuration
             };
         }
         
-        // Unit Overview (Troop Counts)
+        // Unit Overview (Troop Counts from Overview Screen)
         public static class UnitOverview
         {
             public const string UrlSuffix = "screen=overview";
@@ -106,7 +114,7 @@ namespace TWA.Core.Configuration
             public const string BtnConfirm = "#troop_confirm_submit";
             public const string ArrivalTimeDisplay = "#date_arrival";
             
-            // Troop counts from place screen (data-all-count attribute)
+            // Troop counts from place screen (data-all-count attribute) - MOST RELIABLE
             public const string SpearInput = "input[name='spear']";
             public const string SwordInput = "input[name='sword']";
             public const string AxeInput = "input[name='axe']";
@@ -117,6 +125,12 @@ namespace TWA.Core.Configuration
             public const string CatapultInput = "input[name='catapult']";
             public const string KnightInput = "input[name='knight']";
             public const string SnobInput = "input[name='snob']";
+            
+            // Select all units link
+            public const string SelectAllUnits = "#selectAllUnits";
+            
+            // Units entry all links (alternative way to get counts)
+            public const string UnitsEntryAllPattern = "#units_entry_all_{0}";
         }
         
         // Market

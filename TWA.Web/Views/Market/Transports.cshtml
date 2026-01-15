@@ -1,0 +1,128 @@
+@model TWA.Web.Models.TransportsViewModel
+@{
+    ViewData["Title"] = "Sevkiyatlar";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 bg-glass">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-1"><i class="fas fa-truck text-warning"></i> Sevkiyatlar</h2>
+                        <p class="text-muted mb-0">Gelen ve Giden Kaynak Hareketleri</p>
+                    </div>
+                    <div>
+                        <a href="@Url.Action("Index")" class="btn btn-outline-success">
+                            <i class="fas fa-arrow-left"></i> Pazar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card border-0 bg-glass">
+            <div class="card-header bg-transparent border-bottom border-secondary">
+                <h5 class="mb-0"><i class="fas fa-arrow-down text-success"></i> Gelen Sevkiyatlar</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.IncomingTransports.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-dark table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Kaynak</th>
+                                    <th>Hedef</th>
+                                    <th>Kaynaklar</th>
+                                    <th>Varış</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var transport in Model.IncomingTransports)
+                                {
+                                    <tr>
+                                        <td>@transport.OriginVillage</td>
+                                        <td>@transport.TargetVillage</td>
+                                        <td>
+                                            <small>
+                                                <i class="fas fa-tree text-success"></i> @transport.Wood
+                                                <i class="fas fa-cubes text-secondary ms-2"></i> @transport.Stone
+                                                <i class="fas fa-gem text-info ms-2"></i> @transport.Iron
+                                            </small>
+                                        </td>
+                                        <td class="text-warning">
+                                            <small>@transport.ArrivalTime.ToString("HH:mm:ss")</small>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <p>Gelen sevkiyat yok</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-0 bg-glass">
+            <div class="card-header bg-transparent border-bottom border-secondary">
+                <h5 class="mb-0"><i class="fas fa-arrow-up text-danger"></i> Giden Sevkiyatlar</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.OutgoingTransports.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-dark table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Kaynak</th>
+                                    <th>Hedef</th>
+                                    <th>Kaynaklar</th>
+                                    <th>Varış</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var transport in Model.OutgoingTransports)
+                                {
+                                    <tr>
+                                        <td>@transport.OriginVillage</td>
+                                        <td>@transport.TargetVillage</td>
+                                        <td>
+                                            <small>
+                                                <i class="fas fa-tree text-success"></i> @transport.Wood
+                                                <i class="fas fa-cubes text-secondary ms-2"></i> @transport.Stone
+                                                <i class="fas fa-gem text-info ms-2"></i> @transport.Iron
+                                            </small>
+                                        </td>
+                                        <td class="text-warning">
+                                            <small>@transport.ArrivalTime.ToString("HH:mm:ss")</small>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <p>Giden sevkiyat yok</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

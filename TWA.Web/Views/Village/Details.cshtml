@@ -34,11 +34,20 @@
                 </div>
             </div>
             <div class="d-flex gap-2">
-                <button class="btn btn-outline-light border-secondary hover-white">
-                    <i class="fas fa-sync-alt me-2"></i> Yenile
-                </button>
-                <button class="btn btn-danger shadow-lg shadow-danger">
-                    <i class="fas fa-crosshairs me-2"></i> Operasyon Başlat
+                <a href="@Url.Action("Index", "Infrastructure", new { villageId = Model.Id })" class="btn btn-outline-primary">
+                    <i class="fas fa-hard-hat me-2"></i> Altyapı
+                </a>
+                <a href="@Url.Action("Index", "Garrison", new { villageId = Model.Id })" class="btn btn-outline-danger">
+                    <i class="fas fa-shield-alt me-2"></i> Garnizon
+                </a>
+                <a href="@Url.Action("Barracks", "Recruitment", new { villageId = Model.Id })" class="btn btn-outline-success">
+                    <i class="fas fa-user-plus me-2"></i> Asker Bas
+                </a>
+                <a href="@Url.Action("Index", "Market", new { villageId = Model.Id })" class="btn btn-outline-warning">
+                    <i class="fas fa-store me-2"></i> Pazar
+                </a>
+                <button class="btn btn-outline-light border-secondary hover-white" onclick="location.reload()">
+                    <i class="fas fa-sync-alt"></i>
                 </button>
             </div>
         </div>
@@ -109,46 +118,273 @@
 
 <div class="row g-4 fade-in-up" style="animation-delay: 0.2s;">
     <div class="col-lg-7">
-        <div class="card border-0 bg-glass h-100">
-            <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
-                <span class="fw-bold text-danger"><i class="fas fa-shield-alt me-2"></i> GARNİZON KUVVETLERİ</span>
-                <button class="btn btn-xs btn-outline-danger border-0"><i class="fas fa-plus-circle me-1"></i> Asker Bas</button>
+        <div class="card border-0 bg-glass">
+            <div class="card-header bg-dark bg-opacity-50 border-bottom border-danger border-opacity-50 py-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 text-danger fw-bold"><i class="fas fa-shield-alt me-2"></i> GARNİZON KUVVETLERİ</h6>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="row g-3">
+            <div class="card-body p-2">
+                <div class="row g-2">
                     @functions {
-                        void RenderTroopCard(string name, int count, string iconClass, string colorClass) {
-                            <div class="col-md-3 col-6">
-                                <div class="troop-card position-relative overflow-hidden rounded-3 p-3 border border-secondary border-opacity-10 bg-dark bg-opacity-25">
-                                    <i class="@iconClass position-absolute" style="font-size: 4rem; right: -10px; bottom: -10px; opacity: 0.1; color: var(--bs-@colorClass);"></i>
-                                    
-                                    <h3 class="fw-bold text-white mb-0">@count</h3>
-                                    <small class="text-@colorClass text-uppercase fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">@name</small>
+                        void RenderTroopCard(string name, int count, string unitType) {
+                            <div class="col-3">
+                                <div class="troop-mini-card bg-dark bg-opacity-50 rounded-2 p-2 text-center border border-secondary border-opacity-25 hover-lift">
+                                    <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_@(unitType).webp" 
+                                         width="36" height="36" alt="@name" class="mb-1">
+                                    <div class="fw-bold text-white" style="font-size: 0.95rem;">@count</div>
+                                    <small class="text-muted text-uppercase" style="font-size: 0.6rem; letter-spacing: 0.5px;">@name</small>
                                 </div>
                             </div>
                         }
                     }
 
                     @{
-                        // Check if OwnedTroops is null just in case
                         var troops = Model.OwnedTroops ?? new TWA.Core.Entities.TroopSet();
                         
-                        RenderTroopCard("Mızrak", troops.Spear, "fas fa-fist-raised", "secondary");
-                        RenderTroopCard("Kılıç", troops.Sword, "fas fa-khanda", "secondary");
-                        RenderTroopCard("Balta", troops.Axe, "fas fa-ax", "danger");
-                        RenderTroopCard("Casus", troops.Spy, "fas fa-eye", "info");
-                        
-                        RenderTroopCard("Hafif", troops.Light, "fas fa-horse", "danger");
-                        RenderTroopCard("Ağır", troops.Heavy, "fas fa-horse-head", "warning");
-                        RenderTroopCard("Şah", troops.Ram, "fas fa-hammer", "light");
-                        RenderTroopCard("Misyoner", troops.Snob, "fas fa-crown", "warning");
+                        RenderTroopCard("Mızrak", troops.Spear, "spear");
+                        RenderTroopCard("Kılıç", troops.Sword, "sword");
+                        RenderTroopCard("Balta", troops.Axe, "axe");
+                        RenderTroopCard("Casus", troops.Spy, "spy");
+                        RenderTroopCard("Hafif", troops.Light, "light");
+                        RenderTroopCard("Ağır", troops.Heavy, "heavy");
+                        RenderTroopCard("Koç", troops.Ram, "ram");
+                        RenderTroopCard("Mancınık", troops.Catapult, "catapult");
+                        RenderTroopCard("Şövalye", troops.Knight, "knight");
+                        RenderTroopCard("Misyoner", troops.Snob, "snob");
                     }
                 </div>
+            </div>
+        </div>
+        
+        <!-- Üretim Binaları -->
+        <div class="card border-0 bg-glass mt-3">
+            <div class="card-header bg-dark bg-opacity-50 border-bottom border-success border-opacity-50 py-2">
+                <h6 class="mb-0 text-success fw-bold"><i class="fas fa-industry me-2"></i> ÜRETİM BİNALARI</h6>
+            </div>
+            <div class="card-body p-2">
+                <div class="row g-2">
+                    @if (Model.BuildingBarracks > 0)
+                    {
+                        <!-- Kışla -->
+                        <div class="col-6">
+                            <a href="@Url.Action("Barracks", "Recruitment", new { villageId = Model.Id })" class="text-decoration-none">
+                                <div class="building-card bg-dark bg-opacity-50 rounded-2 p-3 border border-secondary border-opacity-25 hover-lift">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="building-icon bg-danger bg-opacity-25 rounded-circle p-2" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-dungeon text-danger fa-lg"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="text-white mb-0">Kışla</h6>
+                                            <small class="text-muted">Piyade Üretimi</small>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-dark border border-danger text-danger">Lvl @Model.BuildingBarracks</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+
+                    @if (Model.BuildingStable > 0)
+                    {
+                        <!-- Ahır -->
+                        <div class="col-6">
+                            <a href="@Url.Action("Stable", "Recruitment", new { villageId = Model.Id })" class="text-decoration-none">
+                                <div class="building-card bg-dark bg-opacity-50 rounded-2 p-3 border border-secondary border-opacity-25 hover-lift">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="building-icon bg-primary bg-opacity-25 rounded-circle p-2" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-horse text-primary fa-lg"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="text-white mb-0">Ahır</h6>
+                                            <small class="text-muted">Süvari Üretimi</small>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-dark border border-primary text-primary">Lvl @Model.BuildingStable</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+
+                    @if (Model.BuildingGarage > 0)
+                    {
+                        <!-- Atölye -->
+                        <div class="col-6">
+                            <a href="@Url.Action("Garage", "Recruitment", new { villageId = Model.Id })" class="text-decoration-none">
+                                <div class="building-card bg-dark bg-opacity-50 rounded-2 p-3 border border-secondary border-opacity-25 hover-lift">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="building-icon bg-info bg-opacity-25 rounded-circle p-2" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-tools text-info fa-lg"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="text-white mb-0">Atölye</h6>
+                                            <small class="text-muted">Kuşatma Silahları</small>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-dark border border-info text-info">Lvl @Model.BuildingGarage</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+
+                    @if (Model.BuildingSmithy > 0)
+                    {
+                        <!-- Demirci -->
+                        <div class="col-6">
+                            <a href="@Url.Action("Index", "Smithy", new { villageId = Model.Id })" class="text-decoration-none">
+                                <div class="building-card bg-dark bg-opacity-50 rounded-2 p-3 border border-secondary border-opacity-25 hover-lift">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="building-icon bg-warning bg-opacity-25 rounded-circle p-2" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-hammer text-warning fa-lg"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="text-white mb-0">Demirci</h6>
+                                            <small class="text-muted">Asker Geliştirme</small>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-dark border border-warning text-warning">Lvl @Model.BuildingSmithy</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+
+                    @if (Model.BuildingSnob > 0)
+                    {
+                        <!-- Akademi -->
+                        <div class="col-6">
+                            <a href="@Url.Action("Snob", "Recruitment", new { villageId = Model.Id })" class="text-decoration-none">
+                                <div class="building-card bg-dark bg-opacity-50 rounded-2 p-3 border border-secondary border-opacity-25 hover-lift">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="building-icon bg-secondary bg-opacity-25 rounded-circle p-2" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-crown text-secondary fa-lg"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="text-white mb-0">Akademi</h6>
+                                            <small class="text-muted">Misyoner Üretimi</small>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-dark border border-secondary text-secondary">Lvl @Model.BuildingSnob</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        
+        <!-- Asker Kuyruğu -->
+        <div class="card border-0 bg-glass mt-3">
+            <div class="card-header bg-dark bg-opacity-50 border-bottom border-success border-opacity-50 py-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 text-success fw-bold"><i class="fas fa-clock me-2"></i> ASKER KUYRUĞU</h6>
+                    @{
+                        var queue = ViewBag.RecruitmentQueue as List<TWA.Core.DTOs.RecruitmentQueueItem> ?? new List<TWA.Core.DTOs.RecruitmentQueueItem>();
+                    }
+                    <span class="badge bg-success bg-opacity-25 text-success border border-success px-2 py-1">
+                        @queue.Count Sırada
+                    </span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                @if (queue.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var item in queue.Take(5))
+                        {
+                            <div class="list-group-item bg-transparent border-secondary border-opacity-10 py-2 px-3 @(item.IsActive ? "border-start border-success border-3" : "")">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="position-relative">
+                                            <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_@(item.UnitType).webp" 
+                                                 width="40" height="40" alt="@item.UnitType">
+                                            @if (item.IsActive)
+                                            {
+                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+                                                    <i class="fas fa-cog fa-spin" style="font-size: 0.6rem;"></i>
+                                                </span>
+                                            }
+                                        </div>
+                                        <div>
+                                            <div class="text-white fw-bold" style="font-size: 0.9rem;">
+                                                <span class="badge bg-primary bg-opacity-25 text-primary border border-primary me-1">@item.Amount</span>
+                                                @GetUnitName(item.UnitType)
+                                            </div>
+                                            <small class="text-muted" style="font-size: 0.7rem;">
+                                                @if (item.IsActive)
+                                                {
+                                                    <span class="text-success">Üretiliyor</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-secondary">Bekliyor</span>
+                                                }
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="text-warning fw-bold countdown-timer" style="font-size: 0.85rem;" data-endtime="@item.EndTime.ToString("o")">
+                                            --:--:--
+                                        </div>
+                                        <small class="text-muted" style="font-size: 0.65rem;">
+                                            <i class="far fa-clock me-1"></i>@item.EndTime.ToString("HH:mm")
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    @if (queue.Count > 5)
+                    {
+                        <div class="text-center py-2 border-top border-secondary border-opacity-10 bg-dark bg-opacity-25">
+                            <small class="text-muted"><i class="fas fa-ellipsis-h me-1"></i> +@(queue.Count - 5) daha fazla kuyrukta</small>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-3x opacity-10 mb-2"></i>
+                        <p class="small mb-0 text-white-50">Asker kuyruğu boş</p>
+                        <a href="@Url.Action("Barracks", "Recruitment", new { villageId = Model.Id })" class="btn btn-sm btn-outline-success mt-2">
+                            <i class="fas fa-plus me-1"></i> Asker Bas
+                        </a>
+                    </div>
+                }
             </div>
         </div>
     </div>
 
     <div class="col-lg-5">
+        
+        @functions {
+            string GetUnitName(string unitType)
+            {
+                return unitType.ToLower() switch
+                {
+                    "spear" => "Mızrakçı",
+                    "sword" => "Kılıç Ustası",
+                    "axe" => "Baltacı",
+                    "spy" => "Casus",
+                    "light" => "Hafif Süvari",
+                    "heavy" => "Ağır Süvari",
+                    "ram" => "Koç",
+                    "catapult" => "Mancınık",
+                    "knight" => "Şövalye",
+                    "snob" => "Misyoner",
+                    _ => unitType
+                };
+            }
+        }
         
         <div class="card border-0 bg-glass mb-4 border-start border-4 border-info">
             <div class="card-body">
@@ -168,8 +404,11 @@
         </div>
 
         <div class="card border-0 bg-glass">
-            <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25">
+            <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
                 <span class="fw-bold text-warning"><i class="fas fa-city me-2"></i> KRİTİK ALTYAPI</span>
+                <a href="@Url.Action("Index", "Infrastructure", new { villageId = Model.Id })" class="btn btn-xs btn-outline-warning border-0">
+                    <i class="fas fa-hammer me-1"></i> Yönet
+                </a>
             </div>
             <div class="card-body p-0">
                 <div class="list-group list-group-flush">
@@ -207,8 +446,27 @@
                                 <div class="text-muted" style="font-size: 0.7rem;">Süvari Üretimi</div>
                             </div>
                         </div>
-                        <div class="text-end">
+                        <div class="text-end d-flex align-items-center gap-2">
                             <span class="badge bg-dark border border-secondary text-info">Lvl @Model.BuildingStable</span>
+                            <a href="@Url.Action("Stable", "Recruitment", new { villageId = Model.Id })" class="btn btn-xs btn-outline-info">
+                                <i class="fas fa-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="list-group-item bg-transparent border-secondary border-opacity-10 d-flex align-items-center justify-content-between py-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="icon-box bg-soft-secondary rounded-circle" style="width: 36px; height: 36px;"><i class="fas fa-tools fa-sm"></i></div>
+                            <div>
+                                <div class="text-white fw-bold small">Atölye</div>
+                                <div class="text-muted" style="font-size: 0.7rem;">Kuşatma Silahları</div>
+                            </div>
+                        </div>
+                        <div class="text-end d-flex align-items-center gap-2">
+                            <span class="badge bg-dark border border-secondary text-secondary">Lvl @Model.BuildingGarage</span>
+                            <a href="@Url.Action("Garage", "Recruitment", new { villageId = Model.Id })" class="btn btn-xs btn-outline-secondary">
+                                <i class="fas fa-plus"></i>
+                            </a>
                         </div>
                     </div>
 
@@ -220,8 +478,11 @@
                                 <div class="text-muted" style="font-size: 0.7rem;">Asker Geliştirme</div>
                             </div>
                         </div>
-                        <div class="text-end">
+                        <div class="text-end d-flex align-items-center gap-2">
                             <span class="badge bg-dark border border-secondary text-warning">Lvl @Model.BuildingSmithy</span>
+                            <a href="@Url.Action("Index", "Smithy", new { villageId = Model.Id })" class="btn btn-xs btn-outline-warning">
+                                <i class="fas fa-arrow-up"></i>
+                            </a>
                         </div>
                     </div>
 
@@ -259,11 +520,20 @@
                                 <div class="text-muted" style="font-size: 0.7rem;">Misyoner Üretimi</div>
                             </div>
                         </div>
-                        <div class="text-end">
-                            @if (Model.BuildingSnob > 0)
+                        <div class="text-end d-flex align-items-center gap-2">
+                            @if (Model.AcademyLevel > 0)
                             {
-                                <span class="badge bg-dark border border-secondary text-primary">Lvl @Model.BuildingSnob</span>
+                                <span class="badge bg-dark border border-secondary text-primary">Lvl @Model.AcademyLevel</span>
+                                <a href="@Url.Action("Snob", "Recruitment", new { villageId = Model.Id })" class="btn btn-xs btn-outline-primary">
+                                    <i class="fas fa-plus"></i>
+                                </a>
                             }
+                            else
+                            {
+                                <span class="badge bg-dark border border-secondary text-muted">YOK</span>
+                            }
+                        </div>
+                    </div>
                             else
                             {
                                 <span class="badge bg-dark border border-secondary text-muted">YOK</span>
@@ -290,10 +560,50 @@
         color: #fff !important;
         border-color: #fff !important;
     }
+    .building-card {
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    .building-card:hover {
+        transform: translateY(-2px);
+        background: rgba(255,255,255,0.08) !important;
+        border-color: rgba(255,255,255,0.3) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
 </style>
 
 @section Scripts {
     <script>
+        // Countdown timer'ları güncelle
+        function updateCountdowns() {
+            document.querySelectorAll('.countdown-timer').forEach(function(element) {
+                const endTime = new Date(element.getAttribute('data-endtime'));
+                const now = new Date();
+                const diff = endTime - now;
+
+                if (diff <= 0) {
+                    element.textContent = 'Tamamlandı!';
+                    element.classList.add('text-success');
+                    element.classList.remove('text-warning');
+                } else {
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                    
+                    element.textContent = 
+                        (hours > 0 ? hours + ':' : '') +
+                        String(minutes).padStart(2, '0') + ':' +
+                        String(seconds).padStart(2, '0');
+                }
+            });
+        }
+
+        // İlk yükleme
+        updateCountdowns();
+        
+        // Her saniye güncelle
+        setInterval(updateCountdowns, 1000);
+    
         // AI Yazı Efekti
         function typeWriter(text, i, fnCallback) {
             if (i < (text.length)) {

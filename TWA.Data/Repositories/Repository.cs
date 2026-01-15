@@ -37,6 +37,11 @@ namespace TWA.Data.Repositories
             return await _dbSet.ToListAsync();
         }
 
+        public async Task<int> CountAsync()
+        {
+            return await _dbSet.CountAsync();
+        }
+
         public async Task<T?> GetByIdAsync(int id)
         {
             // Owned entities (TroopSet gibi) otomatik yüklenir

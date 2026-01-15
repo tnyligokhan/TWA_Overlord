@@ -1,0 +1,491 @@
+@model TWA.Web.Models.RecruitmentViewModel
+@{
+    ViewData["Title"] = "Ahır - Süvari Basma";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 bg-glass">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-1"><i class="fas fa-horse text-primary"></i> Ahır</h2>
+                        <p class="text-muted mb-0">Süvari Birliklerini Eğit</p>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-dark border border-secondary text-warning fs-5">Seviye @Model.BuildingLevel</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Köy Seçimi -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 bg-glass">
+            <div class="card-body">
+                <label class="form-label text-white fw-bold">Köy Seçin:</label>
+                <select class="form-select bg-dark text-white border-secondary" onchange="window.location.href='/Recruitment/Stable?villageId=' + this.value">
+                    @foreach (var village in Model.Villages)
+                    {
+                        <option value="@village.Id" selected="@(village.Id == Model.SelectedVillageId)">
+                            @village.Name (@village.Coordinates) - Ahır Lv.@village.BuildingStable
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.SelectedVillage != null)
+{
+    <!-- Kaynak Durumu -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 bg-glass">
+                <div class="card-body text-center">
+                    <i class="fas fa-tree text-success fa-2x mb-2"></i>
+                    <h4 class="text-white mb-0">@Model.SelectedVillage.Wood</h4>
+                    <small class="text-muted">Odun</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-glass">
+                <div class="card-body text-center">
+                    <i class="fas fa-cubes text-secondary fa-2x mb-2"></i>
+                    <h4 class="text-white mb-0">@Model.SelectedVillage.Stone</h4>
+                    <small class="text-muted">Kil</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-glass">
+                <div class="card-body text-center">
+                    <i class="fas fa-gem text-info fa-2x mb-2"></i>
+                    <h4 class="text-white mb-0">@Model.SelectedVillage.Iron</h4>
+                    <small class="text-muted">Demir</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-glass">
+                <div class="card-body text-center">
+                    <i class="fas fa-users text-warning fa-2x mb-2"></i>
+                    <h4 class="text-white mb-0">@Model.SelectedVillage.PopulationCurrent/@Model.SelectedVillage.PopulationMax</h4>
+                    <small class="text-muted">Nüfus</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Asker Basma Formu -->
+    <div class="row">
+        <!-- Casus -->
+        <div class="col-md-4 mb-4">
+            @if (Model.SelectedVillage.ResearchSpy > 0)
+            {
+                <div class="card border-0 bg-glass h-100">
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_spy.webp" width="80" alt="Casus">
+                            <h4 class="text-white mt-2">Casus</h4>
+                            <p class="text-muted small">Keşif ve casusluk birimi</p>
+                            <span class="badge bg-success bg-opacity-25 text-success border border-success">
+                                <i class="fas fa-check-circle me-1"></i> Araştırma Lv.@Model.SelectedVillage.ResearchSpy
+                            </span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span><i class="fas fa-tree text-success"></i> 50</span>
+                                <span><i class="fas fa-cubes text-secondary"></i> 50</span>
+                                <span><i class="fas fa-gem text-info"></i> 20</span>
+                                <span><i class="fas fa-user text-warning"></i> 2</span>
+                            </div>
+                            <div class="text-center text-muted small mt-2">
+                                <i class="fas fa-clock"></i> 8 dakika
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Mevcut:</span>
+                                <span class="text-white fw-bold">@(Model.SelectedVillage.OwnedTroops?.Spy ?? 0)</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Kuyrukta:</span>
+                                <span class="text-warning fw-bold">0</span>
+                            </div>
+                        </div>
+
+                        <form method="post" asp-action="Train">
+                            <input type="hidden" name="SelectedVillageId" value="@Model.SelectedVillageId" />
+                            <input type="hidden" name="BuildingType" value="stable" />
+                            <input type="hidden" name="UnitType" value="spy" />
+                            
+                            <div class="input-group mb-3">
+                                <input type="number" name="UnitCount" class="form-control bg-dark text-white border-secondary" 
+                                       placeholder="Miktar" min="1" max="100" value="1">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-plus"></i> Bas
+                                </button>
+                            </div>
+                        </form>
+
+                        <button class="btn btn-outline-secondary btn-sm w-100">
+                            <i class="fas fa-calculator"></i> Maksimum Hesapla
+                        </button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card border-0 bg-glass h-100 opacity-50">
+                    <div class="card-body text-center">
+                        <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_spy.webp" width="80" alt="Casus" class="opacity-25">
+                        <h4 class="text-white mt-2">Casus</h4>
+                        <div class="alert alert-warning bg-warning bg-opacity-10 border border-warning mt-3">
+                            <i class="fas fa-lock me-2"></i> Araştırılmamış
+                        </div>
+                        <a href="/Building/Smithy?villageId=@Model.SelectedVillageId" class="btn btn-outline-warning btn-sm mt-2">
+                            <i class="fas fa-hammer me-1"></i> Demirci'ye Git
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Hafif Süvari -->
+        <div class="col-md-4 mb-4">
+            @if (Model.SelectedVillage.ResearchLight > 0)
+            {
+                <div class="card border-0 bg-glass h-100">
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_light.webp" width="80" alt="Hafif Süvari">
+                            <h4 class="text-white mt-2">Hafif Süvari</h4>
+                            <p class="text-muted small">Hızlı saldırı birimi</p>
+                            <span class="badge bg-success bg-opacity-25 text-success border border-success">
+                                <i class="fas fa-check-circle me-1"></i> Araştırma Lv.@Model.SelectedVillage.ResearchLight
+                            </span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span><i class="fas fa-tree text-success"></i> 125</span>
+                                <span><i class="fas fa-cubes text-secondary"></i> 100</span>
+                                <span><i class="fas fa-gem text-info"></i> 250</span>
+                                <span><i class="fas fa-user text-warning"></i> 4</span>
+                            </div>
+                            <div class="text-center text-muted small mt-2">
+                                <i class="fas fa-clock"></i> 30 dakika
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Mevcut:</span>
+                                <span class="text-white fw-bold">@(Model.SelectedVillage.OwnedTroops?.Light ?? 0)</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Kuyrukta:</span>
+                                <span class="text-warning fw-bold">0</span>
+                            </div>
+                        </div>
+
+                        <form method="post" asp-action="Train">
+                            <input type="hidden" name="SelectedVillageId" value="@Model.SelectedVillageId" />
+                            <input type="hidden" name="BuildingType" value="stable" />
+                            <input type="hidden" name="UnitType" value="light" />
+                            
+                            <div class="input-group mb-3">
+                                <input type="number" name="UnitCount" class="form-control bg-dark text-white border-secondary" 
+                                       placeholder="Miktar" min="1" max="100" value="1">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-plus"></i> Bas
+                                </button>
+                            </div>
+                        </form>
+
+                        <button class="btn btn-outline-secondary btn-sm w-100">
+                            <i class="fas fa-calculator"></i> Maksimum Hesapla
+                        </button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card border-0 bg-glass h-100 opacity-50">
+                    <div class="card-body text-center">
+                        <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_light.webp" width="80" alt="Hafif Süvari" class="opacity-25">
+                        <h4 class="text-white mt-2">Hafif Süvari</h4>
+                        <div class="alert alert-warning bg-warning bg-opacity-10 border border-warning mt-3">
+                            <i class="fas fa-lock me-2"></i> Araştırılmamış
+                        </div>
+                        <a href="/Building/Smithy?villageId=@Model.SelectedVillageId" class="btn btn-outline-warning btn-sm mt-2">
+                            <i class="fas fa-hammer me-1"></i> Demirci'ye Git
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Ağır Süvari -->
+        <div class="col-md-4 mb-4">
+            @if (Model.SelectedVillage.ResearchHeavy > 0)
+            {
+                <div class="card border-0 bg-glass h-100">
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_heavy.webp" width="80" alt="Ağır Süvari">
+                            <h4 class="text-white mt-2">Ağır Süvari</h4>
+                            <p class="text-muted small">Güçlü savunma süvarisi</p>
+                            <span class="badge bg-success bg-opacity-25 text-success border border-success">
+                                <i class="fas fa-check-circle me-1"></i> Araştırma Lv.@Model.SelectedVillage.ResearchHeavy
+                            </span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span><i class="fas fa-tree text-success"></i> 200</span>
+                                <span><i class="fas fa-cubes text-secondary"></i> 150</span>
+                                <span><i class="fas fa-gem text-info"></i> 600</span>
+                                <span><i class="fas fa-user text-warning"></i> 6</span>
+                            </div>
+                            <div class="text-center text-muted small mt-2">
+                                <i class="fas fa-clock"></i> 45 dakika
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Mevcut:</span>
+                                <span class="text-white fw-bold">@(Model.SelectedVillage.OwnedTroops?.Heavy ?? 0)</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Kuyrukta:</span>
+                                <span class="text-warning fw-bold">0</span>
+                            </div>
+                        </div>
+
+                        <form method="post" asp-action="Train">
+                            <input type="hidden" name="SelectedVillageId" value="@Model.SelectedVillageId" />
+                            <input type="hidden" name="BuildingType" value="stable" />
+                            <input type="hidden" name="UnitType" value="heavy" />
+                            
+                            <div class="input-group mb-3">
+                                <input type="number" name="UnitCount" class="form-control bg-dark text-white border-secondary" 
+                                       placeholder="Miktar" min="1" max="100" value="1">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-plus"></i> Bas
+                                </button>
+                            </div>
+                        </form>
+
+                        <button class="btn btn-outline-secondary btn-sm w-100">
+                            <i class="fas fa-calculator"></i> Maksimum Hesapla
+                        </button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card border-0 bg-glass h-100 opacity-50">
+                    <div class="card-body text-center">
+                        <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_heavy.webp" width="80" alt="Ağır Süvari" class="opacity-25">
+                        <h4 class="text-white mt-2">Ağır Süvari</h4>
+                        <div class="alert alert-warning bg-warning bg-opacity-10 border border-warning mt-3">
+                            <i class="fas fa-lock me-2"></i> Araştırılmamış
+                        </div>
+                        <a href="/Building/Smithy?villageId=@Model.SelectedVillageId" class="btn btn-outline-warning btn-sm mt-2">
+                            <i class="fas fa-hammer me-1"></i> Demirci'ye Git
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Eğitim Kuyruğu -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 bg-glass">
+                <div class="card-header bg-dark border-bottom border-secondary border-opacity-25">
+                    <h5 class="mb-0 text-white"><i class="fas fa-list-ul text-warning me-2"></i> Eğitim Kuyruğu</h5>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.Queue != null && Model.Queue.Any())
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var item in Model.Queue)
+                            {
+                                <div class="list-group-item bg-glass border-0 border-bottom border-secondary border-opacity-10 @(item.IsActive ? "border-start border-warning border-3" : "")">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="unit-icon-box bg-soft-primary rounded p-2 me-3">
+                                                    <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_@(item.UnitType).webp" 
+                                                         width="40" alt="@item.UnitType">
+                                                </div>
+                                                <div>
+                                                    <h6 class="text-white mb-0 text-capitalize">@GetUnitName(item.UnitType)</h6>
+                                                    <small class="text-muted">
+                                                        @if (item.IsActive)
+                                                        {
+                                                            <span class="badge bg-success bg-opacity-25 text-success border border-success">
+                                                                <i class="fas fa-cog fa-spin me-1"></i> Üretiliyor
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary">
+                                                                <i class="fas fa-clock me-1"></i> Bekliyor
+                                                            </span>
+                                                        }
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 text-center">
+                                            <div class="badge bg-primary bg-opacity-25 text-primary border border-primary px-3 py-2">
+                                                <i class="fas fa-users me-1"></i>
+                                                <span class="fs-6 fw-bold">@item.Amount</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="text-center">
+                                                <div class="text-warning fw-bold mb-1">
+                                                    <i class="fas fa-hourglass-half me-1"></i>
+                                                    <span class="countdown-timer" data-endtime="@item.EndTime.ToString("o")">
+                                                        Hesaplanıyor...
+                                                    </span>
+                                                </div>
+                                                <div class="progress" style="height: 6px;">
+                                                    @{
+                                                        var totalMinutes = (item.EndTime - item.StartTime).TotalMinutes;
+                                                        var elapsedMinutes = (DateTime.Now - item.StartTime).TotalMinutes;
+                                                        var progress = totalMinutes > 0 ? (elapsedMinutes / totalMinutes * 100) : 0;
+                                                        progress = Math.Max(0, Math.Min(100, progress));
+                                                    }
+                                                    <div class="progress-bar bg-warning progress-bar-animated" role="progressbar" 
+                                                         style="width: @progress%" 
+                                                         aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100"
+                                                         data-starttime="@item.StartTime.ToString("o")"
+                                                         data-endtime="@item.EndTime.ToString("o")"></div>
+                                                </div>
+                                                <small class="text-muted countdown-remaining" data-endtime="@item.EndTime.ToString("o")">
+                                                    Hesaplanıyor...
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 text-end">
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-times me-1"></i> İptal
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-5">
+                            <div class="mb-3">
+                                <i class="fas fa-inbox fa-4x opacity-25"></i>
+                            </div>
+                            <h6 class="text-white-50">Eğitim kuyruğu boş</h6>
+                            <p class="small mb-0">Yukarıdaki formlardan asker basabilirsiniz</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@functions {
+    string GetUnitName(string unitType)
+    {
+        return unitType.ToLower() switch
+        {
+            "spy" => "Casus",
+            "light" => "Hafif Süvari",
+            "heavy" => "Ağır Süvari",
+            "knight" => "Şövalye",
+            _ => unitType
+        };
+    }
+}
+
+@section Scripts {
+    <script>
+        // Geri sayım timer'ları
+        function updateCountdowns() {
+            document.querySelectorAll('.countdown-timer').forEach(function(element) {
+                const endTime = new Date(element.getAttribute('data-endtime'));
+                const now = new Date();
+                const diff = endTime - now;
+
+                if (diff <= 0) {
+                    element.textContent = 'Tamamlandı!';
+                    element.classList.add('text-success');
+                    element.classList.remove('text-warning');
+                } else {
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                    
+                    element.textContent = 
+                        (hours > 0 ? hours + ':' : '') +
+                        String(minutes).padStart(2, '0') + ':' +
+                        String(seconds).padStart(2, '0');
+                }
+            });
+
+            document.querySelectorAll('.countdown-remaining').forEach(function(element) {
+                const endTime = new Date(element.getAttribute('data-endtime'));
+                const now = new Date();
+                const diff = endTime - now;
+
+                if (diff <= 0) {
+                    element.textContent = 'Tamamlandı';
+                } else {
+                    const totalMinutes = Math.floor(diff / (1000 * 60));
+                    const hours = Math.floor(totalMinutes / 60);
+                    const minutes = totalMinutes % 60;
+
+                    if (hours > 0) {
+                        element.textContent = hours + ' saat ' + minutes + ' dk kaldı';
+                    } else {
+                        element.textContent = minutes + ' dk kaldı';
+                    }
+                }
+            });
+
+            // Progress bar güncelle
+            document.querySelectorAll('.progress-bar[data-starttime]').forEach(function(bar) {
+                const startTime = new Date(bar.getAttribute('data-starttime'));
+                const endTime = new Date(bar.getAttribute('data-endtime'));
+                const now = new Date();
+                
+                const total = endTime - startTime;
+                const elapsed = now - startTime;
+                const progress = Math.max(0, Math.min(100, (elapsed / total) * 100));
+                
+                bar.style.width = progress + '%';
+                bar.setAttribute('aria-valuenow', progress);
+            });
+        }
+
+        // İlk yükleme
+        updateCountdowns();
+        
+        // Her saniye güncelle
+        setInterval(updateCountdowns, 1000);
+    </script>
+}

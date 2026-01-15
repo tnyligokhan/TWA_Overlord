@@ -1,0 +1,226 @@
+@{
+    ViewData["Title"] = "Grok AI - TWA Overlord";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2>🤖 Grok AI - Stratejik Komuta Merkezi</h2>
+            <p class="text-muted">Grok-2 ile güçlendirilmiş yapay zeka asistanı</p>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <!-- 🧠 1. GÜNLÜK OPERASYON AMİRLİĞİ -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    🧠 Günlük Operasyon Amirliği
+                </div>
+                <div class="card-body">
+                    <p>Köy için bugünün iş emri listesini oluştur</p>
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" id="dailyTaskVillageId" placeholder="Köy ID" value="1">
+                        <button class="btn btn-primary" onclick="generateDailyTasks()">Görev Listesi Oluştur</button>
+                    </div>
+                    <div id="dailyTasksResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 💰 2. EKONOMİK ÖNGÖRÜ -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    💰 Ekonomik Öngörü
+                </div>
+                <div class="card-body">
+                    <p>Kaynak yönetimi ve depo taşma analizi</p>
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" id="resourceVillageId" placeholder="Köy ID" value="1">
+                        <button class="btn btn-success" onclick="getResourceAdvice()">Analiz Et</button>
+                    </div>
+                    <div id="resourceResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ⚔️ 3. ASKERİ ANALİST -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    ⚔️ Askeri Analist
+                </div>
+                <div class="card-body">
+                    <p>Asker durumu ve şablon kontrolü</p>
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" id="militaryVillageId" placeholder="Köy ID" value="1">
+                        <button class="btn btn-danger" onclick="analyzeMilitary()">Askeri Analiz</button>
+                    </div>
+                    <div id="militaryResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🏗️ 5. ŞANTİYE ŞEFLİĞİ -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    🏗️ Şantiye Şefliği
+                </div>
+                <div class="card-body">
+                    <p>Bina önceliklendirme ve mantıksal sıralama</p>
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" id="buildingVillageId" placeholder="Köy ID" value="1">
+                        <button class="btn btn-warning" onclick="getBuildingPriority()">Bina Planı</button>
+                    </div>
+                    <div id="buildingResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🎭 6. İNSAN TAKLİDİ -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    🎭 İnsan Taklidi
+                </div>
+                <div class="card-body">
+                    <p>Rastgele zaman sapması testi</p>
+                    <button class="btn btn-info" onclick="testHumanizedTime()">Zaman Sapması Test Et</button>
+                    <div id="humanizedResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 💬 GENEL CHAT -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    💬 Genel Chat
+                </div>
+                <div class="card-body">
+                    <p>Grok AI ile sohbet et</p>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="chatMessage" placeholder="Mesajınız...">
+                        <button class="btn btn-dark" onclick="sendChat()">Gönder</button>
+                    </div>
+                    <div id="chatResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    async function generateDailyTasks() {
+        const villageId = document.getElementById('dailyTaskVillageId').value;
+        const resultDiv = document.getElementById('dailyTasksResult');
+        resultDiv.innerHTML = '<div class="spinner-border" role="status"></div> Grok düşünüyor...';
+
+        try {
+            const response = await fetch('/GrokAi/GenerateDailyTasks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `villageId=${villageId}`
+            });
+            const data = await response.json();
+            resultDiv.innerHTML = `<pre class="bg-light p-3">${JSON.stringify(data, null, 2)}</pre>`;
+        } catch (error) {
+            resultDiv.innerHTML = `<div class="alert alert-danger">Hata: ${error.message}</div>`;
+        }
+    }
+
+    async function getResourceAdvice() {
+        const villageId = document.getElementById('resourceVillageId').value;
+        const resultDiv = document.getElementById('resourceResult');
+        resultDiv.innerHTML = '<div class="spinner-border" role="status"></div> Analiz ediliyor...';
+
+        try {
+            const response = await fetch('/GrokAi/GetResourceAdvice', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `villageId=${villageId}`
+            });
+            const data = await response.json();
+            resultDiv.innerHTML = `<pre class="bg-light p-3">${JSON.stringify(data, null, 2)}</pre>`;
+        } catch (error) {
+            resultDiv.innerHTML = `<div class="alert alert-danger">Hata: ${error.message}</div>`;
+        }
+    }
+
+    async function analyzeMilitary() {
+        const villageId = document.getElementById('militaryVillageId').value;
+        const resultDiv = document.getElementById('militaryResult');
+        resultDiv.innerHTML = '<div class="spinner-border" role="status"></div> Askeri durum analiz ediliyor...';
+
+        try {
+            const response = await fetch('/GrokAi/AnalyzeMilitary', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `villageId=${villageId}`
+            });
+            const data = await response.json();
+            resultDiv.innerHTML = `<pre class="bg-light p-3">${JSON.stringify(data, null, 2)}</pre>`;
+        } catch (error) {
+            resultDiv.innerHTML = `<div class="alert alert-danger">Hata: ${error.message}</div>`;
+        }
+    }
+
+    async function getBuildingPriority() {
+        const villageId = document.getElementById('buildingVillageId').value;
+        const resultDiv = document.getElementById('buildingResult');
+        resultDiv.innerHTML = '<div class="spinner-border" role="status"></div> Bina planı hazırlanıyor...';
+
+        try {
+            const response = await fetch('/GrokAi/GetBuildingPriority', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `villageId=${villageId}`
+            });
+            const data = await response.json();
+            resultDiv.innerHTML = `<pre class="bg-light p-3">${JSON.stringify(data, null, 2)}</pre>`;
+        } catch (error) {
+            resultDiv.innerHTML = `<div class="alert alert-danger">Hata: ${error.message}</div>`;
+        }
+    }
+
+    async function testHumanizedTime() {
+        const resultDiv = document.getElementById('humanizedResult');
+        resultDiv.innerHTML = '<div class="spinner-border" role="status"></div> Test ediliyor...';
+
+        try {
+            const response = await fetch('/GrokAi/GetHumanizedTime');
+            const data = await response.json();
+            resultDiv.innerHTML = `
+                <div class="alert alert-info">
+                    <strong>Orijinal Zaman:</strong> ${data.baseTime}<br>
+                    <strong>İnsanlaştırılmış Zaman:</strong> ${data.humanizedTime}<br>
+                    <strong>Fark:</strong> ${data.difference.toFixed(1)} saniye
+                </div>
+            `;
+        } catch (error) {
+            resultDiv.innerHTML = `<div class="alert alert-danger">Hata: ${error.message}</div>`;
+        }
+    }
+
+    async function sendChat() {
+        const message = document.getElementById('chatMessage').value;
+        const resultDiv = document.getElementById('chatResult');
+        resultDiv.innerHTML = '<div class="spinner-border" role="status"></div> Grok cevaplıyor...';
+
+        try {
+            const response = await fetch('/GrokAi/Chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `message=${encodeURIComponent(message)}`
+            });
+            const data = await response.json();
+            resultDiv.innerHTML = `<div class="alert alert-secondary">${data.response}</div>`;
+        } catch (error) {
+            resultDiv.innerHTML = `<div class="alert alert-danger">Hata: ${error.message}</div>`;
+        }
+    }
+</script>
+}

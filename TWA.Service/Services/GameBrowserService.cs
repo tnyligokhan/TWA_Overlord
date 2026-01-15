@@ -3,20 +3,27 @@ using Microsoft.Playwright;
 using TWA.Core.Helpers; // RandomProvider buradan gelecek
 using TWA.Core.Interfaces.Services;
 using TWA.Core.Configuration;
+using TWA.Core.Interfaces;
+using TWA.Core.Entities;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TWA.Service.Services
 {
     public class GameBrowserService : IGameBrowserService
     {
         private readonly IConfiguration _config;
+        private readonly IHtmlParsingService _htmlParser;
+        private readonly IServiceProvider _serviceProvider;
         private IPlaywright? _playwright;
-        private IBrowser? _browser;
+        private IBrowserContext? _browser;
         private IPage? _page;
         private bool _isLoggedIn = false;
 
-        public GameBrowserService(IConfiguration config)
+        public GameBrowserService(IConfiguration config, IHtmlParsingService htmlParser, IServiceProvider serviceProvider)
         {
             _config = config;
+            _htmlParser = htmlParser;
+            _serviceProvider = serviceProvider;
         }
 
         private async Task InitBrowserAsync()
@@ -25,22 +32,19 @@ namespace TWA.Service.Services
 
             _playwright = await Playwright.CreateAsync();
             
-            // Taktik: Tarayıcıyı biraz daha yavaş ve gerçekçi aç
-            _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+            // Kalıcı kullanıcı profili ile tarayıcı aç (oturum bilgileri saklanır)
+            var userDataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TWA_Browser_Profile");
+            
+            _browser = await _playwright.Chromium.LaunchPersistentContextAsync(userDataDir, new BrowserTypeLaunchPersistentContextOptions
             {
                 Headless = _config.GetValue<bool>("GameConfig:Headless"), 
-                SlowMo = 50, // Her işlem arası 50ms doğal gecikme
-                Args = new[] { "--start-maximized" } // Tam ekran aç
-            });
-
-            // Tarayıcı Context'i (User-Agent hilesi)
-            var context = await _browser.NewContextAsync(new BrowserNewContextOptions
-            {
+                SlowMo = 50,
+                Args = new[] { "--start-maximized" },
                 UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                 ViewportSize = ViewportSize.NoViewport
             });
 
-            _page = await context.NewPageAsync();
+            _page = _browser.Pages.FirstOrDefault() ?? await _browser.NewPageAsync();
         }
 
         // İNSAN GİBİ YAZMA FONKSİYONU
@@ -83,17 +87,42 @@ namespace TWA.Service.Services
             // Çerez İzni Varsa Kapat (Olası)
             try { if (await _page.IsVisibleAsync(".osano-cm-accept-all")) await _page.ClickAsync(".osano-cm-accept-all"); } catch { }
 
-            // Kullanıcı Adı ve Şifreyi İnsan Gibi Gir
-            await TypeHumanLike("#user", user);
-            await TypeHumanLike("#password", pass);
+            // ÖNCELİKLE: Zaten oyunda mıyız kontrol et (Cookie'den giriş yapılmış olabilir)
+            try
+            {
+                var menuVisible = await _page.Locator("#menu_row").IsVisibleAsync();
+                if (menuVisible || _page.Url.Contains("game.php"))
+                {
+                    _isLoggedIn = true;
+                    await Task.Delay(1000);
+                    
+                    // Popup temizliği yap
+                    var popupButtons = new[] { ".popup_box_close", "#close_welcome_screen", ".btn-confirm-yes" };
+                    foreach (var btn in popupButtons)
+                    {
+                        try { if (await _page.Locator(btn).IsVisibleAsync()) await _page.ClickAsync(btn); } catch { }
+                    }
+                    
+                    return true; // Zaten giriş yapılmış, dünya seçimine gerek yok
+                }
+            }
+            catch { }
 
-            // Giriş Yap
-            await _page.ClickAsync(".btn-login");
+            // Kullanıcı Adı ve Şifreyi İnsan Gibi Gir (sadece login formu varsa)
+            if (await _page.Locator("#user").IsVisibleAsync())
+            {
+                await TypeHumanLike("#user", user);
+                await TypeHumanLike("#password", pass);
+
+                // Giriş Yap
+                if (await _page.IsVisibleAsync(".btn-login"))
+                {
+                    await _page.ClickAsync(".btn-login");
+                    await Task.Delay(2000); // Login sonrası bekle
+                }
+            }
             
             // --- KRİTİK BÖLGE: DÜNYA SEÇİMİ VE BOT KONTROLÜ ---
-            
-            // Eğer "Bot Testi" (Captcha) çıktıysa, giriş yapılamaz.
-            // Burada kullanıcıya zaman tanımak için uzun bir bekleme veya kontrol döngüsü kuruyoruz.
             
             bool worldFound = false;
             int attempts = 0;
@@ -102,26 +131,31 @@ namespace TWA.Service.Services
             {
                 try 
                 {
-                    // Önce zaten giriş yapılmış mı kontrol et
-                    if (await _page.IsVisibleAsync("#menu_row")) 
+                    // Önce zaten oyunda mıyız kontrol et
+                    var menuVisible = await _page.Locator("#menu_row").IsVisibleAsync();
+                    if (menuVisible || _page.Url.Contains("game.php")) 
                     {
+                        _isLoggedIn = true;
                         worldFound = true;
                         break;
                     }
 
                     // Dünya seçim sayfasında mıyız?
-                    // Klanlar.org'da dünya listesi genelde .world_button_active veya benzer class'larda
-                    // Daha genel bir yaklaşım: Dünya numarasını içeren herhangi bir link
-                    var worldNumber = world.Replace("tr", "").Replace("TR", "");
+                    var worldNumber = world.Replace("tr", "").Replace("TR", "").Trim();
                     
-                    // Farklı selector denemeleri
+                    // Farklı selector denemeleri (Tribal Wars dünya seçim sayfası için)
                     var selectors = new[] 
                     {
-                        $"a:has-text('Dünya {worldNumber}')",
+                        $"a:text-is('{worldNumber}. Dünya')",
+                        $"a:has-text('{worldNumber}. Dünya')",
+                        $"a:text-is('TR{worldNumber}')",
                         $"a:has-text('TR{worldNumber}')",
+                        $"a:has-text('Dünya {worldNumber}')",
                         $"a:has-text('{world}')",
                         $".world_button_active:has-text('{worldNumber}')",
-                        $"a[href*='world={world}']"
+                        $"a[href*='world={world}']",
+                        $"a[href*='{world}.klanlar.org']",
+                        $"a[href*='tr{worldNumber}']"
                     };
 
                     bool clicked = false;
@@ -129,16 +163,34 @@ namespace TWA.Service.Services
                     {
                         try
                         {
-                            if (await _page.IsVisibleAsync(selector))
+                            var locator = _page.Locator(selector).First;
+                            if (await locator.IsVisibleAsync())
                             {
+                                Console.WriteLine($"✅ Dünya butonu bulundu: {selector}");
                                 await Task.Delay(1000);
-                                await _page.ClickAsync(selector);
+                                await locator.ClickAsync();
                                 clicked = true;
-                                worldFound = true;
+                                await Task.Delay(3000); // Dünya yüklensin
                                 break;
                             }
                         }
-                        catch { }
+                        catch (Exception ex) 
+                        { 
+                            Console.WriteLine($"❌ Selector başarısız: {selector} - {ex.Message}");
+                        }
+                    }
+
+                    if (clicked)
+                    {
+                        // Dünyaya tıkladık, oyun yüklensin
+                        await Task.Delay(2000);
+                        var menuCheck = await _page.Locator("#menu_row").IsVisibleAsync();
+                        if (menuCheck || _page.Url.Contains("game.php"))
+                        {
+                            _isLoggedIn = true;
+                            worldFound = true;
+                            break;
+                        }
                     }
 
                     if (!clicked)
@@ -158,12 +210,11 @@ namespace TWA.Service.Services
             await Task.Delay(2000);
 
             // Günlük bonus veya pop-up varsa kapatmayı dene
-            // (Oyunun popup kapatma class'ları değişebilir, genel bir mantık)
-            var popupCloseButtons = new[] { ".popup_box_close", "#close_welcome_screen", ".btn-confirm-yes" };
-            foreach (var btn in popupCloseButtons)
+            var finalPopupButtons = new[] { ".popup_box_close", "#close_welcome_screen", ".btn-confirm-yes" };
+            foreach (var btn in finalPopupButtons)
             {
                 try {
-                    if (await _page.IsVisibleAsync(btn)) await _page.ClickAsync(btn);
+                    if (await _page.Locator(btn).IsVisibleAsync()) await _page.ClickAsync(btn);
                 } catch { }
             }
 
@@ -363,7 +414,68 @@ namespace TWA.Service.Services
                 await Task.Delay(RandomProvider.Next(500, 1500));
             }
 
-            return await _page.ContentAsync();
+            var html = await _page.ContentAsync();
+
+            // 🔥 OTOMATİK BİNA SEVİYELERİNİ PARSE ET
+            if (screen == "main")
+            {
+                await ParseAndUpdateBuildingLevelsAsync(html);
+            }
+
+            return html;
+        }
+
+        private async Task ParseAndUpdateBuildingLevelsAsync(string html)
+        {
+            try
+            {
+                var buildings = _htmlParser.ParseBuildingLevels(html);
+                if (buildings.Count == 0) return;
+
+                // Köy ID'yi al
+                var villageIdStr = await _page!.EvaluateAsync<object?>("game_data.village.id");
+                if (villageIdStr == null) return;
+
+                if (!int.TryParse(villageIdStr.ToString(), out int gameVillageId)) return;
+
+                // Scope oluştur ve UnitOfWork al
+                using var scope = _serviceProvider.CreateScope();
+                var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+                // Veritabanından köyü bul (GameId'ye göre)
+                var villages = await unitOfWork.Repository<Village>().GetAllAsync();
+                var village = villages.FirstOrDefault(v => v.GameId == gameVillageId);
+                
+                if (village == null) return;
+
+                // Bina seviyelerini güncelle
+                foreach (var building in buildings)
+                {
+                    switch (building.Key)
+                    {
+                        case "main": village.BuildingMain = building.Value; break;
+                        case "barracks": village.BuildingBarracks = building.Value; break;
+                        case "stable": village.BuildingStable = building.Value; break;
+                        case "garage": village.BuildingGarage = building.Value; break;
+                        case "snob": village.BuildingSnob = building.Value; break;
+                        case "smith": village.BuildingSmithy = building.Value; break;
+                        case "wood": village.BuildingWood = building.Value; break;
+                        case "stone": village.BuildingStone = building.Value; break;
+                        case "iron": village.BuildingIron = building.Value; break;
+                        case "farm": village.BuildingFarm = building.Value; break;
+                        case "storage": village.BuildingStorage = building.Value; break;
+                        case "wall": village.BuildingWall = building.Value; break;
+                    }
+                }
+
+                unitOfWork.Repository<Village>().Update(village);
+                await unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                // Hata logla ama devam et
+                Console.WriteLine($"Building parse error: {ex.Message}");
+            }
         }
 
         public async Task ClickButtonAsync(string selector)

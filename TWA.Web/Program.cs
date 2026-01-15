@@ -17,9 +17,20 @@ builder.Services.AddControllersWithViews();
 // SignalR Eklendi (Canlı Veri İçin)
 builder.Services.AddSignalR();
 
+// Session Support
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(24);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 // Background Worker Kaydı
 builder.Services.AddHostedService<TWA.Web.Workers.AttackBackgroundService>();
 builder.Services.AddHostedService<TWA.Web.Workers.LiveDataBroadcastService>();
+builder.Services.AddHostedService<TWA.Web.Workers.RecruitmentQueueWorker>();
+builder.Services.AddHostedService<TWA.Web.Workers.BuildQueueWorker>();
 
 var app = builder.Build();
 
@@ -35,6 +46,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseSession();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(
@@ -44,4 +57,4 @@ app.MapControllerRoute(
 // SignalR Hub Endpoint
 app.MapHub<GameDataHub>("/gameDataHub");
 
-app.Run();
+    app.Run();

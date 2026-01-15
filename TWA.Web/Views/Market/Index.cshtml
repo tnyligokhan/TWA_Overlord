@@ -1,0 +1,182 @@
+@model TWA.Web.Models.MarketViewModel
+@{
+    ViewData["Title"] = "Pazar - Kaynak Gönder";
+}
+
+<!-- Bağlantı Durumu -->
+<div class="connection-indicator position-fixed top-0 end-0 m-3 p-2 bg-dark rounded shadow-lg" style="z-index: 9999;">
+    <span class="text-muted">🔄 Bağlanıyor...</span>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 bg-glass">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-1"><i class="fas fa-store text-success"></i> Pazar</h2>
+                        <p class="text-muted mb-0">Kaynak Gönder ve Lojistik Yönetimi</p>
+                    </div>
+                    <div>
+                        <a href="@Url.Action("Transports")" class="btn btn-outline-info">
+                            <i class="fas fa-truck"></i> Sevkiyatlar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 bg-glass">
+            <div class="card-body">
+                <label class="form-label text-white fw-bold">Kaynak Köyü:</label>
+                <select class="form-select bg-dark text-white border-secondary" onchange="window.location.href='/Market/Index?villageId=' + this.value">
+                    @foreach (var village in Model.Villages)
+                    {
+                        <option value="@village.Id" selected="@(village.Id == Model.SelectedVillageId ? "selected" : null)">
+                            @village.Name (@village.Coordinates)
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.SelectedVillage != null)
+{
+    <div class="row mb-4" data-village-id="@Model.SelectedVillage.Id">
+        <div class="col-md-3">
+            <div class="card border-0 bg-glass">
+                <div class="card-body text-center">
+                    <i class="fas fa-tree text-success fa-2x mb-2"></i>
+                    <h4 class="text-white mb-0 resource-wood">@Model.SelectedVillage.Wood</h4>
+                    <small class="text-muted">Odun</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-glass">
+                <div class="card-body text-center">
+                    <i class="fas fa-cubes text-secondary fa-2x mb-2"></i>
+                    <h4 class="text-white mb-0 resource-stone">@Model.SelectedVillage.Stone</h4>
+                    <small class="text-muted">Kil</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-glass">
+                <div class="card-body text-center">
+                    <i class="fas fa-gem text-info fa-2x mb-2"></i>
+                    <h4 class="text-white mb-0 resource-iron">@Model.SelectedVillage.Iron</h4>
+                    <small class="text-muted">Demir</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-glass">
+                <div class="card-body text-center">
+                    <i class="fas fa-truck text-warning fa-2x mb-2"></i>
+                    <h4 class="text-white mb-0">@Model.AvailableMerchants/@Model.TotalMerchants</h4>
+                    <small class="text-muted">Tüccar</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" asp-action="SendResources">
+        <input type="hidden" name="SelectedVillageId" value="@Model.SelectedVillageId" />
+        
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card border-0 bg-glass">
+                    <div class="card-header bg-transparent border-bottom border-secondary">
+                        <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Hedef Köy</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label text-white">Hedef Köy Seçin:</label>
+                            <select class="form-select bg-dark text-white border-secondary" name="TargetVillageId" required>
+                                <option value="">Köy Seçin</option>
+                                @foreach (var village in Model.Villages.Where(v => v.Id != Model.SelectedVillageId))
+                                {
+                                    <option value="@village.Id">@village.Name (@village.Coordinates)</option>
+                                }
+                            </select>
+                        </div>
+                        
+                        <div class="alert alert-info border-info bg-dark text-white">
+                            <i class="fas fa-info-circle"></i> Koordinat ile hedef arama özelliği yakında eklenecek
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card border-0 bg-glass">
+                    <div class="card-header bg-transparent border-bottom border-secondary">
+                        <h5 class="mb-0"><i class="fas fa-boxes"></i> Gönderilecek Kaynaklar</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label text-white">
+                                <i class="fas fa-tree text-success"></i> Odun:
+                            </label>
+                            <input type="number" class="form-control bg-dark text-white border-secondary" 
+                                   name="Wood" min="0" max="@Model.SelectedVillage.Wood" value="0">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-white">
+                                <i class="fas fa-cubes text-secondary"></i> Kil:
+                            </label>
+                            <input type="number" class="form-control bg-dark text-white border-secondary" 
+                                   name="Stone" min="0" max="@Model.SelectedVillage.Stone" value="0">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-white">
+                                <i class="fas fa-gem text-info"></i> Demir:
+                            </label>
+                            <input type="number" class="form-control bg-dark text-white border-secondary" 
+                                   name="Iron" min="0" max="@Model.SelectedVillage.Iron" value="0">
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="fillAll()">
+                                <i class="fas fa-fill"></i> Tümünü Doldur
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0 bg-glass">
+                    <div class="card-body text-center">
+                        <button type="submit" class="btn btn-success btn-lg px-5">
+                            <i class="fas fa-paper-plane"></i> Kaynak Gönder
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+}
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+    <script src="~/js/live-data-client.js"></script>
+    <script>
+        function fillAll() {
+            document.querySelector('input[name="Wood"]').value = @(Model.SelectedVillage?.Wood ?? 0);
+            document.querySelector('input[name="Stone"]').value = @(Model.SelectedVillage?.Stone ?? 0);
+            document.querySelector('input[name="Iron"]').value = @(Model.SelectedVillage?.Iron ?? 0);
+        }
+    </script>
+}

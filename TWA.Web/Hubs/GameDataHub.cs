@@ -39,5 +39,15 @@ namespace TWA.Web.Hubs
         {
             await Clients.All.SendAsync("MapUpdated", mapData);
         }
+
+        public async Task BroadcastSystemLog(string level, string message)
+        {
+            await Clients.All.SendAsync("SystemLogReceived", new 
+            { 
+                timestamp = DateTime.Now.ToString("HH:mm:ss"),
+                level = level,
+                message = message 
+            });
+        }
     }
 }

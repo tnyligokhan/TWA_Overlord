@@ -1,0 +1,78 @@
+@model TWA.Web.Models.TribeViewModel
+@{
+    ViewData["Title"] = "Kabile";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 bg-glass">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-1">
+                            <i class="fas fa-users text-warning"></i> 
+                            [@Model.TribeTag] @Model.TribeName
+                        </h2>
+                        <p class="text-muted mb-0">Kabile Yönetimi ve İstatistikler</p>
+                    </div>
+                    <div>
+                        <a href="@Url.Action("Members")" class="btn btn-outline-info">
+                            <i class="fas fa-user-friends"></i> Üyeler
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 bg-glass">
+            <div class="card-body text-center">
+                <i class="fas fa-user-friends text-primary fa-3x mb-3"></i>
+                <h3 class="text-white mb-0">@Model.MemberCount</h3>
+                <small class="text-muted">Üye Sayısı</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 bg-glass">
+            <div class="card-body text-center">
+                <i class="fas fa-star text-warning fa-3x mb-3"></i>
+                <h3 class="text-white mb-0">@Model.TotalPoints.ToString("N0")</h3>
+                <small class="text-muted">Toplam Puan</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 bg-glass">
+            <div class="card-body text-center">
+                <i class="fas fa-trophy text-success fa-3x mb-3"></i>
+                <h3 class="text-white mb-0">#@Model.Rank</h3>
+                <small class="text-muted">Sıralama</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 bg-glass">
+            <div class="card-body text-center">
+                <i class="fas fa-chess-rook text-info fa-3x mb-3"></i>
+                <h3 class="text-white mb-0">@Model.TotalVillages</h3>
+                <small class="text-muted">Toplam Köy</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 bg-glass">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-construction fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">Kabile Özellikleri Geliştiriliyor</h4>
+                <p class="text-muted">Üye listesi, forum ve diğer özellikler yakında eklenecek</p>
+            </div>
+        </div>
+    </div>
+</div>

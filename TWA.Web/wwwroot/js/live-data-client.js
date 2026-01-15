@@ -64,26 +64,44 @@ function updateVillageResources(data) {
     const ironEl = villageCard.querySelector('.resource-iron');
     
     if (woodEl) {
-        woodEl.textContent = (data.wood / 1000).toFixed(1) + 'k';
-        updateProgressBar(villageCard.querySelector('.progress-wood'), data.wood, data.storageCapacity);
+        // Market sayfasında tam sayı, köy listesinde k formatı
+        const isMarketPage = woodEl.tagName === 'H4';
+        woodEl.textContent = isMarketPage ? data.wood.toLocaleString() : (data.wood / 1000).toFixed(1) + 'k';
+        
+        const progressBar = villageCard.querySelector('.progress-wood');
+        if (progressBar) {
+            updateProgressBar(progressBar, data.wood, data.storageCapacity);
+        }
     }
     
     if (stoneEl) {
-        stoneEl.textContent = (data.stone / 1000).toFixed(1) + 'k';
-        updateProgressBar(villageCard.querySelector('.progress-stone'), data.stone, data.storageCapacity);
+        const isMarketPage = stoneEl.tagName === 'H4';
+        stoneEl.textContent = isMarketPage ? data.stone.toLocaleString() : (data.stone / 1000).toFixed(1) + 'k';
+        
+        const progressBar = villageCard.querySelector('.progress-stone');
+        if (progressBar) {
+            updateProgressBar(progressBar, data.stone, data.storageCapacity);
+        }
     }
     
     if (ironEl) {
-        ironEl.textContent = (data.iron / 1000).toFixed(1) + 'k';
-        updateProgressBar(villageCard.querySelector('.progress-iron'), data.iron, data.storageCapacity);
+        const isMarketPage = ironEl.tagName === 'H4';
+        ironEl.textContent = isMarketPage ? data.iron.toLocaleString() : (data.iron / 1000).toFixed(1) + 'k';
+        
+        const progressBar = villageCard.querySelector('.progress-iron');
+        if (progressBar) {
+            updateProgressBar(progressBar, data.iron, data.storageCapacity);
+        }
     }
 
     // Nüfus güncelle
     const popEl = villageCard.querySelector('.population-current');
     if (popEl) {
         popEl.textContent = data.popCurrent;
-        const popPercent = (data.popCurrent / data.popMax) * 100;
-        updateProgressBar(villageCard.querySelector('.progress-population'), data.popCurrent, data.popMax);
+        const progressBar = villageCard.querySelector('.progress-population');
+        if (progressBar) {
+            updateProgressBar(progressBar, data.popCurrent, data.popMax);
+        }
     }
 }
 

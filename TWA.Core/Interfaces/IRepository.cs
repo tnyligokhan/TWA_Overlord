@@ -9,6 +9,7 @@ namespace TWA.Core.Interfaces
         Task<T?> GetByIdWithIncludesAsync(int id, params Expression<Func<T, object>>[] includes);
         Task<IEnumerable<T>> GetAllAsync();
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
+        Task<int> CountAsync();
         Task AddAsync(T entity);
         Task AddRangeAsync(IEnumerable<T> entities);
         void Remove(T entity);

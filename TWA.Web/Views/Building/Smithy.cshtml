@@ -1,0 +1,268 @@
+@model TWA.Web.Models.SmithyViewModel
+@{
+    ViewData["Title"] = "Demirci - Araştırma";
+    
+    var researchList = new List<TWA.Web.Models.ResearchInfo>
+    {
+        new() { UnitType = "spear", UnitName = "Mızrakçı", CurrentLevel = Model.SelectedVillage?.ResearchSpear ?? 0, WoodCost = 1200, StoneCost = 1000, IronCost = 800, RequiredSmithyLevel = 1, RequiredBarracksLevel = 1, BuildingRequirement = "Kışla (1)" },
+        new() { UnitType = "sword", UnitName = "Kılıç Ustası", CurrentLevel = Model.SelectedVillage?.ResearchSword ?? 0, WoodCost = 1400, StoneCost = 1600, IronCost = 1800, RequiredSmithyLevel = 1, RequiredBarracksLevel = 1, BuildingRequirement = "Kışla (1)" },
+        new() { UnitType = "axe", UnitName = "Baltacı", CurrentLevel = Model.SelectedVillage?.ResearchAxe ?? 0, WoodCost = 1700, StoneCost = 1400, IronCost = 1800, RequiredSmithyLevel = 2, RequiredBarracksLevel = 2, BuildingRequirement = "Kışla (2)" },
+        new() { UnitType = "spy", UnitName = "Casus", CurrentLevel = Model.SelectedVillage?.ResearchSpy ?? 0, WoodCost = 1600, StoneCost = 1800, IronCost = 1400, RequiredSmithyLevel = 5, RequiredStableLevel = 1, BuildingRequirement = "Ahır (1)" },
+        new() { UnitType = "light", UnitName = "Hafif Süvari", CurrentLevel = Model.SelectedVillage?.ResearchLight ?? 0, WoodCost = 2000, StoneCost = 2200, IronCost = 1800, RequiredSmithyLevel = 5, RequiredStableLevel = 3, BuildingRequirement = "Ahır (3)" },
+        new() { UnitType = "heavy", UnitName = "Ağır Süvari", CurrentLevel = Model.SelectedVillage?.ResearchHeavy ?? 0, WoodCost = 2400, StoneCost = 2000, IronCost = 2600, RequiredSmithyLevel = 10, RequiredStableLevel = 5, BuildingRequirement = "Ahır (5)" },
+        new() { UnitType = "ram", UnitName = "Koç", CurrentLevel = Model.SelectedVillage?.ResearchRam ?? 0, WoodCost = 2200, StoneCost = 2400, IronCost = 2000, RequiredSmithyLevel = 12, RequiredGarageLevel = 2, BuildingRequirement = "Atölye (2)" },
+        new() { UnitType = "catapult", UnitName = "Mancınık", CurrentLevel = Model.SelectedVillage?.ResearchCatapult ?? 0, WoodCost = 2400, StoneCost = 2600, IronCost = 2200, RequiredSmithyLevel = 15, RequiredGarageLevel = 5, BuildingRequirement = "Atölye (5)" }
+    };
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 bg-glass">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-1"><i class="fas fa-hammer text-warning"></i> Demirci</h2>
+                        <p class="text-muted mb-0">Birliklerin Savaş Gücünü Artır</p>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-dark border border-secondary text-warning fs-5">Seviye @(Model.SelectedVillage?.BuildingSmithy ?? 0)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 bg-glass">
+            <div class="card-body">
+                <label class="form-label text-white fw-bold">Köy Seçin:</label>
+                <select class="form-select bg-dark text-white border-secondary" onchange="window.location.href='/Building/Smithy?villageId=' + this.value">
+                    @foreach (var village in Model.Villages)
+                    {
+                        <option value="@village.Id" selected="@(village.Id == Model.SelectedVillageId)">
+                            @village.Name (@village.Coordinates) - Demirci Lv.@village.BuildingSmithy
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.SelectedVillage != null)
+{
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 bg-glass">
+                <div class="card-body text-center">
+                    <i class="fas fa-tree text-success fa-2x mb-2"></i>
+                    <h4 class="text-white mb-0">@Model.SelectedVillage.Wood</h4>
+                    <small class="text-muted">Odun (+@Model.SelectedVillage.WoodHourly/saat)</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-glass">
+                <div class="card-body text-center">
+                    <i class="fas fa-cubes text-secondary fa-2x mb-2"></i>
+                    <h4 class="text-white mb-0">@Model.SelectedVillage.Stone</h4>
+                    <small class="text-muted">Kil (+@Model.SelectedVillage.StoneHourly/saat)</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-glass">
+                <div class="card-body text-center">
+                    <i class="fas fa-gem text-info fa-2x mb-2"></i>
+                    <h4 class="text-white mb-0">@Model.SelectedVillage.Iron</h4>
+                    <small class="text-muted">Demir (+@Model.SelectedVillage.IronHourly/saat)</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-glass">
+                <div class="card-body text-center">
+                    <i class="fas fa-warehouse text-warning fa-2x mb-2"></i>
+                    <h4 class="text-white mb-0">@Model.SelectedVillage.StorageCapacity</h4>
+                    <small class="text-muted">Depo Kapasitesi</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        @foreach (var research in researchList)
+        {
+            var canResearch = true;
+            var missingRequirements = new List<string>();
+            
+            // Demirci seviye kontrolü
+            if (Model.SelectedVillage.BuildingSmithy < research.RequiredSmithyLevel)
+            {
+                canResearch = false;
+                missingRequirements.Add($"Demirci ({research.RequiredSmithyLevel})");
+            }
+            
+            // Bina gereksinimleri
+            if (research.RequiredBarracksLevel > 0 && Model.SelectedVillage.BuildingBarracks < research.RequiredBarracksLevel)
+            {
+                canResearch = false;
+                missingRequirements.Add(research.BuildingRequirement);
+            }
+            if (research.RequiredStableLevel > 0 && Model.SelectedVillage.BuildingStable < research.RequiredStableLevel)
+            {
+                canResearch = false;
+                missingRequirements.Add(research.BuildingRequirement);
+            }
+            if (research.RequiredGarageLevel > 0 && Model.SelectedVillage.BuildingGarage < research.RequiredGarageLevel)
+            {
+                canResearch = false;
+                missingRequirements.Add(research.BuildingRequirement);
+            }
+            
+            // Kaynak kontrolü
+            var hasResources = Model.SelectedVillage.Wood >= research.WoodCost && 
+                              Model.SelectedVillage.Stone >= research.StoneCost && 
+                              Model.SelectedVillage.Iron >= research.IronCost;
+            
+            // Kaynak yetme zamanı hesaplama
+            var woodNeeded = Math.Max(0, research.WoodCost - Model.SelectedVillage.Wood);
+            var stoneNeeded = Math.Max(0, research.StoneCost - Model.SelectedVillage.Stone);
+            var ironNeeded = Math.Max(0, research.IronCost - Model.SelectedVillage.Iron);
+            
+            var woodHours = Model.SelectedVillage.WoodHourly > 0 ? (double)woodNeeded / Model.SelectedVillage.WoodHourly : 0;
+            var stoneHours = Model.SelectedVillage.StoneHourly > 0 ? (double)stoneNeeded / Model.SelectedVillage.StoneHourly : 0;
+            var ironHours = Model.SelectedVillage.IronHourly > 0 ? (double)ironNeeded / Model.SelectedVillage.IronHourly : 0;
+            
+            var maxHours = Math.Max(woodHours, Math.Max(stoneHours, ironHours));
+            var resourcesAvailableAt = DateTime.Now.AddHours(maxHours);
+            
+            var isMaxLevel = research.CurrentLevel >= research.MaxLevel;
+            
+            <div class="col-md-6 mb-4">
+                <div class="card border-0 bg-glass h-100 @(canResearch && !isMaxLevel ? "" : "opacity-75")">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex align-items-center">
+                                <img src="https://dstr.innogamescdn.com/asset/c645ceed/graphic/unit/unit_@(research.UnitType).webp" 
+                                     width="60" alt="@research.UnitName" class="me-3">
+                                <div>
+                                    <h5 class="text-white mb-1">@research.UnitName</h5>
+                                    @if (isMaxLevel)
+                                    {
+                                        <span class="badge bg-success bg-opacity-25 text-success border border-success">
+                                            <i class="fas fa-check-double me-1"></i> Maksimum Seviye
+                                        </span>
+                                    }
+                                    else if (research.CurrentLevel > 0)
+                                    {
+                                        <span class="badge bg-primary bg-opacity-25 text-primary border border-primary">
+                                            <i class="fas fa-arrow-up me-1"></i> Seviye @research.CurrentLevel
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary">
+                                            <i class="fas fa-lock me-1"></i> Araştırılmamış
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted">Seviye @research.CurrentLevel/@research.MaxLevel</small>
+                            </div>
+                        </div>
+
+                        @if (!isMaxLevel)
+                        {
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted small">Maliyet (Seviye @(research.CurrentLevel + 1)):</span>
+                                </div>
+                                <div class="d-flex justify-content-between text-white small">
+                                    <span class="@(Model.SelectedVillage.Wood >= research.WoodCost ? "text-success" : "text-danger")">
+                                        <i class="fas fa-tree"></i> @research.WoodCost
+                                    </span>
+                                    <span class="@(Model.SelectedVillage.Stone >= research.StoneCost ? "text-success" : "text-danger")">
+                                        <i class="fas fa-cubes"></i> @research.StoneCost
+                                    </span>
+                                    <span class="@(Model.SelectedVillage.Iron >= research.IronCost ? "text-success" : "text-danger")">
+                                        <i class="fas fa-gem"></i> @research.IronCost
+                                    </span>
+                                </div>
+                            </div>
+
+                            @if (!hasResources && canResearch)
+                            {
+                                <div class="alert alert-info bg-info bg-opacity-10 border border-info mb-3 py-2">
+                                    <small>
+                                        <i class="fas fa-clock me-1"></i>
+                                        <strong>Mevcut hammaddeler:</strong>
+                                        @if (maxHours < 1)
+                                        {
+                                            <span>Bugün saat @resourcesAvailableAt.ToString("HH:mm")</span>
+                                        }
+                                        else if (maxHours < 24)
+                                        {
+                                            var tomorrow = DateTime.Today.AddDays(1);
+                                            if (resourcesAvailableAt.Date == tomorrow)
+                                            {
+                                                <span>Yarın saat @resourcesAvailableAt.ToString("HH:mm")</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Bugün saat @resourcesAvailableAt.ToString("HH:mm")</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span>@resourcesAvailableAt.ToString("dd.MM.yyyy HH:mm")</span>
+                                        }
+                                    </small>
+                                </div>
+                            }
+
+                            @if (missingRequirements.Any())
+                            {
+                                <div class="alert alert-warning bg-warning bg-opacity-10 border border-warning mb-3 py-2">
+                                    <small>
+                                        <i class="fas fa-exclamation-triangle me-1"></i>
+                                        <strong>Karşılanmayan koşullar:</strong> @string.Join(", ", missingRequirements)
+                                    </small>
+                                </div>
+                            }
+
+                            @if (canResearch && hasResources)
+                            {
+                                <button class="btn btn-success w-100">
+                                    <i class="fas fa-flask me-1"></i> Araştır (Seviye @(research.CurrentLevel + 1))
+                                </button>
+                            }
+                            else if (canResearch)
+                            {
+                                <button class="btn btn-outline-secondary w-100" disabled>
+                                    <i class="fas fa-hourglass-half me-1"></i> Yetersiz Kaynak
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-outline-secondary w-100" disabled>
+                                    <i class="fas fa-lock me-1"></i> Gereksinimler Karşılanmadı
+                                </button>
+                            }
+                        }
+                        else
+                        {
+                            <div class="alert alert-success bg-success bg-opacity-10 border border-success mb-0">
+                                <i class="fas fa-trophy me-2"></i>
+                                <strong>Tamamlandı!</strong> Bu birim maksimum seviyeye ulaştı.
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

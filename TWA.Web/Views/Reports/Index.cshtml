@@ -1,0 +1,133 @@
+@model TWA.Web.Models.ReportsViewModel
+@{
+    ViewData["Title"] = "Raporlar";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 bg-glass">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-1"><i class="fas fa-file-alt text-info"></i> Raporlar</h2>
+                        <p class="text-muted mb-0">Saldırı, savunma ve diğer raporlarınız</p>
+                    </div>
+                    <div>
+                        <span class="badge bg-danger fs-5">@Model.UnreadCount Okunmamış</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 bg-glass">
+            <div class="card-body">
+                <div class="btn-group w-100" role="group">
+                    <a href="@Url.Action("Index", new { category = "all" })" 
+                       class="btn @(Model.SelectedCategory == "all" ? "btn-primary" : "btn-outline-secondary")">
+                        <i class="fas fa-list"></i> Tümü
+                    </a>
+                    <a href="@Url.Action("Index", new { category = "attack" })" 
+                       class="btn @(Model.SelectedCategory == "attack" ? "btn-danger" : "btn-outline-secondary")">
+                        <i class="fas fa-sword"></i> Saldırı
+                    </a>
+                    <a href="@Url.Action("Index", new { category = "defense" })" 
+                       class="btn @(Model.SelectedCategory == "defense" ? "btn-success" : "btn-outline-secondary")">
+                        <i class="fas fa-shield-alt"></i> Savunma
+                    </a>
+                    <a href="@Url.Action("Index", new { category = "support" })" 
+                       class="btn @(Model.SelectedCategory == "support" ? "btn-info" : "btn-outline-secondary")">
+                        <i class="fas fa-hands-helping"></i> Destek
+                    </a>
+                    <a href="@Url.Action("Index", new { category = "trade" })" 
+                       class="btn @(Model.SelectedCategory == "trade" ? "btn-warning" : "btn-outline-secondary")">
+                        <i class="fas fa-exchange-alt"></i> Ticaret
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Reports.Any())
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 bg-glass">
+                <div class="card-header bg-transparent border-bottom border-secondary d-flex justify-content-between">
+                    <h5 class="mb-0">Rapor Listesi</h5>
+                    <form method="post" asp-action="DeleteAll" asp-route-category="@Model.SelectedCategory" 
+                          onsubmit="return confirm('Tüm raporları silmek istediğinize emin misiniz?')">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i> Tümünü Sil
+                        </button>
+                    </form>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th width="50"></th>
+                                    <th>Rapor</th>
+                                    <th width="150">Tarih</th>
+                                    <th width="100">İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var report in Model.Reports)
+                                {
+                                    <tr class="@(report.IsRead ? "" : "table-active")">
+                                        <td class="text-center">
+                                            <i class="@report.Icon @report.ColorClass fa-2x"></i>
+                                        </td>
+                                        <td>
+                                            <a href="@Url.Action("Details", new { id = report.Id })" 
+                                               class="text-white text-decoration-none">
+                                                <strong>@report.Title</strong>
+                                                @if (!report.IsRead)
+                                                {
+                                                    <span class="badge bg-danger ms-2">YENİ</span>
+                                                }
+                                                <br>
+                                                <small class="text-muted">@report.Summary</small>
+                                            </a>
+                                        </td>
+                                        <td class="text-muted">
+                                            @report.ReceivedAt.ToString("dd.MM.yyyy HH:mm")
+                                        </td>
+                                        <td>
+                                            <form method="post" asp-action="Delete" asp-route-id="@report.Id" 
+                                                  class="d-inline" onsubmit="return confirm('Raporu silmek istediğinize emin misiniz?')">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 bg-glass">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">Rapor Bulunamadı</h4>
+                    <p class="text-muted">Bu kategoride henüz rapor bulunmuyor.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -13,7 +13,8 @@ namespace TWA.Data
         {
             // SQL Server Bağlantısı
             services.AddDbContext<TwaDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+                    b => b.MigrationsAssembly("TWA.Data")));
 
             // UnitOfWork ve Repository Kaydı
             // Scoped: Her HTTP isteği için yeni bir tane oluşturur.

@@ -8,11 +8,11 @@ namespace TWA.Service.Services
         private IPlaywright? _playwright;
         // private IBrowser? _browser; // Removed unused field
         private IPage? _page;
-        private readonly IGroqAiService _groqService;
+        private readonly IGrokAiService _grokService;
 
-        public WhatsAppService(IGroqAiService groqService)
+        public WhatsAppService(IGrokAiService grokService)
         {
-            _groqService = groqService;
+            _grokService = grokService;
         }
 
         public async Task StartListeningAsync()
@@ -78,9 +78,9 @@ namespace TWA.Service.Services
                         // Tetikleyici: "Hey TWA"
                         if (lastMessage.StartsWith("Hey TWA", StringComparison.OrdinalIgnoreCase))
                         {
-                            // 1. Groq'a sor
+                            // 1. Grok'a sor
                             string prompt = lastMessage.Replace("Hey TWA", "").Trim();
-                            string reply = await _groqService.GetChatResponseAsync(prompt); 
+                            string reply = await _grokService.GetChatResponseAsync(prompt); 
 
                             // 2. Cevabı yaz
                             await _page.FillAsync("div[contenteditable='true'][data-tab='10']", reply);

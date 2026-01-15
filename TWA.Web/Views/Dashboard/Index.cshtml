@@ -4,32 +4,7 @@
     ViewData["Title"] = "KOMUTA MERKEZİ";
 }
 
-<!-- 1. TOP TOOLBAR (Control Panel) -->
-<div class="d-flex justify-content-between align-items-center mb-4 fade-in-down">
-    <div>
-        <h4 class="mb-0 fw-bold text-white"><i class="fas fa-rocket me-2 text-primary"></i> KOMUTA MERKEZİ</h4>
-        <small class="text-muted">OVERLORD v3.2 // CONNECTED</small>
-    </div>
-    
-    <div class="d-flex gap-3 align-items-center">
-        <!-- Server Time Pill -->
-        <div class="d-flex align-items-center px-3 py-2 rounded-pill" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);">
-            <i class="fas fa-globe me-2 text-muted"></i>
-            <span id="server-clock" class="font-monospace fw-bold text-white">--:--:--</span>
-        </div>
-
-        <!-- Connect Action -->
-        <button id="btn-connect" class="btn btn-success d-flex align-items-center gap-2">
-            <i class="fas fa-plug"></i> <span>OYUNA BAĞLAN</span>
-        </button>
-        
-        <button class="btn btn-icon btn-outline-light rounded-circle" style="width: 42px; height: 42px;">
-            <i class="fas fa-cog"></i>
-        </button>
-    </div>
-</div>
-
-<!-- 2. HUD STATS (Bento Grid) -->
+<!-- HUD STATS (Bento Grid) -->
 <div class="row g-4 mb-4">
     <!-- Village Count -->
     <div class="col-md-3">
@@ -285,14 +260,11 @@
 
                 <!-- Logs Panel -->
                 <div class="tab-pane fade h-100" id="logs-panel" role="tabpanel">
-                    <div class="cmd-log-window p-3 h-100 custom-scroll">
-                        @foreach (var log in Model.RecentLogs)
-                        {
-                            <div class="mb-1">
-                                <span class="text-muted small me-2">[@DateTime.Now.ToString("HH:mm:ss")]</span>
-                                <span class="text-success fw-bold">SYS:</span> @log
-                            </div>
-                        }
+                    <div id="system-log-window" class="cmd-log-window p-3 h-100 custom-scroll">
+                        <div class="mb-1">
+                            <span class="text-muted small me-2">[<span class="log-time">--:--:--</span>]</span>
+                            <span class="text-info fw-bold">SYS:</span> <span class="text-white">Sistem başlatılıyor...</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -301,23 +273,143 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     <script>
+        // SignalR Connection
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/gameDataHub")
+            .withAutomaticReconnect()
+            .build();
+
+        // System Log Handler
+        connection.on("SystemLogReceived", function (data) {
+            const logWindow = document.getElementById("system-log-window");
+            const logEntry = document.createElement("div");
+            logEntry.className = "mb-1 fade-in";
+            
+            let levelClass = "text-info";
+            let levelIcon = "info-circle";
+            
+            switch(data.level) {
+                case "SUCCESS":
+                    levelClass = "text-success";
+                    levelIcon = "check-circle";
+                    break;
+                case "ERROR":
+                    levelClass = "text-danger";
+                    levelIcon = "exclamation-triangle";
+                    break;
+                case "WARNING":
+                    levelClass = "text-warning";
+                    levelIcon = "exclamation-circle";
+                    break;
+            }
+            
+            logEntry.innerHTML = `
+                <span class="text-muted small me-2">[${data.timestamp}]</span>
+                <span class="${levelClass} fw-bold"><i class="fas fa-${levelIcon} me-1"></i>${data.level}:</span>
+                <span class="text-white">${data.message}</span>
+            `;
+            
+            logWindow.appendChild(logEntry);
+            
+            // Auto-scroll to bottom
+            logWindow.scrollTop = logWindow.scrollHeight;
+            
+            // Keep only last 50 logs
+            while (logWindow.children.length > 50) {
+                logWindow.removeChild(logWindow.firstChild);
+            }
+        });
+
+        // Resources Update Handler
+        connection.on("ResourcesUpdated", function (data) {
+            console.log("Resources updated for village:", data.villageId);
+            // Update UI if needed
+        });
+
+        // Troops Update Handler
+        connection.on("TroopsUpdated", function (data) {
+            console.log("Troops updated for village:", data.villageId);
+            // Update UI if needed
+        });
+
+        // Start Connection
+        connection.start()
+            .then(function () {
+                console.log("SignalR Connected");
+                addSystemLog("INFO", "SignalR bağlantısı kuruldu");
+            })
+            .catch(function (err) {
+                console.error("SignalR Connection Error:", err);
+                addSystemLog("ERROR", "SignalR bağlantı hatası: " + err.toString());
+            });
+
+        // Helper function to add log manually
+        function addSystemLog(level, message) {
+            const timestamp = new Date().toLocaleTimeString('tr-TR', { hour12: false });
+            connection.invoke("BroadcastSystemLog", level, message).catch(function (err) {
+                console.error("Log broadcast error:", err);
+            });
+        }
+
         // Clock
         setInterval(() => {
             document.getElementById('server-clock').innerText = new Date().toLocaleTimeString();
         }, 1000);
 
+        // Check connection status on page load
+        checkConnectionStatus();
+
+        // Connection State Management
+        let isConnected = false;
+
+        // Check connection status on page load
+        function checkConnectionStatus() {
+            $.get('/Dashboard/GetConnectionStatus', function(data) {
+                if (data.isConnected) {
+                    setConnectedState();
+                } else {
+                    setDisconnectedState();
+                }
+            }).fail(function() {
+                setDisconnectedState();
+            });
+        }
+
+        function setConnectedState() {
+            isConnected = true;
+            const btn = $('#btn-connect-global');
+            btn.prop('disabled', true)
+               .removeClass('btn-success')
+               .addClass('btn-outline-success')
+               .html('<i class="fas fa-link"></i> BAĞLANTI (ONLINE)');
+        }
+
+        function setDisconnectedState() {
+            isConnected = false;
+            const btn = $('#btn-connect-global');
+            btn.prop('disabled', false)
+               .removeClass('btn-outline-success')
+               .addClass('btn-success')
+               .html('<i class="fas fa-plug"></i> OYUNA BAĞLAN');
+        }
+
         // Connect Button Animation
-        $('#btn-connect').click(function() {
+        $('#btn-connect-global').click(function() {
+            if (isConnected) return; // Already connected, do nothing
+
             var btn = $(this);
-            var originalContent = btn.html();
             
             btn.prop('disabled', true).html('<i class="fas fa-circle-notch fa-spin"></i> BAĞLANILIYOR...');
             
+            addSystemLog("INFO", "Oyuna bağlanılıyor...");
+            
             $.post('/Dashboard/ConnectGame', function(data) {
                 if(data.success) {
-                    btn.removeClass('btn-success').addClass('btn-outline-success')
-                       .html('<i class="fas fa-link"></i> BAĞLI (ONLINE)');
+                    setConnectedState();
+                    
+                    addSystemLog("SUCCESS", data.message);
                     
                     // Show success message in chat
                     $('#chat-history').append(`
@@ -328,7 +420,9 @@
                     `);
                     scrollToBottom();
                 } else {
-                    btn.prop('disabled', false).html('<i class="fas fa-exclamation-triangle"></i> HATA - TEKRAR DENE');
+                    setDisconnectedState();
+                    
+                    addSystemLog("ERROR", data.message || 'Bilinmeyen hata');
                     
                     // Show error message in chat
                     $('#chat-history').append(`
@@ -340,7 +434,9 @@
                     scrollToBottom();
                 }
             }).fail(function(xhr, status, error) {
-                btn.prop('disabled', false).html('<i class="fas fa-exclamation-triangle"></i> HATA - TEKRAR DENE');
+                setDisconnectedState();
+                
+                addSystemLog("ERROR", "Bağlantı hatası: " + error);
                 
                 // Show network error in chat
                 $('#chat-history').append(`
@@ -350,6 +446,16 @@
                     </div>
                 `);
                 scrollToBottom();
+            });
+        });
+
+        // Sync Village Data (AJAX - No Page Reload)
+        $('#btn-sync-global').click(function(e) {
+            e.preventDefault();
+            window.syncService.syncAllVillages();
+        });
+                    }
+                });
             });
         });
 
