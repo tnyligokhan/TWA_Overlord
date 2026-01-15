@@ -12,8 +12,8 @@ using TWA.Data.Context;
 namespace TWA.Data.Migrations
 {
     [DbContext(typeof(TwaDbContext))]
-    [Migration("20260114184322_mig_1")]
-    partial class mig_1
+    [Migration("20260115212905_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -239,16 +239,30 @@ namespace TWA.Data.Migrations
                     b.Property<int>("BarracksLevel")
                         .HasColumnType("int");
 
+                    b.Property<string>("BarracksQueueJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BuildQueueJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("BuildingBarracks")
                         .HasColumnType("int");
 
                     b.Property<int>("BuildingFarm")
                         .HasColumnType("int");
 
+                    b.Property<int>("BuildingGarage")
+                        .HasColumnType("int");
+
                     b.Property<int>("BuildingIron")
                         .HasColumnType("int");
 
                     b.Property<int>("BuildingMain")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BuildingMarket")
                         .HasColumnType("int");
 
                     b.Property<int>("BuildingSmithy")
@@ -258,6 +272,9 @@ namespace TWA.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("BuildingStable")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BuildingStatue")
                         .HasColumnType("int");
 
                     b.Property<int>("BuildingStone")
@@ -281,8 +298,16 @@ namespace TWA.Data.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("FlagsJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("GameId")
                         .HasColumnType("int");
+
+                    b.Property<string>("GarageQueueJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Iron")
                         .HasColumnType("int");
@@ -292,6 +317,13 @@ namespace TWA.Data.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsKnightLocal")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("KnightName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Loyalty")
                         .HasColumnType("int");
@@ -312,11 +344,43 @@ namespace TWA.Data.Migrations
                     b.Property<int>("PopulationMax")
                         .HasColumnType("int");
 
+                    b.Property<int>("ResearchAxe")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResearchCatapult")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResearchHeavy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResearchLight")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResearchRam")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResearchSpear")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResearchSpy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResearchSword")
+                        .HasColumnType("int");
+
                     b.Property<int>("SmithyLevel")
                         .HasColumnType("int");
 
+                    b.Property<string>("SnobQueueJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("StableLevel")
                         .HasColumnType("int");
+
+                    b.Property<string>("StableQueueJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Stone")
                         .HasColumnType("int");
@@ -361,6 +425,9 @@ namespace TWA.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("TargetSword")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalMerchants")
                         .HasColumnType("int");
 
                     b.Property<int>("Type")

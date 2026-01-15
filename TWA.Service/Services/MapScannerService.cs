@@ -30,23 +30,25 @@ namespace TWA.Service.Services
                     foreach (var kvp in villageGroup)
                     {
                         // JSON Array içindeki indeksler (Oyunun yapısına göre):
-                        // 0: ID, 2: İsim, 3: Puan, 4: Sahip ID ("0" ise Barbar)
+                        // 0: ID, 1: X, 2: Y, 3: İsim, 4: Puan, 5: Sahip ID ("0" ise Barbar)
                         var rawData = kvp.Value;
-                        string? ownerId = rawData[4]?.ToString();
+                        
+                        // Parse village data
+                        int gameId = int.Parse(rawData[0]?.ToString() ?? "0");
+                        int villageX = int.Parse(rawData[1]?.ToString() ?? "0");
+                        int villageY = int.Parse(rawData[2]?.ToString() ?? "0");
+                        string villageName = rawData[3]?.ToString() ?? "Unknown";
+                        int points = int.Parse(rawData[4]?.ToString()?.Replace(".", "") ?? "0");
+                        string? ownerId = rawData[5]?.ToString();
                         
                         // Sadece Barbarları (Sahibi "0" olanları) alıyoruz
                         if (ownerId == "0") 
                         {
-                            int gameId = int.Parse(rawData[0]?.ToString() ?? "0");
-                            int points = int.Parse(rawData[3]?.ToString()?.Replace(".", "") ?? "0");
-                            
-                            // Harita içi bağıl konumdan gerçek koordinatı hesapla
-                            // Bu kısım oyunun JS mantığına göre biraz karmaşıktır, 
-                            // şimdilik basit bir X/Y varsayımı yapıyoruz veya direkt kaydediyoruz.
-                            // Gerçek botta: Sector X/Y + Local Offset hesabı yapılır.
-                            
-                            // Veritabanında var mı?
-                            var existing = (await villageRepo.FindAsync(v => v.GameId == gameId)).FirstOrDefault();
+                            // Veritabanında var mı? GameId veya Koordinat ile kontrol
+                            var existing = (await villageRepo.FindAsync(v => 
+                                v.GameId == gameId || 
+                                (v.CoordinateX == villageX && v.CoordinateY == villageY)
+                            )).FirstOrDefault();
                             
                             if (existing == null)
                             {
@@ -54,20 +56,20 @@ namespace TWA.Service.Services
                                 var barbarian = new Village
                                 {
                                     GameId = gameId,
-                                    Name = rawData[2].ToString(),
+                                    Name = villageName,
                                     Points = points,
                                     Type = VillageType.Barbarian,
-                                    // Koordinatları hesaplamamız lazım ama şimdilik placeholder
-                                    CoordinateX = sector.Data.X, 
-                                    CoordinateY = sector.Data.Y 
+                                    CoordinateX = villageX, 
+                                    CoordinateY = villageY 
                                 };
                                 await villageRepo.AddAsync(barbarian);
                                 newVillagesCount++;
                             }
                             else
                             {
-                                // Puanı güncelle (Barbarlar gelişir)
+                                // Puanı ve diğer bilgileri güncelle
                                 existing.Points = points;
+                                existing.Name = villageName;
                                 existing.UpdatedDate = DateTime.UtcNow;
                                 villageRepo.Update(existing);
                             }

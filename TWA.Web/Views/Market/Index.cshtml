@@ -167,6 +167,58 @@
             </div>
         </div>
     </form>
+
+    @if (Model.Offers.Any())
+    {
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card border-0 bg-glass">
+                    <div class="card-header bg-transparent border-bottom border-secondary">
+                        <h5 class="mb-0"><i class="fas fa-list"></i> Mevcut Teklifler</h5>
+                    </div>
+                    <div class="card-body">
+                         <div class="table-responsive">
+                            <table class="table table-dark table-hover text-nowrap">
+                                <thead>
+                                    <tr>
+                                        <th>Oyuncu</th>
+                                        <th>Önerilen</th>
+                                        <th>İstenen</th>
+                                        <th>Oran</th>
+                                        <th>Süre</th>
+                                        <th>İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var offer in Model.Offers)
+                                    {
+                                        <tr>
+                                            <td>@offer.PlayerName</td>
+                                            <td>
+                                                @if(offer.OfferingWood > 0) { <span class="text-success"><i class="fas fa-tree"></i> @offer.OfferingWood</span> }
+                                                @if(offer.OfferingStone > 0) { <span class="text-secondary"><i class="fas fa-cubes"></i> @offer.OfferingStone</span> }
+                                                @if(offer.OfferingIron > 0) { <span class="text-info"><i class="fas fa-gem"></i> @offer.OfferingIron</span> }
+                                            </td>
+                                            <td>
+                                                 @if(offer.AskingWood > 0) { <span class="text-success"><i class="fas fa-tree"></i> @offer.AskingWood</span> }
+                                                @if(offer.AskingStone > 0) { <span class="text-secondary"><i class="fas fa-cubes"></i> @offer.AskingStone</span> }
+                                                @if(offer.AskingIron > 0) { <span class="text-info"><i class="fas fa-gem"></i> @offer.AskingIron</span> }
+                                            </td>
+                                            <td>@offer.Ratio.ToString("0.00")</td>
+                                            <td>@offer.Duration.ToString("hh\\:mm\\:ss")</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">Kabul Et</button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 }
 
 @section Scripts {

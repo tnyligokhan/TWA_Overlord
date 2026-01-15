@@ -10,6 +10,7 @@ namespace TWA.Web.Controllers
     public class DashboardController : Controller
     {
         private readonly IVillageService _villageService;
+        private readonly TWA.Service.Services.VillageDataSyncService _syncService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGrokAiService _grokAiService;
         private readonly IGameBrowserService _browserService;
@@ -18,6 +19,7 @@ namespace TWA.Web.Controllers
 
         public DashboardController(
             IVillageService villageService, 
+            TWA.Service.Services.VillageDataSyncService syncService,
             IUnitOfWork unitOfWork, 
             IGrokAiService grokAiService, 
             IGameBrowserService browserService,
@@ -25,6 +27,7 @@ namespace TWA.Web.Controllers
             IHtmlParsingService htmlParser)
         {
             _villageService = villageService;
+            _syncService = syncService;
             _unitOfWork = unitOfWork;
             _grokAiService = grokAiService;
             _browserService = browserService;
@@ -125,44 +128,25 @@ namespace TWA.Web.Controllers
                         message = "Köy verileri ayrıştırılıyor..." 
                     });
 
+                    // Parse basic info first to ensure village exists and get ID
                     await _villageService.ParseAndSyncAsync(html);
                     
-                    await _hubContext.Clients.All.SendAsync("SystemLogReceived", new 
-                    { 
-                        timestamp = DateTime.Now.ToString("HH:mm:ss"),
-                        level = "SUCCESS",
-                        message = "Köy verileri başarıyla güncellendi" 
-                    });
-
-                    // 4. Askeri kuyrukları çek
-                    await _hubContext.Clients.All.SendAsync("SystemLogReceived", new 
-                    { 
-                        timestamp = DateTime.Now.ToString("HH:mm:ss"),
-                        level = "INFO",
-                        message = "Askeri üretim kuyrukları kontrol ediliyor..." 
-                    });
-
-                    var villages = await _villageService.GetAllVillagesAsync();
-                    foreach (var village in villages)
+                    // Get Village ID
+                    int villageId = await _browserService.GetGameDataIntAsync("game_data.village.id");
+                    
+                    if (villageId > 0)
                     {
-                        try
-                        {
-                            // Kışla kuyruğu
-                            if (village.BuildingBarracks > 0)
-                            {
-                                var barracksHtml = await _browserService.GetPageContentAsync("train");
-                                var barracksQueue = _htmlParser.ParseRecruitmentQueue(barracksHtml, "barracks");
-                                
-                                if (barracksQueue.Any())
-                                {
-                                    village.BarracksQueueJson = System.Text.Json.JsonSerializer.Serialize(barracksQueue);
-                                }
-                            }
-                        }
-                        catch { }
+                         // Call Full Sync with Progress Callback
+                         await _syncService.SyncAllVillageDataAsync(villageId, async (msg) => 
+                         {
+                             await _hubContext.Clients.All.SendAsync("SystemLogReceived", new 
+                             { 
+                                 timestamp = DateTime.Now.ToString("HH:mm:ss"),
+                                 level = "INFO",
+                                 message = msg 
+                             });
+                         });
                     }
-
-                    await _unitOfWork.CommitAsync();
 
                     await _hubContext.Clients.All.SendAsync("SystemLogReceived", new 
                     { 
@@ -191,7 +175,9 @@ namespace TWA.Web.Controllers
                 { 
                     timestamp = DateTime.Now.ToString("HH:mm:ss"),
                     level = "ERROR",
-                    message = $"Bağlantı hatası: {ex.Message}" 
+                    message = $"Bağlantı hatası: {ex.Message}",
+                    stackTrace = ex.StackTrace,
+                    source = ex.Source
                 });
 
                 // Tarayıcı açık kalsın, kullanıcı müdahale edebilsin diye kapatmıyoruz.

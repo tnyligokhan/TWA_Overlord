@@ -1,0 +1,72 @@
+@model TWA.Core.Entities.Village
+
+<!-- Bina Menüsü -->
+<div class="card border-0 mb-4 bg-glass fade-in-up" style="animation-delay: 0.05s;">
+    <div class="card-body p-2">
+        <nav class="navbar navbar-expand-lg navbar-dark p-0">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#buildingNavbar" aria-controls="buildingNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="buildingNavbar">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <a class="nav-link px-3 py-2 rounded hover-bg-primary" href="@Url.Action("Index", "Infrastructure", new { villageId = Model.Id })">
+                                <i class="fas fa-landmark text-primary me-2"></i>
+                                <span class="fw-semibold">Ana Bina</span>
+                                <small class="badge bg-primary bg-opacity-25 text-primary ms-2">@Model.BuildingMain</small>
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown" style="z-index: 1050;">
+                            <a class="nav-link dropdown-toggle px-3 py-2 rounded hover-bg-success" href="#" id="recruitmentDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-plus text-success me-2"></i>
+                                <span class="fw-semibold">Asker Topla</span>
+                            </a>
+                            <ul class="dropdown-menu bg-dark border-secondary" aria-labelledby="recruitmentDropdown" style="z-index: 1051;">
+                                <li>
+                                    <a class="dropdown-item text-white hover-bg-success" href="@Url.Action("Barracks", "Recruitment", new { villageId = Model.Id })">
+                                        <i class="fas fa-shield-alt text-success me-2"></i> Kışla
+                                        <small class="badge bg-success bg-opacity-25 text-success ms-2">Lv.@Model.BuildingBarracks</small>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-white hover-bg-success" href="@Url.Action("Stable", "Recruitment", new { villageId = Model.Id })">
+                                        <i class="fas fa-horse text-success me-2"></i> Ahır
+                                        <small class="badge bg-success bg-opacity-25 text-success ms-2">Lv.@Model.BuildingStable</small>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-white hover-bg-success" href="@Url.Action("Garage", "Recruitment", new { villageId = Model.Id })">
+                                        <i class="fas fa-cog text-success me-2"></i> Atölye
+                                        <small class="badge bg-success bg-opacity-25 text-success ms-2">Lv.@Model.BuildingGarage</small>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 py-2 rounded hover-bg-info" href="@Url.Action("Index", "Academy", new { villageId = Model.Id })">
+                                <i class="fas fa-graduation-cap text-info me-2"></i>
+                                <span class="fw-semibold">Akademi</span>
+                                <small class="badge bg-info bg-opacity-25 text-info ms-2">@Model.BuildingSnob</small>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 py-2 rounded hover-bg-danger" href="@Url.Action("Smithy", "Building", new { villageId = Model.Id })">
+                                <i class="fas fa-hammer text-danger me-2"></i>
+                                <span class="fw-semibold">Demirci</span>
+                                <small class="badge bg-danger bg-opacity-25 text-danger ms-2">@Model.BuildingSmithy</small>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 py-2 rounded hover-bg-warning" href="@Url.Action("Index", "Market", new { villageId = Model.Id })">
+                                <i class="fas fa-store text-warning me-2"></i>
+                                <span class="fw-semibold">Pazar</span>
+                                <small class="badge bg-warning bg-opacity-25 text-warning ms-2">@Model.BuildingMarket</small>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>

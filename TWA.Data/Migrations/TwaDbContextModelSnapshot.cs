@@ -259,6 +259,9 @@ namespace TWA.Data.Migrations
                     b.Property<int>("BuildingMain")
                         .HasColumnType("int");
 
+                    b.Property<int>("BuildingMarket")
+                        .HasColumnType("int");
+
                     b.Property<int>("BuildingSmithy")
                         .HasColumnType("int");
 
@@ -292,6 +295,10 @@ namespace TWA.Data.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("FlagsJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("GameId")
                         .HasColumnType("int");
 
@@ -307,6 +314,13 @@ namespace TWA.Data.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsKnightLocal")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("KnightName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Loyalty")
                         .HasColumnType("int");
@@ -408,6 +422,9 @@ namespace TWA.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("TargetSword")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalMerchants")
                         .HasColumnType("int");
 
                     b.Property<int>("Type")

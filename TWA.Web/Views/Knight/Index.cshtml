@@ -1,0 +1,59 @@
+@model TWA.Core.Entities.Village
+
+@{
+    ViewData["Title"] = "Şövalye";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Şövalye Durumu</h3>
+                <div class="card-options">
+                     <a href="@Url.Action("SyncData", "Village", new { id = Model.Id })" class="btn btn-secondary btn-sm"><i class="fe fe-refresh-cw"></i> Verileri Güncelle</a>
+                </div>
+            </div>
+            <div class="card-body text-center">
+                <span class="avatar avatar-xxl brround" style="background-image: url('/assets/images/knight_large.png'); background-color: #ddd;">
+                    <i class="fe fe-shield" style="font-size: 40px; line-height: 80px; color: #555;"></i>
+                </span>
+                <h3 class="mb-1 mt-3">@(!string.IsNullOrEmpty(Model.KnightName) ? Model.KnightName : "İsimsiz Şövalye")</h3>
+                <p class="mb-4 text-muted">Heykel Seviyesi: <span class="badge bg-success">@Model.BuildingStatue</span></p>
+
+                <div class="row">
+                    <div class="col-12">
+                        @if (Model.IsKnightLocal)
+                        {
+                            <div class="alert alert-success">
+                                <i class="fe fe-home me-2"></i> Şövalye şu an köyde.
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning">
+                                <i class="fe fe-navigation me-2"></i> Şövalye görevde veya başka köyde.
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-center">
+                <small class="text-muted">Şövalye, ordularınıza liderlik eder ve savaş gücünü artırır.</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Aylık İstatistikler ve Yetenekler</h3>
+            </div>
+            <div class="card-body">
+                <p>Şövalye yetenek ağacı ve detaylı istatistikler bu alanda gösterilebilir.</p>
+                <div class="alert alert-info">
+                    Henüz yetenek verisi çekilmemektedir.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

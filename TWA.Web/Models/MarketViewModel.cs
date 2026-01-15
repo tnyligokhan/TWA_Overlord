@@ -15,6 +15,8 @@ namespace TWA.Web.Models
         public int Wood { get; set; }
         public int Stone { get; set; }
         public int Iron { get; set; }
+        
+        public List<TradeOffer> Offers { get; set; } = new List<TradeOffer>();
     }
 
     public class TransportsViewModel

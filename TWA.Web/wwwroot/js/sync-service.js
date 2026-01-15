@@ -39,11 +39,17 @@ class SyncService {
                 this.updateVillageUI(result.data);
                 this.showSuccessNotification(result.message);
             } else {
+                console.error("Sync Village Error:", result.message);
+                if (result.innerMessage) console.error("Inner Message:", result.innerMessage);
+                if (result.stackTrace) console.error("StackTrace:", result.stackTrace);
+                if (result.innerStackTrace) console.error("Inner StackTrace:", result.innerStackTrace);
+                if (result.source) console.error("Source:", result.source);
                 this.showErrorNotification(result.message);
             }
 
             return result;
         } catch (error) {
+            console.error("Sync Village Exception:", error);
             if (error.name === 'AbortError') {
                 this.showErrorNotification('Senkronizasyon iptal edildi');
             } else {
@@ -83,17 +89,23 @@ class SyncService {
 
             if (result.success) {
                 this.showSuccessNotification(result.message);
-                
+
                 // Reload page after successful sync to show all updates
                 setTimeout(() => {
                     window.location.reload();
                 }, 1500);
             } else {
+                console.error("Sync API Error:", result.message);
+                if (result.innerMessage) console.error("Inner Message:", result.innerMessage);
+                if (result.stackTrace) console.error("StackTrace:", result.stackTrace);
+                if (result.innerStackTrace) console.error("Inner StackTrace:", result.innerStackTrace);
+                if (result.source) console.error("Source:", result.source);
                 this.showErrorNotification(result.message);
             }
 
             return result;
         } catch (error) {
+            console.error("Sync Fetch Exception:", error);
             if (error.name === 'AbortError') {
                 this.showErrorNotification('Senkronizasyon iptal edildi');
             } else {
@@ -123,10 +135,10 @@ class SyncService {
         this.updateElement(`#wood-${data.id}`, data.wood);
         this.updateElement(`#stone-${data.id}`, data.stone);
         this.updateElement(`#iron-${data.id}`, data.iron);
-        
+
         // Update population
         this.updateElement(`#population-${data.id}`, `${data.populationCurrent}/${data.populationMax}`);
-        
+
         // Update troops if elements exist
         if (data.ownedTroops) {
             Object.keys(data.ownedTroops).forEach(troopType => {
@@ -148,7 +160,7 @@ class SyncService {
             if (oldValue !== value.toString()) {
                 element.classList.add('updating');
                 element.textContent = value;
-                
+
                 setTimeout(() => {
                     element.classList.remove('updating');
                     element.classList.add('updated');
@@ -268,10 +280,10 @@ class SyncService {
 window.syncService = new SyncService();
 
 // Auto-initialize on DOM ready
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Bind sync buttons
     document.querySelectorAll('[data-sync-village]').forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', function (e) {
             e.preventDefault();
             const villageId = this.getAttribute('data-sync-village');
             window.syncService.syncVillage(villageId);
@@ -279,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.querySelectorAll('[data-sync-all]').forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', function (e) {
             e.preventDefault();
             window.syncService.syncAllVillages();
         });

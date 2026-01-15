@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TWA.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class mig_1 : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -71,7 +71,27 @@ namespace TWA.Data.Migrations
                     BuildingBarracks = table.Column<int>(type: "int", nullable: false),
                     BuildingSmithy = table.Column<int>(type: "int", nullable: false),
                     BuildingStable = table.Column<int>(type: "int", nullable: false),
+                    BuildingGarage = table.Column<int>(type: "int", nullable: false),
                     BuildingSnob = table.Column<int>(type: "int", nullable: false),
+                    BuildingStatue = table.Column<int>(type: "int", nullable: false),
+                    BuildingMarket = table.Column<int>(type: "int", nullable: false),
+                    TotalMerchants = table.Column<int>(type: "int", nullable: false),
+                    KnightName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsKnightLocal = table.Column<bool>(type: "bit", nullable: false),
+                    ResearchSpear = table.Column<int>(type: "int", nullable: false),
+                    ResearchSword = table.Column<int>(type: "int", nullable: false),
+                    ResearchAxe = table.Column<int>(type: "int", nullable: false),
+                    ResearchSpy = table.Column<int>(type: "int", nullable: false),
+                    ResearchLight = table.Column<int>(type: "int", nullable: false),
+                    ResearchHeavy = table.Column<int>(type: "int", nullable: false),
+                    ResearchRam = table.Column<int>(type: "int", nullable: false),
+                    ResearchCatapult = table.Column<int>(type: "int", nullable: false),
+                    BuildQueueJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BarracksQueueJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StableQueueJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    GarageQueueJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SnobQueueJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FlagsJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AiAction = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AiTarget = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     WallLevel = table.Column<int>(type: "int", nullable: false),

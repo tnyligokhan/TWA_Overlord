@@ -1,0 +1,55 @@
+@model IEnumerable<TWA.Core.Entities.InventoryItem>
+
+@{
+    ViewData["Title"] = "Envanter";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Envanter</h3>
+                <div class="card-options">
+                    <a href="#" class="btn btn-primary btn-sm" onclick="location.reload();"><i class="fe fe-refresh-cw"></i> Yenile</a>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (Model == null || !Model.Any())
+                {
+                    <div class="alert alert-info">
+                        Envanterde henüz öğe bulunmuyor veya veri senkronize edilmedi.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover table-vcenter text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th>Ad</th>
+                                    <th>Kategori</th>
+                                    <th>Adet</th>
+                                    <th>Tanım</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="avatar avatar-sm rounded me-2" style="background-image: url('')"></span> <!-- Placeholder for icon -->
+                                            @item.Name
+                                        </td>
+                                        <td>@item.Category</td>
+                                        <td><span class="badge bg-primary">@item.Count</span></td>
+                                        <td>@item.Description</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

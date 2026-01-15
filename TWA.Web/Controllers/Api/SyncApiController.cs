@@ -59,10 +59,17 @@ namespace TWA.Web.Controllers.Api
             }
             catch (Exception ex)
             {
+                var innerMessage = ex.InnerException?.Message ?? "No inner exception";
+                var innerStackTrace = ex.InnerException?.StackTrace ?? "";
+                
                 return StatusCode(500, new
                 {
                     success = false,
-                    message = "Senkronizasyon hatası: " + ex.Message
+                    message = "Senkronizasyon hatası: " + ex.Message,
+                    innerMessage = innerMessage,
+                    stackTrace = ex.StackTrace,
+                    innerStackTrace = innerStackTrace,
+                    source = ex.Source
                 });
             }
         }
@@ -110,10 +117,17 @@ namespace TWA.Web.Controllers.Api
             }
             catch (Exception ex)
             {
+                var innerMessage = ex.InnerException?.Message ?? "No inner exception";
+                var innerStackTrace = ex.InnerException?.StackTrace ?? "";
+                
                 return StatusCode(500, new
                 {
                     success = false,
-                    message = "Toplu senkronizasyon hatası: " + ex.Message
+                    message = "Toplu senkronizasyon hatası: " + ex.Message,
+                    innerMessage = innerMessage,
+                    stackTrace = ex.StackTrace,
+                    innerStackTrace = innerStackTrace,
+                    source = ex.Source
                 });
             }
         }

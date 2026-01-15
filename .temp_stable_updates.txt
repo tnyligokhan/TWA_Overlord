@@ -1,0 +1,17 @@
+// Bu dosya Stable.cshtml için güncellemeleri içerir
+// Spy, Light, Heavy için kuyruk sayacı ve maksimum hesaplama eklenecek
+
+// Spy (Casus) - Satır ~160-187
+// Kuyrukta: <span class="text-warning fw-bold queue-count" data-unit="spy">0</span>
+// Input: id="spy-count"
+// Button: class="calc-max" data-unit="spy" data-wood="50" data-stone="50" data-iron="20" data-pop="2"
+
+// Light (Hafif Süvari) - Satır ~236-263
+// Kuyrukta: <span class="text-warning fw-bold queue-count" data-unit="light">0</span>
+// Input: id="light-count"
+// Button: class="calc-max" data-unit="light" data-wood="125" data-stone="100" data-iron="250" data-pop="4"
+
+// Heavy (Ağır Süvari) - Satır ~312-339
+// Kuyrukta: <span class="text-warning fw-bold queue-count" data-unit="heavy">0</span>
+// Input: id="heavy-count"
+// Button: class="calc-max" data-unit="heavy" data-wood="200" data-stone="150" data-iron="600" data-pop="6"

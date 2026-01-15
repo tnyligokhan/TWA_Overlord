@@ -1,0 +1,49 @@
+@model TWA.Core.Entities.Report
+
+@{
+    ViewData["Title"] = "Rapor Detayı";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card bg-glass">
+            <div class="card-header d-flex justify-content-between">
+                <h3 class="card-title">@Model.Subject</h3>
+                <small class="text-muted">@Model.Date.ToString("dd.MM.yyyy HH:mm:ss")</small>
+            </div>
+            <div class="card-body">
+                @if (!string.IsNullOrEmpty(Model.HtmlContent))
+                {
+                    <div class="report-content">
+                        @Html.Raw(Model.HtmlContent)
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info bg-dark border-secondary text-light">
+                         Bu raporun detay içeriği henüz senkronize edilmedi veya metin formatında alınamadı.
+                    </div>
+                }
+                
+                @if(Model.Loot > 0)
+                {
+                    <div class="mb-3">
+                        <strong>Ganimet:</strong> <span class="text-warning">@Model.Loot / @Model.MaxLoot</span>
+                    </div>
+                }
+                
+                <hr />
+                
+                <a href="@Url.Action("Index")" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Listeye Dön
+                </a>
+                
+                 <form method="post" asp-action="Delete" asp-route-id="@Model.Id" class="d-inline float-end" onsubmit="return confirm('Silmek istediğinize emin misiniz?')">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Sil
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

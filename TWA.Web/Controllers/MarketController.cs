@@ -8,10 +8,12 @@ namespace TWA.Web.Controllers
     public class MarketController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly TWA.Core.Interfaces.Services.IGameBrowserService _browserService;
 
-        public MarketController(IUnitOfWork unitOfWork)
+        public MarketController(IUnitOfWork unitOfWork, TWA.Core.Interfaces.Services.IGameBrowserService browserService)
         {
             _unitOfWork = unitOfWork;
+            _browserService = browserService;
         }
 
         public async Task<IActionResult> Index(int? villageId)
@@ -21,16 +23,19 @@ namespace TWA.Web.Controllers
             var selectedVillageId = villageId ?? villages.FirstOrDefault()?.Id ?? 0;
             var selectedVillage = villages.FirstOrDefault(v => v.Id == selectedVillageId);
             
-            // Market level doesn't exist in Village entity, using a default value
-            int merchantCount = 10; // Default merchant count
+            // Get Trade Offers
+            // In a real app we might filter offers relevant to this village (e.g. range) or all.
+            // For now, let's fetch all active offers.
+            var offers = await _unitOfWork.Repository<TradeOffer>().GetAllAsync();
             
             var model = new MarketViewModel
             {
                 Villages = villages,
                 SelectedVillageId = selectedVillageId,
                 SelectedVillage = selectedVillage,
-                AvailableMerchants = merchantCount,
-                TotalMerchants = merchantCount
+                AvailableMerchants = selectedVillage?.AvailableMerchants ?? 0,
+                TotalMerchants = selectedVillage?.TotalMerchants ?? 0,
+                Offers = offers.ToList()
             };
             
             return View(model);
@@ -39,8 +44,10 @@ namespace TWA.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> SendResources(MarketViewModel model)
         {
-            // TODO: Implement resource sending via GameBrowserService
-            TempData["Success"] = "Kaynak gönderimi başlatıldı!";
+            // TODO: Implement actual resource sending logic via _browserService
+            // await _browserService.SendResourcesAsync(model.SelectedVillageId, model.TargetVillageId, model.Wood, model.Stone, model.Iron);
+            
+            TempData["Success"] = "Kaynak gönderimi sıraya alındı! (Simülasyon)";
             return RedirectToAction("Index", new { villageId = model.SelectedVillageId });
         }
 
@@ -48,8 +55,9 @@ namespace TWA.Web.Controllers
         {
             var model = new TransportsViewModel
             {
-                IncomingTransports = new List<TransportItem>(), // TODO: Load from database
-                OutgoingTransports = new List<TransportItem>() // TODO: Load from database
+                // Currently we don't track transports in DB actively.
+                IncomingTransports = new List<TransportItem>(), 
+                OutgoingTransports = new List<TransportItem>() 
             };
 
             return View(model);

@@ -59,6 +59,12 @@ namespace TWA.Core.Entities
         public int BuildingGarage { get; set; } // Workshop
         public int BuildingSnob { get; set; } // Academy
         public int BuildingStatue { get; set; } // Heykel (Şövalye)
+        public int BuildingMarket { get; set; } // Pazar yerine
+        public int TotalMerchants { get; set; }
+        
+        // Knight/Statue
+        public string KnightName { get; set; } = string.Empty;
+        public bool IsKnightLocal { get; set; }
         
         // Demirci Araştırma Seviyeleri
         public int ResearchSpear { get; set; } = 0;
@@ -78,6 +84,8 @@ namespace TWA.Core.Entities
         public string StableQueueJson { get; set; } = "[]";   // Ahır
         public string GarageQueueJson { get; set; } = "[]";   // Atölye
         public string SnobQueueJson { get; set; } = "[]";     // Akademi (Soylu)
+        
+        public string FlagsJson { get; set; } = "{}"; // Bayraklar JSON
         
         // AI Logic Properties
         public string AiAction { get; set; } = "BUILD"; // Default action

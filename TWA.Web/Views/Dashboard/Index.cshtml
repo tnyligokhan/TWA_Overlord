@@ -292,16 +292,24 @@
             
             switch(data.level) {
                 case "SUCCESS":
+                    console.log(`%c[SUCCESS] ${data.message}`, 'color: green; font-weight: bold;');
                     levelClass = "text-success";
                     levelIcon = "check-circle";
                     break;
                 case "ERROR":
+                    console.error(`[ERROR] ${data.message}`);
+                    if (data.stackTrace) console.error("StackTrace:", data.stackTrace);
+                    if (data.source) console.error("Source:", data.source);
                     levelClass = "text-danger";
                     levelIcon = "exclamation-triangle";
                     break;
                 case "WARNING":
+                    console.warn(`[WARNING] ${data.message}`);
                     levelClass = "text-warning";
                     levelIcon = "exclamation-circle";
+                    break;
+                default:
+                    console.log(`[${data.level}] ${data.message}`);
                     break;
             }
             
